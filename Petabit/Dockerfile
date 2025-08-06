@@ -7,7 +7,8 @@ RUN dotnet restore Petabit.csproj
 
 COPY . .
 RUN dotnet build Petabit.csproj -c Release -o /app/build
-RUN dotnet publish Petabit.csproj -c Release -o /app/publish /p:SelfContained=false
+RUN dotnet publish Petabit.csproj -c Release -o /app/publish
+
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
