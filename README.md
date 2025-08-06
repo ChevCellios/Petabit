@@ -54,8 +54,8 @@
 ## 📸 Screenshot
 
 ### 💻 Desktop prikaz (Dark Mode)
-![Petabit Dark Desktop](./wwwroot/img/screenshotPetabit.png)
-> `wwwroot/img/screenshotPetabit.png`  
+![Petabit Dark Desktop](./wwwroot/docs/screenshotPetabit.png)
+> `wwwroot/docs/screenshotPetabit.png`  
 
 
 ---
