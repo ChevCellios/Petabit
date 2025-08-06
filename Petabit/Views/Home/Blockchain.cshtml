@@ -1,0 +1,20 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["BlockchainTechnology"];
+}
+
+<div class="container mt-5 text-light">
+    <h1 class="display-4 text-center">🪙 @Localizer["BlockchainTechnology"]</h1>
+
+    <div class="mt-4">
+        <p class="lead">
+            @Localizer["BlockchainTechnologyDescription"]
+        </p>
+
+        <a href="https://minepi.com/SuperBolt" target="_blank" class="btn btn-outline-warning mt-3">
+            🌐 @Localizer["VisitPiNetwork"]
+        </a>
+    </div>
+</div>

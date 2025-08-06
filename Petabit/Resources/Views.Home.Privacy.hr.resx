@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Contact" xml:space="preserve">
+    <value>Kontaktirajte nas</value>
+  </data>
+  <data name="ContactText" xml:space="preserve">
+    <value>Ako imate pitanja ili zabrinutosti vezano uz privatnost, slobodno nas kontaktirajte na: midom.croatia@yahoo.com</value>
+  </data>
+  <data name="Cookies" xml:space="preserve">
+    <value>Kolačići</value>
+  </data>
+  <data name="CookiesPoint1" xml:space="preserve">
+    <value>Trenutno ne koristimo kolačiće za praćenje korisnika ili reklamne svrhe.</value>
+  </data>
+  <data name="CookiesPoint2" xml:space="preserve">
+    <value>Mogu se koristiti nužni kolačići za tehničko funkcioniranje stranice (npr. za održavanje sesije ili lokalizaciju).
+</value>
+  </data>
+  <data name="DataCollected" xml:space="preserve">
+    <value>Koje podatke prikupljamo?</value>
+  </data>
+  <data name="DataPoint1" xml:space="preserve">
+    <value>Ne prikupljamo osobne podatke poput imena, adrese e-pošte, brojeva ili drugih identifikacijskih informacija.</value>
+  </data>
+  <data name="DataPoint2" xml:space="preserve">
+    <value>Aplikacija može prikupljati tehničke podatke poput IP adrese i informacije o pregledniku u svrhu analize performansi i sigurnosti, ali ti podaci nisu povezani s vašim identitetom.</value>
+  </data>
+  <data name="DataSecurity" xml:space="preserve">
+    <value>Podatkovna sigurnost</value>
+  </data>
+  <data name="DataSecurityText" xml:space="preserve">
+    <value>Poduzimamo razumne tehničke i organizacijske mjere kako bismo zaštitili podatke od neovlaštenog pristupa, gubitka ili zloupotrebe.
+</value>
+  </data>
+  <data name="IntroText" xml:space="preserve">
+    <value>Ova aplikacija je namijenjena kao portfolio i demonstracija mojih vještina u web razvoju. Vaša privatnost nam je važna, zato želimo biti transparentni u vezi s podacima koje obrađujemo.</value>
+  </data>
+  <data name="PolicyChanges" xml:space="preserve">
+    <value>Izmjene ove politike</value>
+  </data>
+  <data name="PolicyChangesText" xml:space="preserve">
+    <value>Ovu politiku privatnosti možemo povremeno ažurirati. Sve promjene bit će objavljene na ovoj stranici.</value>
+  </data>
+  <data name="ThankYou" xml:space="preserve">
+    <value>Hvala ti što koristiš Petabit! Da, baš ti! : )</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Politika privatnosti</value>
+  </data>
+  <data name="WelcomeText" xml:space="preserve">
+    <value>Dobrodošli na Petabit! : )</value>
+  </data>
+  <data name="YourRights" xml:space="preserve">
+    <value>Vaša prava</value>
+  </data>
+  <data name="YourRightsText" xml:space="preserve">
+    <value>Budući da ne prikupljamo osobne podatke, nemate zahtjeve za pristup, ispravak ili brisanje osobnih podataka.</value>
+  </data>
+</root>

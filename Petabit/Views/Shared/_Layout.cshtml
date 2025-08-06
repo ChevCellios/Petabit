@@ -1,30 +1,99 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@*<!-- Omogućuje lokalizaciju i dohvat kulture iz zahtjeva-->*@
+@using Microsoft.AspNetCore.Localization 
+@* Ubrizgava lokalizator za prikaz lokaliziranih *@
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+
+@{
+    var currentCulture = Context.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture.Name;
+    var culture = Context.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture.TwoLetterISOLanguageName ?? "en";
+    var title = "Petabit - Learn. Build. Evolve.";
+    var description = "Petabit is a minimal, multilingual web platform focused on learning, tools, and tech evolution.";
+    var url = "https://yourdomain.com"; // Zamijeni pravim URL-om
+    var image = $"{url}/screenshot.png";
+}
+
+<!DOCTYPE html>
+<html lang="@culture">
 <head>
+    <link rel="apple-touch-icon" sizes="180x180" href="~/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="~/favicon-32x32.png" asp-append-version="true" />
 
+    <link rel="icon" type="image/png" sizes="16x16" href="~/favicon-16x16.png">
+    <link rel="manifest" href="~/site.webmanifest">
+    <link rel="mask-icon" href="~/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="~/favicon.ico">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-config" content="~/browserconfig.xml">
+    <meta name="theme-color" content="#000000">
 
+    <!-- Primary Meta -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Petabit</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <meta name="title" content="@title" />
+    <meta name="description" content="@description" />
+    <meta name="keywords" content="Petabit, tech, learning, .NET, ASP.NET Core, AI tools, multilingual" />
+    <meta name="author" content="Petabit Team" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="@url/@culture" />
 
-    <!-- Bootstrap CSS -->
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="@url/@culture" />
+    <meta property="og:title" content="@title" />
+    <meta property="og:description" content="@description" />
+    <meta property="og:image" content="@image" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="@url/@culture" />
+    <meta property="twitter:title" content="@title" />
+    <meta property="twitter:description" content="@description" />
+    <meta property="twitter:image" content="@image" />
+
+    <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Petabit.styles.css" asp-append-version="true" />
+
+    <style>
+        .btn-home {
+            min-width: 180px;
+            max-width: 220px;
+            text-align: center;
+            white-space: nowrap;
+            margin-bottom: 8px;
+        }
+    </style>
+
+    @RenderSection("Styles", required: false)
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
+<body class="dark-mode">
+    <!-- Header & Navigation -->
+    <header style="position: relative; height: auto;">
+        <nav class="navbar navbar-expand-lg navbar-dark matrix" style="position: relative; z-index: 1;">
+            <canvas id="matrixCanvas"></canvas>
+
+            <div class="container-fluid position-relative" style="z-index: 2;">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Petabit</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <form asp-controller="Home" asp-action="SetLanguage" method="post" class="d-inline">
+                                <select name="culture" onchange="this.form.submit()" class="form-select form-select-sm w-auto d-inline">
+                                    <option value="en" selected="@(culture == "en" ? "selected" : null)">EN</option>
+                                    <option value="hr" selected="@(culture == "hr" ? "selected" : null)">HR</option>
+                                    <option value="de" selected="@(culture == "de" ? "selected" : null)">DE</option>
+                                </select>
+                            </form>
+
+                            
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
@@ -35,25 +104,101 @@
                 </div>
             </div>
         </nav>
+
+        <button id="toggle-dark-mode" class="btn btn-outline-light">🌓</button>
     </header>
+
+    <!-- Glavni sadržaj -->
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <!-- Footer -->
+    <footer class="border-top">
         <div class="container">
             &copy; 2025 - Petabit - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
+    <!-- JS biblioteke -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 
+    <!-- Matrix animacija -->
+    <script>
+        const canvas = document.getElementById("matrixCanvas");
+        const ctx = canvas.getContext("2d");
+
+        function resizeCanvas() {
+            const navbar = document.querySelector("nav.navbar");
+            canvas.width = navbar.offsetWidth;
+            canvas.height = navbar.offsetHeight;
+        }
+
+        let columns, drops;
+        const fontSize = 1;
+        const matrixChars = "アァイィウエカガキギクグケゲコゴサザシジスズタダチッヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモヤユヨラリルレロワンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        const letters = matrixChars.split("");
+
+        function setupMatrix() {
+            columns = Math.floor(canvas.width / fontSize);
+            drops = Array.from({ length: columns }).fill(1);
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#00ff00";
+            ctx.font = fontSize + "px monospace";
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height || Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+
+        resizeCanvas();
+        setupMatrix();
+        setInterval(drawMatrix, 33);
+        window.addEventListener("resize", () => {
+            resizeCanvas();
+            setupMatrix();
+        });
+    </script>
+
+    <!-- Dark/Light Mode Toggle -->
+    <script>
+        const body = document.body;
+        const toggle = document.getElementById('toggle-dark-mode');
+
+        // Postavi temu na temelju spremljene vrijednosti u localStorage
+        if (localStorage.getItem("theme") === "light") {
+            body.classList.remove("dark-mode");
+            body.classList.add("light-mode");
+        } else {
+            body.classList.add("dark-mode");
+            body.classList.remove("light-mode");
+        }
+
+        // Kad korisnik klikne na prekidač, promijeni temu i spremi novu postavku
+        toggle.addEventListener('click', () => {
+            if (body.classList.contains("dark-mode")) {
+                body.classList.replace("dark-mode", "light-mode");
+                localStorage.setItem("theme", "light");
+            } else {
+                body.classList.replace("light-mode", "dark-mode");
+                localStorage.setItem("theme", "dark");
+            }
+        });
+
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+

@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "ISS Tracker";
+    Layout = "_Layout";
+}
+
+<h1>🛰️ Prati ISS (Minimal)</h1>
+
+<button id="iss-ping-button" class="btn btn-primary">🔭 Ping ISS</button>
+<audio id="ping-sound" src="/sounds/ping.mp3" preload="auto"></audio>
+
+<div id="iss-result" class="mt-3"></div>
+<div id="iss-speed" class="mt-1"></div>
+<div id="iss-astronauts" class="mt-1"></div>
+<div id="astronaut-count" class="mt-1"></div>
+
+@section Scripts {
+    <script src="~/js/iss-tracker.js"></script>
+}

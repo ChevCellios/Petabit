@@ -1,22 +1,205 @@
+/* ========== Globalna podešavanja ========== */
 html {
-  font-size: 14px;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
+    html {
+        font-size: 16px;
+    }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    .navbar.matrix .navbar-brand {
+        font-size: 1.2rem;
+    }
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: #121212;
+    color: #e0e0e0;
 }
+/* DEFAULT dark mode odmah */
+   /** body.dark-mode {
+        background-color: #121212;
+        color: #e0e0e0;
+    }*/
+
+/* Light mode */
+body.light-mode {
+    background-color: #f4f4f4;
+    color: #000000;
+}
+
+/* Dark mode dodatni elementi */
+body.dark-mode .navbar,
+body.dark-mode .footer,
+body.dark-mode .card,
+body.dark-mode .list-group-item {
+    background-color: #1e1e1e;
+    color: #f1f1f1;
+    border-color: #333;
+}
+
+body.dark-mode a {
+    color: #bb86fc;
+}
+
+/* Stilovi za tekst i naslove */
+:is(h1, h2, h3, h4, h5, h6) {
+    color: #ffffff;
+    text-shadow: 0 0 5px #00ff00;
+}
+
+body.light-mode :is(h1, h2, h3, h4, h5, h6, .btn, .nav-link) {
+    color: #000000;
+    text-shadow: 0 0 5px #00ff00;
+}
+
+body.dark-mode :is(h1, h2, h3, h4, h5, h6, .btn, .nav-link) {
+    color: #ffffff;
+    text-shadow: 0 0 5px #00ff00;
+}
+
+/* ========== Fokus efekti ========== */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* ========== Hamburger gumb centriran na manjim ekranima ========== */
+.navbar-toggler {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+/* Ali na veæim ekranima neka bude normalno poravnat */
+@media (min-width: 992px) {
+    .navbar-toggler {
+        margin: 0;
+    }
+}
+
+/* ========== Dark/Light Mode gumb ========== */
+
+.mode-toggle 
+{
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1050;
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+}
+
+.icon-button:hover {
+    opacity: 0.75;
+    transform: scale(1.1);
+    transition: all 0.2s ease-in-out;
+}
+
+/* ========== Matrix Navbar Stilovi ========== */
+.navbar.matrix {
+    position: relative;
+    overflow: hidden;
+    background-color: #001f00;
+    background-image: linear-gradient(145deg, #001f00, #003300);
+    border-bottom: 2px solid #00ff00;
+    color: #00ff00;
+}
+
+.navbar.matrix a,
+.navbar.matrix .navbar-brand {
+    color: #f1f1f1 !important;
+    text-shadow: 0 0 3px #00ff00;
+}
+
+.navbar.matrix a:hover,
+button.btn:hover,
+select.form-select:hover {
+    color: #ccffcc !important;
+    text-shadow: 0 0 8px #00ff00;
+}
+
+.navbar.matrix canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.navbar.matrix > .container-fluid {
+    position: relative;
+    z-index: 1;
+}
+
+/* ========== Ostalo (tipke, forme) ========== */
+button.btn,
+select.form-select {
+    color: #1e1e1e !important;
+    text-shadow: 0 0 3px #00ff00;
+
+}
+
+#iss-result, #iss-speed, #iss-astronauts, #astronaut-count {
+    font-size: 1.2rem;
+    margin-top: 10px;
+}
+/* ========== Animacije i efekti ========== */
+/* Animacija dugmeta - PING efekt */
+@keyframes pingEffect {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(0, 255, 0, 0.7);
+    }
+
+    50% {
+        transform: scale(1.15);
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.9);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(0, 255, 0, 0.0);
+    }
+}
+#iss-ping-button {
+    position: relative;
+    overflow: hidden;
+}
+
+
+.ping-animate {
+    animation: pingEffect 0.3s ease-in-out;
+}
+#iss-result {
+    color: #00ff00;
+    font-family: monospace;
+    text-shadow: 0 0 4px #00ff00;
+}
+
+body.dark-mode .lead {
+    color: #e0e0e0;
+}
+
+body.light-mode .lead {
+    color: #222222;
+}
+
+
+
+
+
+
+

@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "http": {
+    "Kestrel.Project": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

@@ -1,8 +1,72 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
+    // Postavlja naslov stranice koji će se prikazati u pregledniku
+    ViewData["Title"] = "Welcome to Petabit";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container text-center mt-5">
+    <!-- Glavni naslov aplikacije -->
+    <h1 class="display-4">Petabit 🌍</h1>
+    <!-- Lokalizirani tekst dobrodošlice -->
+    <p class="lead">@Localizer["WelcomeText"]</p>
+
+    <div class="mt-4">
+        <!-- Gumbi u jednom redu, svaki u svojoj koloni -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-auto">
+                <a href="/Home/Books" class="btn btn-primary btn-home">📚 @Localizer["BooksLink"]</a>
+            </div>
+            <div class="col-auto">
+                <a href="/Home/Apps" class="btn btn-success btn-home">📱 @Localizer["AppsLink"]</a>
+            </div>
+            <div class="col-auto">
+                <a href="/Home/Blockchain" class="btn btn-warning btn-home">🪙 @Localizer["BlockchainLink"]</a>
+            </div>
+        </div>
+
+        <!-- Sekcija za ISS Tracker -->
+        <h2 class="text-center mt-4">🌐 ISS Tracker</h2>
+
+        <!-- Gumb za dohvat trenutnih podataka o ISS-u -->
+        <button id="iss-ping-button" class="btn btn-primary">📡🛰️ Ping ISS</button>
+        <!-- Zvuk koji se reproducira prilikom pritiska na gumb -->
+        <audio id="ping-sound" src="/sounds/zvuk.mp3" preload="auto"></audio>
+
+        <!-- Ovdje će se prikazati rezultati dohvaćenih podataka o ISS-u -->
+        <div id="iss-result" class="mt-3"></div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Dodaje event listener na gumb za dohvat ISS podataka
+        document.getElementById('iss-ping-button').addEventListener('click', () => {
+            // Reproducira zvuk prilikom klika
+            document.getElementById('ping-sound').play();
+
+            // Poziva backend endpoint za dohvat podataka o ISS-u
+            fetch('/iss/data')
+                .then(response => response.json())
+                .then(data => {
+                    // Prikazuje podatke o trenutnoj lokaciji, brzini i broju astronauta na ISS-u
+                    document.getElementById('iss-result').innerHTML = `
+                        🌍 Lokacija ISS-a:<br>
+                        🧭 Latitude: ${data.latitude.toFixed(2)}°<br>
+                        🧭 Longitude: ${data.longitude.toFixed(2)}°<br>
+                        🚀 Brzina: ${data.speed.toFixed(2)} km/h<br>
+                        👨‍🚀 Astronauta na ISS-u: ${data.astronautCount}
+                    `;
+                })
+                .catch(error => {
+                    // Prikazuje poruku o grešci ako dohvat podataka ne uspije
+                    document.getElementById('iss-result').innerHTML = "❌ Greška pri dohvaćanju ISS podataka.";
+                    console.error("Greška:", error);
+                });
+        });
+    </script>
+}
+
+
+

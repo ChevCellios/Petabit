@@ -1,6 +1,40 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
-}
-<h1>@ViewData["Title"]</h1>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
-<p>Use this page to detail your site's privacy policy.</p>
+@{
+    ViewData["Title"] = Localizer["Title"];
+}
+
+<h1>@Localizer["Title"]</h1>
+
+<p>@Localizer["WelcomeText"]</p>
+
+<p>@Localizer["IntroText"]</p>
+
+<h2>@Localizer["DataCollected"]</h2>
+<ul>
+    <li><strong>@Localizer["DataPoint1"]</strong></li>
+    <li>@Localizer["DataPoint2"]</li>
+</ul>
+
+<h2>@Localizer["Cookies"]</h2>
+<ul>
+    <li>@Localizer["CookiesPoint1"]</li>
+    <li>@Localizer["CookiesPoint2"]</li>
+</ul>
+
+<h2>@Localizer["DataSecurity"]</h2>
+<p>@Localizer["DataSecurityText"]</p>
+
+<h2>@Localizer["YourRights"]</h2>
+<p>@Localizer["YourRightsText"]</p>
+
+<h2>@Localizer["PolicyChanges"]</h2>
+<p>@Localizer["PolicyChangesText"]</p>
+
+<p>@Localizer["ThankYou"]</p>
+
+<h2>@Localizer["Contact"]</h2>
+<p>@Html.Raw(Localizer["ContactText"].Value.Replace("midom.croatia@yahoo.com", "<a href=\"mailto:midom.croatia@yahoo.com\">midom.croatia@yahoo.com</a>"))</p>
+
+
