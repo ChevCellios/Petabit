@@ -2,20 +2,22 @@
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
-		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-		<!-- ✅ OVDJE dodano -->
+
+		<!-- ✅ Dobrodošli za moderni .NET stil -->
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 
-		<!-- 🔽 Dodano za optimizaciju i objavu -->
-		<PublishSingleFile>true</PublishSingleFile>
-		<PublishTrimmed>true</PublishTrimmed>
-		<PublishReadyToRun>true</PublishReadyToRun>
+		<!-- ❌ OVE OPCIJE MAKNUTE jer ne rade na Render-u -->
+		<!-- <RuntimeIdentifier>win-x64</RuntimeIdentifier> -->
+		<!-- <PublishSingleFile>true</PublishSingleFile> -->
+		<!-- <PublishTrimmed>true</PublishTrimmed> -->
+		<!-- <PublishReadyToRun>true</PublishReadyToRun> -->
+
+		<!-- ✅ Ovo može ostati -->
 		<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
 		<CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
 	</PropertyGroup>
-
-	<ItemGroup>
+<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.7" />
 	</ItemGroup>
 
@@ -24,4 +26,3 @@
 	</ItemGroup>
 
 </Project>
-
