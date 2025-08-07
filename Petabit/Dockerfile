@@ -1,16 +1,18 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
-
-# Ovdje COPY koristi relativne putanje jer je kontekst već Petabit/
-COPY *.csproj ./
-RUN dotnet restore Petabit.csproj
-
-COPY . .
-RUN dotnet build Petabit.csproj -c Release -o /app/build
-RUN dotnet publish Petabit.csproj -c Release -o /app/publish
-
-
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+﻿# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
-COPY --from=build /app/publish ./
+
+# Copy csproj and restore as distinct layers
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copy everything else and build
+COPY . ./
+RUN dotnet publish -c Release -o /out
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+COPY --from=build /out ./
+
 ENTRYPOINT ["dotnet", "Petabit.dll"]
