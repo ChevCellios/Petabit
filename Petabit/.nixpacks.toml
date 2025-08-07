@@ -1,0 +1,8 @@
+﻿[phases.setup]
+nixPkgs = ["dotnet-sdk_8"]
+
+[phases.build]
+cmds = ["dotnet restore", "dotnet build"]
+
+[phases.start]
+cmds = ["dotnet run --project Petabit/Petabit.csproj"]
