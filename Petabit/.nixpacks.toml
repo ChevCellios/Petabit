@@ -1,5 +1,9 @@
-﻿[phases.setup]
-nixPkgs = ["dotnet-sdk_8"]
+﻿[build]
+builder = "nixpacks"
+
+[variables]
+DOTNET_SDK_VERSION = "8.0.100"
+
 
 [phases.build]
 cmds = ["dotnet restore", "dotnet build"]
