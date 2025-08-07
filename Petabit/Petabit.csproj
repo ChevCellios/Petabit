@@ -1,35 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-
-    <!-- Za render -->
-    <PublishTrimmed>false</PublishTrimmed>
-    <PublishSingleFile>false</PublishSingleFile>
-    <PublishReadyToRun>false</PublishReadyToRun>
-    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
-  </PropertyGroup>
-
-</Project>
-
-	<ItemGroup>
-	  <Compile Remove="Views\ISS\**" />
-	  <Content Remove="Views\ISS\**" />
-	  <EmbeddedResource Remove="Views\ISS\**" />
-	  <None Remove="Views\ISS\**" />
-	</ItemGroup>
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-		<!-- Za render -->
-		<PublishTrimmed>false</PublishTrimmed>
-		<PublishSingleFile>false</PublishSingleFile>
-		<PublishReadyToRun>false</PublishReadyToRun>
-		<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-		<CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
-	
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.0" />
+	</ItemGroup>
+
+</Project>
