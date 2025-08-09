@@ -3,7 +3,7 @@
 on:
   push:
     branches:
-      - main   # ili stavi naziv grane s koje želiš deploy
+      - PetabitVerNET90304   # ili stavi naziv grane s koje želiš deploy
 
 jobs:
   build:
