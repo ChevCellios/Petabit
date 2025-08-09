@@ -6,6 +6,7 @@
 ![Status](https://img.shields.io/badge/status-active-success)
 ## Napomena
 Ova verzija aplikacije je degradirana radi spuštanja sa .NET 8 na .NET 6, pa neke funkcionalnosti možda nisu dostupne ili potpuno primjenjive.
+## Demo / Produkcija Aplikacija(degraded .NET 6) je dostupna ovdje [🌐 Otvori aplikaciju](https://petabit-production.up.railway.app/)
 
 **Petabit** je minimalistička, lokalizirana i responzivna ASP.NET Core MVC web aplikacija s integriranim prikazom lokacije, brzine i broja astronauta na Međunarodnoj svemirskoj postaji (ISS). Projekt je razvijen kao demonstracija modernih web tehnologija, dobre prakse i profesionalne prezentacije rada.
 
