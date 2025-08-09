@@ -4,9 +4,12 @@
 ![Language](https://img.shields.io/badge/language-C%23-orange)
 ![Localization](https://img.shields.io/badge/i18n-3%20languages-green)
 ![Status](https://img.shields.io/badge/status-active-success)
-
+## Napomena
+Ova verzija aplikacije je degradirana radi spuštanja sa .NET 8 na .NET 6, pa neke funkcionalnosti možda nisu dostupne ili potpuno primjenjive.
 
 **Petabit** je minimalistička, lokalizirana i responzivna ASP.NET Core MVC web aplikacija s integriranim prikazom lokacije, brzine i broja astronauta na Međunarodnoj svemirskoj postaji (ISS). Projekt je razvijen kao demonstracija modernih web tehnologija, dobre prakse i profesionalne prezentacije rada.
+
+
 
 ---
 
