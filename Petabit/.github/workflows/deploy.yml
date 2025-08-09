@@ -3,7 +3,7 @@
 on:
   push:
     branches:
-      - PetabitVerNET90304   # ili stavi naziv grane s koje želiš deploy
+      - PetabitVerNET90304
 
 jobs:
   build:
@@ -18,17 +18,16 @@ jobs:
           dotnet-version: '9.0.304'
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore Petabit/Petabit.csproj
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build Petabit/Petabit.csproj --configuration Release --no-restore
 
       - name: Publish
-        run: dotnet publish -c Release -o publish
+        run: dotnet publish Petabit/Petabit.csproj -c Release -o publish
 
-      # Ovdje ide Railway deployment ako želiš automatski upload
-      # Na primjer, pomoću Railway CLI:
-      # - uses: railwayapp/railway-deploy@v1
-      #   with:
-      #     service-id: ${{ secrets.RAILWAY_SERVICE_ID }}
-      #     token: ${{ secrets.RAILWAY_TOKEN }}
+      # Railway deploy
+      - uses: railwayapp/railway-deploy@v1
+        with:
+          service-id: ${{ secrets.RAILWAY_SERVICE_ID }}
+          token: ${{ secrets.RAILWAY_TOKEN }}
