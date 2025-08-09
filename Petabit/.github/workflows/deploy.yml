@@ -1,0 +1,34 @@
+﻿name: Deploy to Railway
+
+on:
+  push:
+    branches:
+      - main   # ili stavi naziv grane s koje želiš deploy
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET 9 SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.304'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish -c Release -o publish
+
+      # Ovdje ide Railway deployment ako želiš automatski upload
+      # Na primjer, pomoću Railway CLI:
+      # - uses: railwayapp/railway-deploy@v1
+      #   with:
+      #     service-id: ${{ secrets.RAILWAY_SERVICE_ID }}
+      #     token: ${{ secrets.RAILWAY_TOKEN }}
