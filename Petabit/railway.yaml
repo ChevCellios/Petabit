@@ -1,4 +1,4 @@
 ﻿# railway.yaml
 build:
-  builder: DOCKERFILE
+  builder: dockerfile
   dockerfilePath: ./Dockerfile
