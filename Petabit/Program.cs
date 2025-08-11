@@ -9,7 +9,19 @@ namespace Petabit
     {
         public static void Main(string[] args)
         {
+            // Postavke aplikacije
             var builder = WebApplication.CreateBuilder(args);
+
+            // Postavke za korištenje HTTPS i porta /Bind port from enviroment(Render)
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+            builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
+            // Konfiguracija servisa - Config
+            builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
 
             // Lokalizacija
             builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
@@ -21,6 +33,7 @@ namespace Petabit
 
             var app = builder.Build();
 
+            // Error handling
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -35,29 +48,27 @@ namespace Petabit
     new CultureInfo("de")
 };
 
-            app.UseRequestLocalization(new RequestLocalizationOptions
+            var localizationOptions = new RequestLocalizationOptions
             {
                 DefaultRequestCulture = new RequestCulture("en"),
                 SupportedCultures = supportedCultures,
                 SupportedUICultures = supportedCultures,
                 RequestCultureProviders = new List<IRequestCultureProvider>
     {
-        new CookieRequestCultureProvider(), // koristi cookie za promjene jezika
-        new AcceptLanguageHeaderRequestCultureProvider() // fallback
+        new CookieRequestCultureProvider(),
+        new AcceptLanguageHeaderRequestCultureProvider()
     }
-            });
+            };
 
+            app.UseRequestLocalization(localizationOptions);
 
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            // Security headers
             app.Use(async (context, next) =>
             {
                 context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
                 context.Response.Headers.Add("X-Frame-Options", "DENY");
                 context.Response.Headers.Add("Referrer-Policy", "no-referrer");
                 context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
-
                 context.Response.Headers.Add("Content-Security-Policy",
                     "default-src 'self' https: data: 'unsafe-inline'; " +
                     "script-src 'self' https: 'unsafe-inline' 'unsafe-eval'; " +
@@ -65,13 +76,15 @@ namespace Petabit
                     "font-src 'self' https: data:; " +
                     "img-src 'self' https: data:; " +
                     "connect-src 'self' https:; " +
-                    "frame-src 'none';"
-                );
-
+                    "frame-src 'none';");
+                context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+                context.Response.Headers.Add("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
                 await next();
             });
 
 
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
 
