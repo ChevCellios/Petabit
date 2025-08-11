@@ -1,24 +1,32 @@
-﻿# Build stage
+﻿# KORAK 1: Build stage s .NET SDK image-om
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /app
 
-# Kopiraj csproj i restore dependencies
-COPY *.csproj ./
-RUN dotnet restore
+# Postavi radni direktorij u /src
+WORKDIR /src
 
-# Kopiraj ostatak koda i buildaj aplikaciju
-COPY . ./
-RUN dotnet publish -c Release -o /app/out
+# Kopiraj samo .csproj fajl iz poddirektorija Petabit/Petabit u lokalni folder Petabit
+COPY Petabit/Petabit/Petabit.csproj Petabit/
 
-# Runtime stage
+# Pokreni restore ovisnosti za projekt (iz Petabit/Petabit foldera)
+RUN dotnet restore Petabit/Petabit.csproj
+
+# Kopiraj sav ostatak koda iz poddirektorija Petabit/Petabit u lokalni folder Petabit
+COPY Petabit/Petabit/ Petabit/
+
+# Promijeni radni direktorij u Petabit (gdje je csproj)
+WORKDIR /src/Petabit
+
+# Build i publish aplikacije u release modu u folder /app
+RUN dotnet publish -c Release -o /app
+
+# KORAK 2: Runtime stage s ASP.NET Core runtime image-om
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
+
+# Postavi radni direktorij u /app
 WORKDIR /app
 
-# Kopiraj buildane datoteke iz build stagea
-COPY --from=build /app/out ./
+# Kopiraj iz build faze objavljeni output u runtime image
+COPY --from=build /app .
 
-# Izloži port (možeš staviti i environment varijablu)
-EXPOSE 5000
-
-# Postavi start naredbu
+# Definiraj komandu za pokretanje aplikacije
 ENTRYPOINT ["dotnet", "Petabit.dll"]
