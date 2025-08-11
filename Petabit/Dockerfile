@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Kopiraj samo .csproj fajl iz poddirektorija Petabit/Petabit u lokalni folder Petabit
-COPY Petabit/Petabit/Petabit.csproj Petabit/
+COPY Petabit/Petabit.csproj Petabit/
 
 # Pokreni restore ovisnosti za projekt (iz Petabit/Petabit foldera)
 RUN dotnet restore Petabit/Petabit.csproj
