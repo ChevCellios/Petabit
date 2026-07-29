@@ -3,101 +3,68 @@
 ![.NET](https://img.shields.io/badge/.NET-8.0-blueviolet)
 ![Language](https://img.shields.io/badge/language-C%23-orange)
 ![Localization](https://img.shields.io/badge/i18n-3%20languages-green)
-![Status](https://img.shields.io/badge/status-active-success)
-## Napomena
-Ova verzija aplikacije je degradirana radi spuštanja sa .NET 8 na .NET 6, pa neke funkcionalnosti možda nisu dostupne ili potpuno primjenjive.
-## Demo / Produkcija Aplikacija(degraded .NET 6) je dostupna ovdje [🌐 Otvori aplikaciju](https://petabit-production.up.railway.app/)
 
-**Petabit** je minimalistička, lokalizirana i responzivna ASP.NET Core MVC web aplikacija s integriranim prikazom lokacije, brzine i broja astronauta na Međunarodnoj svemirskoj postaji (ISS). Projekt je razvijen kao demonstracija modernih web tehnologija, dobre prakse i profesionalne prezentacije rada.
+Petabit je responzivna ASP.NET Core MVC aplikacija s višejezičnim sučeljem i jednostavnim ISS trackerom. Projekt je zamišljen kao portfolio demonstracija rada s .NET-om, Razor pogledima, lokalizacijom i dohvatom podataka iz vanjskih API-ja.
 
+## Značajke
 
+- Lokalizacija na hrvatski, engleski i njemački jezik
+- Light i dark način prikaza, uz spremanje korisničkog odabira
+- ISS tracker s trenutačnom lokacijom, brzinom i brojem astronauta na ISS-u
+- Obrada nedostupnosti vanjskih servisa i vremenskog ograničenja zahtjeva
+- Responzivan prikaz za desktop i mobilne uređaje
+- Stranice za knjige, aplikacije, blockchain i privatnost
 
----
+## Tehnologije
 
-## ✨ Značajke
-
-- 🌍 **Lokalizacija (i18n)**: podržani jezici su **hrvatski (default)**, **engleski** i **njemački**.
-- 🌒 **Dark / Light Mode**: korisnik može birati između tamnog i svijetlog prikaza.
-- 📡 **Prikaz ISS-a**:  
-  - Prikaz trenutne lokacije ISS-a  
-  - Izračun brzine ISS-a u stvarnom vremenu  
-  - Broj astronauta i njihova imena  
-- 🛜 **Ping ISS gumb** s animacijom i zvučnim efektom
-- 📱 Potpuno responzivna stranica za desktop i mobilne uređaje
-- 📄 Lokalizirane stranice poput Privacy i Contact
-
----
-
-## ⚙️ Tehnologije
-
-- ASP.NET Core MVC (.NET 8)
-- C#
+- .NET 8 i ASP.NET Core MVC
+- C# i Razor Views
 - Bootstrap 5
-- JavaScript (DOM manipulation, fetch API)
-- HTML5 & CSS3
-- Razor Pages
-- JSON API: [open-notify.org](https://open-notify.org/)
-- Lokalizacija putem `.resx` datoteka
+- JavaScript Fetch API
+- `.resx` lokalizacijske datoteke
+- [Where the ISS at?](https://wheretheiss.at/) i [Open Notify](http://open-notify.org/) API-ji
 
----
+## Pokretanje lokalno
 
-## 🚀 Pokretanje projekta
+### Preduvjeti
 
-1. Kloniraj repozitorij:
-    ```bash
-    git clone https://github.com/chevcelios/petabit.git
-    cd petabit
-    ```
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
-2. Otvori projekt u Visual Studio 2022
+### Koraci
 
-3. Pokreni aplikaciju (`F5`) ili klikom na “Start Debugging”
+```bash
+git clone https://github.com/ChevCellios/Petabit.git
+cd Petabit
+dotnet restore --configfile NuGet.Config
+dotnet run --project Petabit
+```
 
----
+Nakon pokretanja otvorite URL koji `dotnet run` ispiše u terminalu. U razvojnom okruženju možete otvoriti i `Petabit.sln` u Visual Studio 2022.
 
-## 📸 Screenshot
+## ISS tracker
 
-### 💻 Desktop prikaz (Dark Mode)
-![Petabit Dark Desktop](https://github.com/ChevCellios/Petabit/blob/master/Petabit/docs/screenshotPetabit.png)
- 
+Klik na **Ping ISS** dohvaća podatke preko aplikacijskog endpointa `GET /Home/Data`. Poslužitelj dohvaća lokaciju i brzinu ISS-a te broj članova posade, čime se izbjegava problem blokiranih HTTP zahtjeva iz HTTPS preglednika.
 
+Za prikaz svježih podataka aplikaciji je potreban pristup internetu. Ako vanjski servis privremeno nije dostupan, tracker prikazuje poruku o grešci bez rušenja stranice.
 
----
+## Struktura projekta
 
-## 📁 Struktura projekta
-
+```text
 Petabit/
-├── Controllers/
-├── Views/
-│ ├── Home/
-│ ├── Shared/
-├── wwwroot/
-│ ├── css/
-│ ├── js/
-├── Resources/
-│ ├── Views.Home.Index.hr.resx
-│ ├── Views.Home.Privacy.en.resx
-│ └── ...
-├── Program.cs
-├── Startup.cs
-└── README.md
+├── Controllers/       # MVC kontroleri i ISS endpoint
+├── Models/            # modeli odgovora vanjskih API-ja
+├── Resources/         # lokalizacijske datoteke
+├── Views/             # Razor pogledi
+├── wwwroot/           # CSS, JavaScript, zvukovi i slike
+├── Program.cs         # konfiguracija aplikacije
+└── Petabit.csproj
+```
 
+## Screenshot
 
----
+![Petabit dark mode](Petabit/docs/screenshotPetabit.png)
 
-## 🛡️ Licenca
-
-MIT License — slobodno koristi, modificiraj i dijeli uz atribuciju.
-
----
-
-## 📬 Kontakt
+## Kontakt
 
 - GitHub: [Chev Cellios](https://github.com/chevcellios)
 - E-mail: [midom.croatia@yahoo.com](mailto:midom.croatia@yahoo.com)
-
----
-
-## 🌟 Napomena
-
-Petabit je nastao kao portfolio showcase, ali se u budućnosti može proširiti s dodatnim API servisima, bazom podataka, autentifikacijom i CMS funkcionalnošću.
