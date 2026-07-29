@@ -3,6 +3,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const consentBanner = document.getElementById("analytics-consent");
     const measurementId = document.body.dataset.analyticsId;
 
+    const removeAnalyticsCookies = () => {
+        document.cookie.split(";").forEach(cookie => {
+            const name = cookie.trim().split("=")[0];
+            if (name === "_ga" || name.startsWith("_ga_")) {
+                document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax`;
+            }
+        });
+    };
+
     const loadAnalytics = () => {
         if (!measurementId || document.querySelector("script[data-petabit-analytics]")) return;
 
@@ -27,12 +36,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("analytics-accept")?.addEventListener("click", () => {
         localStorage.setItem(preferenceKey, "accepted");
+        window[`ga-disable-${measurementId}`] = false;
         consentBanner.hidden = true;
         loadAnalytics();
     });
 
     document.getElementById("analytics-reject")?.addEventListener("click", () => {
         localStorage.setItem(preferenceKey, "rejected");
+        if (measurementId) {
+            window[`ga-disable-${measurementId}`] = true;
+        }
+        removeAnalyticsCookies();
         consentBanner.hidden = true;
+    });
+
+    document.getElementById("manage-analytics-consent")?.addEventListener("click", () => {
+        localStorage.removeItem(preferenceKey);
+        consentBanner.hidden = false;
+        consentBanner.scrollIntoView({ behavior: "smooth", block: "center" });
     });
 });
