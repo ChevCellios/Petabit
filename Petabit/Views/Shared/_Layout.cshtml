@@ -88,7 +88,7 @@
 
     @RenderSection("Styles", required: false)
 </head>
-<body class="dark-mode">
+<body class="dark-mode" data-analytics-id="@Configuration["Analytics:MeasurementId"]">
     <!-- Header & Navigation -->
     <header style="position: relative; height: auto;">
         <nav class="navbar navbar-expand-lg navbar-dark matrix" style="position: relative; z-index: 1;">
@@ -141,6 +141,15 @@
             &copy; 2025 - Petabit - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
+    <section id="analytics-consent" class="border rounded p-3 m-3 bg-dark text-light" role="dialog" aria-label="Postavke analitičkih kolačića" aria-live="polite" hidden>
+        <p class="mb-2">Petabit koristi analitičke kolačiće za anonimizirano praćenje posjećenosti i poboljšanje sadržaja.</p>
+        <div class="d-flex gap-2 align-items-center flex-wrap">
+            <button id="analytics-accept" type="button" class="btn btn-success btn-sm">Prihvaćam</button>
+            <button id="analytics-reject" type="button" class="btn btn-outline-light btn-sm">Odbijam</button>
+            <a asp-controller="Home" asp-action="Privacy">Saznaj više</a>
+        </div>
+    </section>
 
     <!-- JS biblioteke -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
