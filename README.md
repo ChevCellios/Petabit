@@ -67,4 +67,4 @@ Petabit/
 ## Kontakt
 
 - GitHub: [Chev Cellios](https://github.com/chevcellios)
-- E-mail: [midom.croatia@yahoo.com](mailto:midom.croatia@yahoo.com)
+- E-mail: [midom.cro@outlook.com](mailto:midom.cro@outlook.com)
