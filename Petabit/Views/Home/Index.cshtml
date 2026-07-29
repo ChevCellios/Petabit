@@ -53,13 +53,22 @@
                     return response.json();
                 })
                 .then(data => {
-                    // Prikazuje podatke o trenutnoj lokaciji, brzini i broju astronauta na ISS-u
+                    const crew = data.astronauts
+                        .map(person => `<li>${person.name} — ${person.country} (${person.agency})</li>`)
+                        .join('');
+                    const vehicles = data.dockedVehicles
+                        .map(vehicle => `<li>${vehicle.name} — ${vehicle.purpose} (${vehicle.operator})</li>`)
+                        .join('');
+
                     document.getElementById('iss-result').innerHTML = `
                         🌍 Lokacija ISS-a:<br>
                         🧭 Latitude: ${data.latitude.toFixed(2)}°<br>
                         🧭 Longitude: ${data.longitude.toFixed(2)}°<br>
                         🚀 Brzina: ${data.speed.toFixed(2)} km/h<br>
                         👨‍🚀 Astronauta na ISS-u: ${data.astronautCount}
+                        <h3 class="mt-3">Posada</h3><ul>${crew}</ul>
+                        <h3>Spojeno na ISS</h3><ul>${vehicles}</ul>
+                        <small>Referentno stanje: ${new Date(data.stationStatusUpdatedAt).toLocaleDateString('hr-HR')}, <a href="${data.stationStatusSource}" target="_blank" rel="noopener">NASA</a>.</small>
                     `;
                 })
                 .catch(error => {

@@ -63,23 +63,22 @@ public class HomeController : Controller
 
         try
         {
-            var issTask = httpClient.GetFromJsonAsync<IssLocationResponse>("https://api.wheretheiss.at/v1/satellites/25544");
-            var peopleTask = httpClient.GetFromJsonAsync<AstronautsResponse>("http://api.open-notify.org/astros.json");
-            await Task.WhenAll(issTask, peopleTask);
-
-            var iss = await issTask;
+            var iss = await httpClient.GetFromJsonAsync<IssLocationResponse>("https://api.wheretheiss.at/v1/satellites/25544");
             if (iss is null)
             {
                 return Problem("ISS service returned no data.", statusCode: StatusCodes.Status503ServiceUnavailable);
             }
 
-            var people = await peopleTask;
             return Json(new
             {
                 latitude = iss.Latitude,
                 longitude = iss.Longitude,
                 speed = iss.Velocity,
-                astronautCount = people?.People.Count(person => string.Equals(person.Craft, "ISS", StringComparison.OrdinalIgnoreCase)) ?? 0
+                astronautCount = StationStatus.Crew.Count,
+                astronauts = StationStatus.Crew,
+                dockedVehicles = StationStatus.DockedVehicles,
+                stationStatusUpdatedAt = StationStatus.LastVerified,
+                stationStatusSource = StationStatus.SourceUrl
             });
         }
         catch (HttpRequestException exception)
