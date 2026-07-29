@@ -11,7 +11,10 @@
         resultDiv.innerHTML = "⏳ Dohvaćam podatke...";
 
         try {
-            const response = await fetch("https://api.wheretheiss.at/v1/satellites/25544");
+            const response = await fetch("/Home/Data");
+            if (!response.ok) {
+                throw new Error(`Request failed with status ${response.status}`);
+            }
             const data = await response.json();
             const lat = data.latitude.toFixed(2);
             const lon = data.longitude.toFixed(2);
@@ -20,13 +23,8 @@
             resultDiv.innerHTML = `🌍 Lokacija: ${lat}, ${lon}`;
             speedDiv.innerHTML = `🚀 Brzina: ${velocity} km/h`;
 
-            const astroRes = await fetch("http://api.open-notify.org/astros.json");
-            const astroData = await astroRes.json();
-
-            const issAstronauts = astroData.people.filter(p => p.craft === "ISS");
-
-            astronautCountDiv.innerHTML = `👨‍🚀 Ukupno na ISS-u: ${issAstronauts.length}`;
-            astronautsDiv.innerHTML = issAstronauts.map(p => `- ${p.name}`).join("<br>");
+            astronautCountDiv.innerHTML = `👨‍🚀 Ukupno na ISS-u: ${data.astronautCount}`;
+            astronautsDiv.innerHTML = "";
 
             pingSound.play();
         } catch (error) {

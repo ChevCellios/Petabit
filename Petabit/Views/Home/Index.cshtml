@@ -47,8 +47,11 @@
             document.getElementById('ping-sound').play();
 
             // Poziva backend endpoint za dohvat podataka o ISS-u
-            fetch('/iss/data')
-                .then(response => response.json())
+            fetch('@Url.Action("Data", "Home")')
+                .then(response => {
+                    if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
+                    return response.json();
+                })
                 .then(data => {
                     // Prikazuje podatke o trenutnoj lokaciji, brzini i broju astronauta na ISS-u
                     document.getElementById('iss-result').innerHTML = `

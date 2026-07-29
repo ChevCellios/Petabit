@@ -2,9 +2,9 @@
 {
     public class AstronautsResponse
     {
-        public string Message { get; set; }
+        public string? Message { get; set; }
         public int? Number { get; set; }
-        public List<Astronaut> People { get; set; }
+        public List<Astronaut> People { get; set; } = [];
     }
 
     public class Astronaut
