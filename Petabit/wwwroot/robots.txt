@@ -1,5 +1,3 @@
 ﻿User-agent: *
 Allow: /
-Sitemap: https://yourdomain.com/sitemap.xml
-Disallow: /admin/
-Disallow: /private/
+Sitemap: https://petabit-production.up.railway.app/sitemap.xml

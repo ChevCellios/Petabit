@@ -1,12 +1,13 @@
 ﻿@{
-    ViewData["Title"] = "Recommended Books";
+    ViewData["Title"] = "Preporučene knjige za programiranje";
+    ViewData["Description"] = "Izbor knjiga za programiranje, razvoj softvera i profesionalni tehnološki rast.";
 }
 
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 
 <div class="container mt-5">
-    <h2>📚 @Localizer["LearnWithBooks"]</h2>
+    <h1>📚 @Localizer["LearnWithBooks"]</h1>
     <ul class="list-group mt-3">
         <li class="list-group-item">
             <a href="https://example.com/clean-code" target="_blank" rel="noopener noreferrer">@Localizer["Clean Code – Robert C. Martin"]</a>

@@ -1,20 +1,30 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
-		<loc>https://yourdomain.com/</loc>
+		<loc>https://petabit-production.up.railway.app/</loc>
 		<changefreq>weekly</changefreq>
 		<priority>1.0</priority>
 	</url>
 	<url>
-		<loc>https://yourdomain.com/en</loc>
+		<loc>https://petabit-production.up.railway.app/Home/Books</loc>
 		<changefreq>weekly</changefreq>
 	</url>
 	<url>
-		<loc>https://yourdomain.com/hr</loc>
+		<loc>https://petabit-production.up.railway.app/Home/Apps</loc>
 		<changefreq>weekly</changefreq>
 	</url>
 	<url>
-		<loc>https://yourdomain.com/de</loc>
+		<loc>https://petabit-production.up.railway.app/Home/Blockchain</loc>
 		<changefreq>weekly</changefreq>
+	</url>
+	<url>
+		<loc>https://petabit-production.up.railway.app/Home/ISSTracker</loc>
+		<changefreq>daily</changefreq>
+		<priority>0.8</priority>
+	</url>
+	<url>
+		<loc>https://petabit-production.up.railway.app/Home/Privacy</loc>
+		<changefreq>yearly</changefreq>
+		<priority>0.3</priority>
 	</url>
 </urlset>

@@ -2,14 +2,17 @@
 @using Microsoft.AspNetCore.Localization 
 @* Ubrizgava lokalizator za prikaz lokaliziranih *@
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+@inject IConfiguration Configuration
 
 @{
-    var currentCulture = Context.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture.Name;
     var culture = Context.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture.TwoLetterISOLanguageName ?? "en";
-    var title = "Petabit - Learn. Build. Evolve.";
-    var description = "Petabit is a minimal, multilingual web platform focused on learning, tools, and tech evolution.";
-    var url = "https://yourdomain.com"; // Zamijeni pravim URL-om
-    var image = $"{url}/screenshot.png";
+    var siteName = Configuration["Seo:SiteName"] ?? "Petabit";
+    var siteUrl = (Configuration["Seo:SiteUrl"] ?? $"{Context.Request.Scheme}://{Context.Request.Host}").TrimEnd('/');
+    var pageTitle = ViewData["Title"]?.ToString() ?? siteName;
+    var description = ViewData["Description"]?.ToString() ?? "Petabit je višejezična tehnološka platforma za učenje, digitalne alate i praćenje ISS-a.";
+    var canonicalUrl = $"{siteUrl}{Context.Request.PathBase}{Context.Request.Path}";
+    var image = $"{siteUrl}/img/screenshotPetabit.png";
+    var ogLocale = culture switch { "hr" => "hr_HR", "de" => "de_DE", _ => "en_US" };
 }
 
 <!DOCTYPE html>
@@ -29,27 +32,40 @@
     <!-- Primary Meta -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Petabit</title>
-    <meta name="title" content="@title" />
+    <title>@pageTitle | @siteName</title>
+    <meta name="title" content="@pageTitle" />
     <meta name="description" content="@description" />
     <meta name="keywords" content="Petabit, tech, learning, .NET, ASP.NET Core, AI tools, multilingual" />
-    <meta name="author" content="Petabit Team" />
+    <meta name="author" content="Petabit" />
     <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="@url/@culture" />
+    <link rel="canonical" href="@canonicalUrl" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="@url/@culture" />
-    <meta property="og:title" content="@title" />
+    <meta property="og:url" content="@canonicalUrl" />
+    <meta property="og:title" content="@pageTitle" />
     <meta property="og:description" content="@description" />
     <meta property="og:image" content="@image" />
+    <meta property="og:site_name" content="@siteName" />
+    <meta property="og:locale" content="@ogLocale" />
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="@url/@culture" />
-    <meta property="twitter:title" content="@title" />
-    <meta property="twitter:description" content="@description" />
-    <meta property="twitter:image" content="@image" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="@canonicalUrl" />
+    <meta name="twitter:title" content="@pageTitle" />
+    <meta name="twitter:description" content="@description" />
+    <meta name="twitter:image" content="@image" />
+
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@type": "WebSite",
+      "name": "@siteName",
+      "url": "@siteUrl",
+      "description": "@description",
+      "inLanguage": "@culture"
+    }
+    </script>
 
     <!-- CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
