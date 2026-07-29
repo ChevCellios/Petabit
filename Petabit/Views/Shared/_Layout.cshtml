@@ -1,5 +1,6 @@
 ﻿@*<!-- Omogućuje lokalizaciju i dohvat kulture iz zahtjeva-->*@
 @using Microsoft.AspNetCore.Localization 
+@using System.Text.Encodings.Web
 @using System.Text.Json
 @* Ubrizgava lokalizator za prikaz lokaliziranih *@
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
@@ -14,15 +15,17 @@
     var canonicalUrl = $"{siteUrl}{Context.Request.PathBase}{Context.Request.Path}";
     var image = $"{siteUrl}/img/screenshotPetabit.png";
     var ogLocale = culture switch { "hr" => "hr_HR", "de" => "de_DE", _ => "en_US" };
-    var structuredData = JsonSerializer.Serialize(new Dictionary<string, string>
-    {
-        ["@context"] = "https://schema.org",
-        ["@type"] = "WebSite",
-        ["name"] = siteName,
-        ["url"] = siteUrl,
-        ["description"] = description,
-        ["inLanguage"] = culture
-    });
+    var structuredData = JsonSerializer.Serialize(
+        new Dictionary<string, string>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = "WebSite",
+            ["name"] = siteName,
+            ["url"] = siteUrl,
+            ["description"] = description,
+            ["inLanguage"] = culture
+        },
+        new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
 }
 
 <!DOCTYPE html>
