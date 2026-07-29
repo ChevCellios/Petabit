@@ -5,6 +5,7 @@ using System.Diagnostics;
 
 namespace Petabit.Controllers;
 
+[AutoValidateAntiforgeryToken]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -29,7 +30,13 @@ public class HomeController : Controller
         Response.Cookies.Append(
             CookieRequestCultureProvider.DefaultCookieName,
             CookieRequestCultureProvider.MakeCookieValue(requestCulture),
-            new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
+            new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddYears(1),
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax
+            });
 
         return LocalRedirect(Url.IsLocalUrl(returnUrl) ? returnUrl : "/");
     }

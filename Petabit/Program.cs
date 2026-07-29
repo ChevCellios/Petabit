@@ -26,8 +26,7 @@ namespace Petabit
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
-            // Dodaj podržane jezike
+            // Configure supported languages
             var supportedCultures = new[]
             {
     new CultureInfo("en"),
@@ -49,27 +48,35 @@ namespace Petabit
 
 
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
             app.Use(async (context, next) =>
             {
-                context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-                context.Response.Headers.Add("X-Frame-Options", "DENY");
-                context.Response.Headers.Add("Referrer-Policy", "no-referrer");
-                context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+                context.Response.OnStarting(() =>
+                {
+                    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+                    context.Response.Headers["X-Frame-Options"] = "DENY";
+                    context.Response.Headers["Referrer-Policy"] = "no-referrer";
+                    context.Response.Headers["Permissions-Policy"] = "camera=(), geolocation=(), microphone=()";
+                    context.Response.Headers["Content-Security-Policy"] =
+                        "default-src 'self'; " +
+                        "base-uri 'self'; " +
+                        "form-action 'self'; " +
+                        "frame-ancestors 'none'; " +
+                        "object-src 'none'; " +
+                        "script-src 'self' 'unsafe-inline'; " +
+                        "style-src 'self' 'unsafe-inline'; " +
+                        "img-src 'self' data:; " +
+                        "font-src 'self' data:; " +
+                        "media-src 'self'; " +
+                        "connect-src 'self';";
 
-                context.Response.Headers.Add("Content-Security-Policy",
-                    "default-src 'self' https: data: 'unsafe-inline'; " +
-                    "script-src 'self' https: 'unsafe-inline' 'unsafe-eval'; " +
-                    "style-src 'self' https: 'unsafe-inline'; " +
-                    "font-src 'self' https: data:; " +
-                    "img-src 'self' https: data:; " +
-                    "connect-src 'self' https:; " +
-                    "frame-src 'none';"
-                );
+                    return Task.CompletedTask;
+                });
 
                 await next();
             });
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
 
             app.UseRouting();
