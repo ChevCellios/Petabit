@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["dotnet-sdk_8"]
+
+[phases.build]
+cmds = [
+  "dotnet restore Petabit/Petabit.csproj",
+  "dotnet publish Petabit/Petabit.csproj -c Release -o out --no-restore"
+]
+
+[start]
+cmd = "dotnet out/Petabit.dll --urls http://0.0.0.0:$PORT"
