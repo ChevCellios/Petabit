@@ -1,5 +1,6 @@
 ﻿@*<!-- Omogućuje lokalizaciju i dohvat kulture iz zahtjeva-->*@
 @using Microsoft.AspNetCore.Localization 
+@using System.Text.Json
 @* Ubrizgava lokalizator za prikaz lokaliziranih *@
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 @inject IConfiguration Configuration
@@ -13,6 +14,15 @@
     var canonicalUrl = $"{siteUrl}{Context.Request.PathBase}{Context.Request.Path}";
     var image = $"{siteUrl}/img/screenshotPetabit.png";
     var ogLocale = culture switch { "hr" => "hr_HR", "de" => "de_DE", _ => "en_US" };
+    var structuredData = JsonSerializer.Serialize(new Dictionary<string, string>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "WebSite",
+        ["name"] = siteName,
+        ["url"] = siteUrl,
+        ["description"] = description,
+        ["inLanguage"] = culture
+    });
 }
 
 <!DOCTYPE html>
@@ -56,16 +66,7 @@
     <meta name="twitter:description" content="@description" />
     <meta name="twitter:image" content="@image" />
 
-    <script type="application/ld+json">
-    {
-      "@@context": "https://schema.org",
-      "@@type": "WebSite",
-      "name": "@siteName",
-      "url": "@siteUrl",
-      "description": "@description",
-      "inLanguage": "@culture"
-    }
-    </script>
+    <script type="application/ld+json">@Html.Raw(structuredData)</script>
 
     <!-- CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
