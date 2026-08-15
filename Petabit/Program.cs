@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
 using System.Security.Cryptography;
@@ -9,7 +11,7 @@ using System.Threading.RateLimiting;
 
 namespace Petabit
 {
-    public class Program
+    public partial class Program
     {
         public static void Main(string[] args)
         {
@@ -39,6 +41,7 @@ namespace Petabit
                 options.IncludeSubDomains = true;
             });
             builder.Services.AddHttpClient();
+            builder.Services.AddHealthChecks();
             builder.Services.AddOutputCache();
             builder.Services.AddRateLimiter(options =>
             {
@@ -124,6 +127,15 @@ namespace Petabit
             app.UseRateLimiter();
             app.UseOutputCache();
             app.UseAuthorization();
+
+            app.MapHealthChecks("/health/live", new HealthCheckOptions
+            {
+                Predicate = _ => false
+            });
+            app.MapHealthChecks("/health/ready", new HealthCheckOptions
+            {
+                Predicate = registration => registration.Tags.Contains("ready")
+            });
 
             app.MapControllerRoute(
                 name: "default",
