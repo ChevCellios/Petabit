@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const cultureSelector = document.getElementById("culture-selector");
+    cultureSelector?.addEventListener("change", () => cultureSelector.form?.requestSubmit());
+
     const preferenceKey = "petabit-analytics-consent";
     const consentBanner = document.getElementById("analytics-consent");
     const measurementId = document.body.dataset.analyticsId;

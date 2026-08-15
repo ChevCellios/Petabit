@@ -158,7 +158,7 @@
                     <ul class="navbar-nav flex-row align-items-center gap-2">
                         <li class="nav-item">
                             <form asp-controller="Home" asp-action="SetLanguage" method="post" class="d-inline">
-                                <select name="culture" onchange="this.form.submit()" class="form-select form-select-sm w-auto d-inline">
+                                <select id="culture-selector" name="culture" class="form-select form-select-sm w-auto d-inline" aria-label="Odabir jezika">
                                     <option value="en" selected="@(culture == "en" ? "selected" : null)">EN</option>
                                     <option value="hr" selected="@(culture == "hr" ? "selected" : null)">HR</option>
                                     <option value="de" selected="@(culture == "de" ? "selected" : null)">DE</option>
