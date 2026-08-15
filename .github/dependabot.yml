@@ -9,9 +9,11 @@ updates:
       timezone: "Europe/Zagreb"
     open-pull-requests-limit: 5
     groups:
-      nuget-dependencies:
+      nuget-patch-dependencies:
         patterns:
           - "*"
+        update-types:
+          - "patch"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -22,6 +24,8 @@ updates:
       timezone: "Europe/Zagreb"
     open-pull-requests-limit: 5
     groups:
-      github-actions:
+      github-actions-patch-dependencies:
         patterns:
           - "*"
+        update-types:
+          - "patch"
