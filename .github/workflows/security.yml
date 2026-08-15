@@ -1,0 +1,68 @@
+name: Security
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: "30 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-audit:
+    name: Audit NuGet dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore and audit dependencies
+        run: >-
+          dotnet restore Petabit.sln
+          --configfile NuGet.Config
+          -p:NuGetAudit=true
+          -p:NuGetAuditMode=all
+          -warnaserror:NU1901,NU1902,NU1903,NU1904
+
+  codeql:
+    name: Analyze C# with CodeQL
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: read
+      packages: read
+      security-events: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: csharp
+          build-mode: autobuild
+
+      - name: Build application
+        uses: github/codeql-action/autobuild@v4
+
+      - name: Analyze application
+        uses: github/codeql-action/analyze@v4
