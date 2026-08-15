@@ -179,7 +179,7 @@ PetabitNabrijavanje/
 
 ## 📸 Screenshot
 
-![Petabit desktop prikaz](Petabit/docs/petabit-app-screenshot.png)
+![Petabit desktop prikaz](Petabit/wwwroot/img/petabit-app-preview.png)
 
 ## 🗺️ Moguća buduća poboljšanja
 

@@ -14,7 +14,7 @@
     var pageTitle = ViewData["Title"]?.ToString() ?? siteName;
     var description = ViewData["Description"]?.ToString() ?? "Petabit je višejezična tehnološka platforma za učenje, digitalne alate i praćenje ISS-a.";
     var canonicalUrl = $"{siteUrl}{Context.Request.PathBase}{Context.Request.Path}";
-    var image = $"{siteUrl}/img/screenshotPetabit.png";
+    var image = $"{siteUrl}/img/petabit-app-preview.png";
     var ogLocale = culture switch { "hr" => "hr_HR", "de" => "de_DE", _ => "en_US" };
     var structuredData = JsonSerializer.Serialize(
         new Dictionary<string, string>
