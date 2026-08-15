@@ -1,6 +1,6 @@
 # 🌐 Petabit
 
-[![Petabit — ASP.NET Core aplikacija za praćenje ISS-a](Petabit/docs/petabit-app-screenshot.png)](https://petabit-production.up.railway.app/)
+[![Petabit — ASP.NET Core aplikacija za praćenje ISS-a](Petabit/docs/social-preview.jpg)](https://petabit-production.up.railway.app/)
 
 [![CI](https://github.com/ChevCellios/Petabit/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/ChevCellios/Petabit/actions/workflows/ci.yml)
 [![Security](https://github.com/ChevCellios/Petabit/actions/workflows/security.yml/badge.svg?branch=master)](https://github.com/ChevCellios/Petabit/actions/workflows/security.yml)
@@ -179,7 +179,7 @@ PetabitNabrijavanje/
 
 ## 📸 Screenshot
 
-![Petabit desktop prikaz](Petabit/docs/screenshotPetabit.png)
+![Petabit desktop prikaz](Petabit/docs/petabit-app-screenshot.png)
 
 ## 🗺️ Moguća buduća poboljšanja
 
