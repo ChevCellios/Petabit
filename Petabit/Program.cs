@@ -17,6 +17,17 @@ namespace Petabit
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            if (!builder.Environment.IsDevelopment())
+            {
+                builder.Logging.ClearProviders();
+                builder.Logging.AddJsonConsole(options =>
+                {
+                    options.IncludeScopes = true;
+                    options.TimestampFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
+                    options.UseUtcTimestamp = true;
+                });
+            }
+
             // Lokalizacija
             builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
@@ -76,6 +87,7 @@ namespace Petabit
             var app = builder.Build();
 
             app.UseForwardedHeaders();
+            app.UseMiddleware<RequestObservabilityMiddleware>();
 
             if (!app.Environment.IsDevelopment())
             {

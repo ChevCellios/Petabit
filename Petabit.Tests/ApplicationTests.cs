@@ -52,6 +52,19 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
+    public async Task ResponseIncludesAValidCorrelationId()
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/health/ready");
+        request.Headers.Add("X-Correlation-ID", "4d5f2c87-9eb4-45b6-bc53-04e44960bd8d");
+
+        var response = await _client.SendAsync(request);
+        var correlationId = Assert.Single(response.Headers.GetValues("X-Correlation-ID"));
+
+        Assert.Equal("4d5f2c879eb445b6bc5304e44960bd8d", correlationId);
+        Assert.True(Guid.TryParseExact(correlationId, "N", out _));
+    }
+
+    [Fact]
     public async Task MinimalIssTrackerExplainsItsApiPurpose()
     {
         var response = await _client.GetAsync("/Home/ISSTracker");
