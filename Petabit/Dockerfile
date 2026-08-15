@@ -11,6 +11,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
 COPY --from=build /app/publish .
-ENV ASPNETCORE_URLS=http://+:3000
+
 USER $APP_UID
-ENTRYPOINT ["dotnet", "Petabit.dll"]
+ENTRYPOINT ["sh", "-c", "exec dotnet Petabit.dll --urls http://0.0.0.0:${PORT:-3000}"]
