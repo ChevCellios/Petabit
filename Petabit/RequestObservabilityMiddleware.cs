@@ -16,9 +16,7 @@ public sealed class RequestObservabilityMiddleware(
 
         using var scope = logger.BeginScope(new Dictionary<string, object?>
         {
-            ["CorrelationId"] = correlationId,
-            ["RequestMethod"] = context.Request.Method,
-            ["RequestPath"] = context.Request.Path.Value
+            ["CorrelationId"] = correlationId
         });
 
         var startedAt = Stopwatch.GetTimestamp();
