@@ -10,4 +10,16 @@
 		<PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<Content Update="wwwroot\lib\**\*.map" CopyToPublishDirectory="Never" />
+		<Content Update="wwwroot\lib\bootstrap\dist\css\*.css" CopyToPublishDirectory="Never" />
+		<Content Update="wwwroot\lib\bootstrap\dist\css\bootstrap.min.css" CopyToPublishDirectory="PreserveNewest" />
+		<Content Update="wwwroot\lib\bootstrap\dist\js\**\*" CopyToPublishDirectory="Never" />
+		<Content Update="wwwroot\lib\jquery\dist\**\*" CopyToPublishDirectory="Never" />
+		<Content Update="wwwroot\lib\jquery-validation\dist\*.js" CopyToPublishDirectory="Never" />
+		<Content Update="wwwroot\lib\jquery-validation\dist\jquery.validate.min.js" CopyToPublishDirectory="PreserveNewest" />
+		<Content Update="wwwroot\lib\jquery-validation-unobtrusive\*.js" CopyToPublishDirectory="Never" />
+		<Content Update="wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js" CopyToPublishDirectory="PreserveNewest" />
+	</ItemGroup>
+
 </Project>

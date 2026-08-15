@@ -1,21 +1,24 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "Petabit",
+  "short_name": "Petabit",
+  "description": "Višejezična tehnološka platforma i ISS tracker.",
+  "lang": "en",
+  "start_url": "/",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     },
     {
       "src": "/web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "background_color": "#000000",
   "display": "standalone"
 }
