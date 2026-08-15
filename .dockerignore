@@ -1,0 +1,13 @@
+.git
+.github
+.vs
+**/bin
+**/obj
+**/TestResults
+*.user
+*.suo
+*.log
+.nuget-appdata
+.nuget-packages
+Petabit/docs
+Petabit.Tests

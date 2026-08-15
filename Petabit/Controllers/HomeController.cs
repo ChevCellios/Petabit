@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.RateLimiting;
 using Petabit.Models;
+using Polly.CircuitBreaker;
+using Polly.Timeout;
 using System.Diagnostics;
 
 namespace Petabit.Controllers;
@@ -69,13 +71,12 @@ public class HomeController : Controller
     [OutputCache(Duration = 10)]
     public async Task<IActionResult> Data(CancellationToken cancellationToken)
     {
-        var httpClient = _httpClientFactory.CreateClient();
-        httpClient.Timeout = TimeSpan.FromSeconds(10);
+        var httpClient = _httpClientFactory.CreateClient("iss");
 
         try
         {
             var iss = await httpClient.GetFromJsonAsync<IssLocationResponse>(
-                "https://api.wheretheiss.at/v1/satellites/25544",
+                "satellites/25544",
                 cancellationToken);
             if (iss is null)
             {
@@ -103,6 +104,16 @@ public class HomeController : Controller
         {
             _logger.LogWarning(exception, "ISS data request timed out.");
             return Problem("ISS data request timed out.", statusCode: StatusCodes.Status504GatewayTimeout);
+        }
+        catch (TimeoutRejectedException exception)
+        {
+            _logger.LogWarning(exception, "ISS resilience pipeline timed out.");
+            return Problem("ISS data request timed out.", statusCode: StatusCodes.Status504GatewayTimeout);
+        }
+        catch (BrokenCircuitException exception)
+        {
+            _logger.LogWarning(exception, "ISS circuit breaker is open.");
+            return Problem("ISS data is temporarily unavailable.", statusCode: StatusCodes.Status503ServiceUnavailable);
         }
     }
 }

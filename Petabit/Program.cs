@@ -40,7 +40,22 @@ namespace Petabit
                 options.MaxAge = TimeSpan.FromDays(365);
                 options.IncludeSubDomains = true;
             });
-            builder.Services.AddHttpClient();
+            builder.Services.AddHttpClient("iss", client =>
+            {
+                client.BaseAddress = new Uri("https://api.wheretheiss.at/v1/");
+                client.Timeout = Timeout.InfiniteTimeSpan;
+            })
+            .AddStandardResilienceHandler(options =>
+            {
+                options.Retry.MaxRetryAttempts = 2;
+                options.Retry.Delay = TimeSpan.FromMilliseconds(250);
+                options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(3);
+                options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(8);
+                options.CircuitBreaker.FailureRatio = 0.5;
+                options.CircuitBreaker.MinimumThroughput = 4;
+                options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
+                options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(30);
+            });
             builder.Services.AddHealthChecks();
             builder.Services.AddOutputCache();
             builder.Services.AddRateLimiter(options =>
