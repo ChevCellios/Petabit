@@ -1,0 +1,54 @@
+name: Uptime Monitor
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: uptime-monitor
+  cancel-in-progress: true
+
+jobs:
+  check-production:
+    name: Check production availability
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    env:
+      SITE_URL: https://petabit-production.up.railway.app
+
+    steps:
+      - name: Check home page
+        run: |
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --retry 2 \
+            --retry-delay 5 \
+            --retry-all-errors \
+            --connect-timeout 10 \
+            --max-time 30 \
+            "$SITE_URL/" > /dev/null
+
+      - name: Check readiness endpoint
+        run: |
+          response="$(curl \
+            --fail \
+            --silent \
+            --show-error \
+            --retry 2 \
+            --retry-delay 5 \
+            --retry-all-errors \
+            --connect-timeout 10 \
+            --max-time 30 \
+            "$SITE_URL/health/ready")"
+
+          if [ "$response" != "Healthy" ]; then
+            echo "Unexpected readiness response: $response"
+            exit 1
+          fi
