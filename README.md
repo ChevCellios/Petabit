@@ -4,15 +4,19 @@
 ![Language](https://img.shields.io/badge/language-C%23-orange)
 ![Localization](https://img.shields.io/badge/i18n-HR%20%7C%20EN%20%7C%20DE-green)
 ![Status](https://img.shields.io/badge/status-active-success)
+![Deployment](https://img.shields.io/badge/deployment-Railway-blueviolet)
 
 Petabit je responzivna i višejezična ASP.NET Core MVC aplikacija za tehnološki sadržaj i praćenje Međunarodne svemirske postaje. Projekt kombinira Razor poglede, lokalizaciju, animirani ISS prikaz, vanjski API i sigurnosne prakse prikladne za javnu web-aplikaciju.
+
+**Aktivna aplikacija:** [petabit-production.up.railway.app](https://petabit-production.up.railway.app)
 
 ## ✨ Značajke
 
 - hrvatsko, englesko i njemačko sučelje; zadani jezik je engleski
 - dark/light tema sa spremanjem korisničkog odabira
 - ISS tracker s trenutačnom lokacijom i brzinom postaje
-- animirani hologramski prikaz Zemlje, orbite i položaja ISS-a
+- animirani hologramski prikaz Zemlje, kontinenata i položaja ISS-a
+- sinusoidna projekcija ISS ground track putanje, poravnata s trenutačnim položajem postaje i nagibom orbite od približno ±51,6°
 - LED matrični prikaz lokacije, brzine, posade i spojenih letjelica
 - kurirani podaci o posadi i letjelicama s poveznicom na NASA-u
 - responzivan navbar, kompaktan footer i prilagođen prikaz na mobilnim uređajima
@@ -28,10 +32,11 @@ Pozicijski podaci dohvaćaju se preko serverskog endpointa `/Home/Data`. Odgovor
 
 ## 🛡️ Sigurnost i privatnost
 
-- HTTPS redirekcija i HSTS u produkciji
+- HTTPS redirekcija i eksplicitni jednogodišnji HSTS u produkciji
+- obrada Railway `X-Forwarded-For` i `X-Forwarded-Proto` zaglavlja prije HTTPS middlewarea
 - Content Security Policy s jednokratnim nonceom za inline skripte i stilove
 - sigurnosna zaglavlja `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` i `Permissions-Policy`
-- antiforgery validacija za POST zahtjeve
+- antiforgery validacija za POST zahtjeve i kolačić s `HttpOnly`, `Secure` i `SameSite=Strict` atributima
 - rate limiting ISS endpointa: 60 zahtjeva u minuti
 - output cache ISS odgovora u trajanju od 10 sekundi
 - sigurno DOM renderiranje API podataka bez umetanja preko `innerHTML`
@@ -47,7 +52,7 @@ Pozicijski podaci dohvaćaju se preko serverskog endpointa `/Home/Data`. Odgovor
 - HTML5, CSS3 i Bootstrap 5
 - `.resx` lokalizacijske datoteke
 - ASP.NET Core Output Caching i Rate Limiting
-- Docker
+- Docker i Railway
 
 ## 🚀 Pokretanje lokalno
 
@@ -83,6 +88,16 @@ docker run --rm -p 3000:3000 petabit
 ```
 
 Aplikacija je zatim dostupna na `http://localhost:3000`.
+
+## 🚄 Railway deployment
+
+Produkcijska aplikacija povezana je s granom `master` GitHub repozitorija. Nakon što se Pull Request spoji u `master`, Railway automatski pokreće novi build i deployment koristeći postavke iz korijenske `.nixpacks.toml` datoteke.
+
+Za provjeru deploymenta:
+
+1. Otvori postojeći Petabit servis u Railway dashboardu.
+2. U odjeljku **Deployments** pričekaj da najnoviji deployment dobije status **ACTIVE**.
+3. Otvori javnu aplikaciju i osvježi je kombinacijom `Ctrl + F5`.
 
 ## ✅ Provjera projekta
 
