@@ -46,3 +46,39 @@ button.accept-policy {
   white-space: nowrap;
   line-height: 60px;
 }
+
+.site-footer {
+  min-height: 2.25rem;
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
+.analytics-consent-compact {
+  position: fixed;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  z-index: 1080;
+  width: min(310px, calc(100vw - 1.2rem));
+  margin: 0;
+  padding: 0.45rem 0.55rem;
+  font-size: 0.72rem;
+  line-height: 1.25;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.32);
+}
+
+.analytics-consent-compact .btn {
+  padding: 0.1rem 0.34rem;
+  font-size: 0.66rem;
+}
+
+@media (max-width: 420px) {
+  .analytics-consent-compact {
+    right: 0.4rem;
+    bottom: 0.4rem;
+    width: min(280px, calc(100vw - 0.8rem));
+  }
+}

@@ -8,6 +8,7 @@
 
 @{
     var culture = Context.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture.TwoLetterISOLanguageName ?? "en";
+    var cspNonce = Context.Items["CspNonce"]?.ToString();
     var siteName = Configuration["Seo:SiteName"] ?? "Petabit";
     var siteUrl = (Configuration["Seo:SiteUrl"] ?? $"{Context.Request.Scheme}://{Context.Request.Host}").TrimEnd('/');
     var pageTitle = ViewData["Title"]?.ToString() ?? siteName;
@@ -69,14 +70,70 @@
     <meta name="twitter:description" content="@description" />
     <meta name="twitter:image" content="@image" />
 
-    <script type="application/ld+json">@Html.Raw(structuredData)</script>
+    <script type="application/ld+json" nonce="@cspNonce">@Html.Raw(structuredData)</script>
 
     <!-- CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Petabit.styles.css" asp-append-version="true" />
 
-    <style>
+    <style nonce="@cspNonce">
+        html {
+            min-height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: 100svh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .site-header {
+            position: relative;
+            height: auto;
+        }
+
+        .site-main-shell {
+            width: 100%;
+            flex: 1 0 auto;
+        }
+
+        .navbar.matrix .matrix-nav-row {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            z-index: 2;
+        }
+
+        .navbar.matrix .matrix-nav-row .navbar-brand {
+            flex: 0 0 auto;
+            margin-right: 1rem;
+        }
+
+        .navbar.matrix .matrix-nav-links {
+            flex: 0 1 auto;
+            width: auto;
+        }
+
+        main[role="main"] .btn:not(#iss-ping-button) {
+            padding: 0.25rem 0.6rem;
+            font-size: 0.82rem;
+            line-height: 1.25;
+        }
+
+        main[role="main"] .btn-home:not(#iss-ping-button) {
+            min-width: 150px;
+            max-width: 185px;
+        }
+
+        .footer-source-links {
+            margin-left: 0.45rem;
+            font-size: 0.68rem;
+            white-space: nowrap;
+        }
+
         .btn-home {
             min-width: 180px;
             max-width: 220px;
@@ -90,19 +147,15 @@
 </head>
 <body class="dark-mode" data-analytics-id="@Configuration["Analytics:MeasurementId"]">
     <!-- Header & Navigation -->
-    <header style="position: relative; height: auto;">
-        <nav class="navbar navbar-expand-lg navbar-dark matrix" style="position: relative; z-index: 1;">
+    <header class="site-header">
+        <nav class="navbar navbar-expand-lg navbar-dark matrix">
             <canvas id="matrixCanvas"></canvas>
 
-            <div class="container-fluid position-relative" style="z-index: 2;">
+            <div class="container-fluid position-relative matrix-nav-row">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Petabit</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="navbar-collapse d-flex matrix-nav-links">
+                    <ul class="navbar-nav flex-row align-items-center gap-2">
                         <li class="nav-item">
                             <form asp-controller="Home" asp-action="SetLanguage" method="post" class="d-inline">
                                 <select name="culture" onchange="this.form.submit()" class="form-select form-select-sm w-auto d-inline">
@@ -125,26 +178,30 @@
             </div>
         </nav>
 
-        <button id="toggle-dark-mode" class="btn btn-outline-light">🌓</button>
+        <button id="toggle-dark-mode" class="btn border-0">🌓</button>
     </header>
 
     <!-- Glavni sadržaj -->
-    <div class="container">
+    <div class="container site-main-shell">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
     <!-- Footer -->
-    <footer class="border-top">
+    <footer class="site-footer border-top">
         <div class="container">
             &copy; 2025 - Petabit - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <span class="footer-source-links" aria-label="Vanjski izvori">
+                · <a href="https://www.nasa.gov/" target="_blank" rel="noopener noreferrer">NASA</a>
+                · <a href="https://wheretheiss.at/" target="_blank" rel="noopener noreferrer">Open API</a>
+            </span>
         </div>
     </footer>
 
-    <section id="analytics-consent" class="border rounded p-3 m-3 bg-dark text-light" role="dialog" aria-label="Postavke analitičkih kolačića" aria-live="polite" hidden>
-        <p class="mb-2">Petabit koristi analitičke kolačiće za anonimizirano praćenje posjećenosti i poboljšanje sadržaja.</p>
-        <div class="d-flex gap-2 align-items-center flex-wrap">
+    <section id="analytics-consent" class="analytics-consent-compact border rounded bg-dark text-light" role="dialog" aria-label="Postavke analitičkih kolačića" aria-live="polite" hidden>
+        <p class="mb-1">Petabit koristi analitičke kolačiće za anonimizirano praćenje posjećenosti i poboljšanje sadržaja.</p>
+        <div class="d-flex gap-1 align-items-center flex-wrap">
             <button id="analytics-accept" type="button" class="btn btn-success btn-sm">Prihvaćam</button>
             <button id="analytics-reject" type="button" class="btn btn-outline-light btn-sm">Odbijam</button>
             <a asp-controller="Home" asp-action="Privacy">Saznaj više</a>
@@ -152,12 +209,10 @@
     </section>
 
     <!-- JS biblioteke -->
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     <!-- Matrix animacija -->
-    <script>
+    <script nonce="@cspNonce">
         const canvas = document.getElementById("matrixCanvas");
         const ctx = canvas.getContext("2d");
 
@@ -201,7 +256,7 @@
     </script>
 
     <!-- Dark/Light Mode Toggle -->
-    <script>
+    <script nonce="@cspNonce">
         const body = document.body;
         const toggle = document.getElementById('toggle-dark-mode');
 

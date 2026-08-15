@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
+using System.Security.Cryptography;
+using System.Threading.RateLimiting;
 
 namespace Petabit
 {
@@ -18,6 +21,21 @@ namespace Petabit
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization();
             builder.Services.AddHttpClient();
+            builder.Services.AddOutputCache();
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.AddPolicy("iss", _ =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        "iss-endpoint",
+                        _ => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 60,
+                            Window = TimeSpan.FromMinutes(1),
+                            QueueLimit = 0,
+                            AutoReplenishment = true
+                        }));
+            });
 
             var app = builder.Build();
 
@@ -50,6 +68,9 @@ namespace Petabit
 
             app.Use(async (context, next) =>
             {
+                var cspNonce = Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
+                context.Items["CspNonce"] = cspNonce;
+
                 context.Response.OnStarting(() =>
                 {
                     context.Response.Headers["X-Content-Type-Options"] = "nosniff";
@@ -62,8 +83,8 @@ namespace Petabit
                         "form-action 'self'; " +
                         "frame-ancestors 'none'; " +
                         "object-src 'none'; " +
-                        "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; " +
-                        "style-src 'self' 'unsafe-inline'; " +
+                        $"script-src 'self' 'nonce-{cspNonce}' https://www.googletagmanager.com; " +
+                        $"style-src 'self' 'nonce-{cspNonce}'; " +
                         "img-src 'self' data:; " +
                         "font-src 'self' data:; " +
                         "media-src 'self'; " +
@@ -80,6 +101,8 @@ namespace Petabit
 
 
             app.UseRouting();
+            app.UseRateLimiter();
+            app.UseOutputCache();
             app.UseAuthorization();
 
             app.MapControllerRoute(
