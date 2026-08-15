@@ -52,6 +52,17 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
+    public async Task MinimalIssTrackerExplainsItsApiPurpose()
+    {
+        var response = await _client.GetAsync("/Home/ISSTracker");
+        var body = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("ISS Tracker – Minimalni prikaz", body);
+        Assert.Contains("/Home/Data", body);
+    }
+
+    [Fact]
     public async Task IssDataReturnsJsonWhenUpstreamSucceeds()
     {
         using var client = CreateClientWithIssResponse(

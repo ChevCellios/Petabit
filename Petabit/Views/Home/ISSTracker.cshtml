@@ -1,12 +1,17 @@
 ﻿@{
-    ViewData["Title"] = "ISS Tracker";
-    ViewData["Description"] = "Prati trenutačnu lokaciju i brzinu ISS-a, posadu na postaji te spojene svemirske letjelice.";
+    ViewData["Title"] = "ISS Tracker – Minimalni prikaz";
+    ViewData["Description"] = "Lagana verzija ISS trackera koja podatke dohvaća iz Petabit API endpointa.";
     Layout = "_Layout";
 }
 
-<h1>🛰️ Prati ISS (Minimal)</h1>
+<h1>🛰️ ISS Tracker – Minimalni prikaz</h1>
 
-<button id="iss-ping-button" class="btn btn-primary">🔭 Ping ISS</button>
+<p id="minimal-tracker-description" class="lead">
+    Lagana verzija ISS trackera koja trenutačnu lokaciju, brzinu i status postaje dohvaća iz
+    Petabit API endpointa <code>/Home/Data</code>.
+</p>
+
+<button id="iss-ping-button" class="btn btn-primary" aria-describedby="minimal-tracker-description">🔭 Ping ISS</button>
 <audio id="ping-sound" src="/sounds/zvuk.mp3" preload="auto"></audio>
 
 <div id="iss-result" class="mt-3"></div>
