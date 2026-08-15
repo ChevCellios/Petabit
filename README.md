@@ -1,6 +1,6 @@
 # 🌐 Petabit
 
-![.NET](https://img.shields.io/badge/.NET-8.0-blueviolet)
+![.NET](https://img.shields.io/badge/.NET-10.0-blueviolet)
 ![Language](https://img.shields.io/badge/language-C%23-orange)
 ![Localization](https://img.shields.io/badge/i18n-HR%20%7C%20EN%20%7C%20DE-green)
 ![Status](https://img.shields.io/badge/status-active-success)
@@ -41,7 +41,7 @@ Pozicijski podaci dohvaćaju se preko serverskog endpointa `/Home/Data`. Odgovor
 
 ## ⚙️ Tehnologije
 
-- .NET 8 i ASP.NET Core MVC
+- .NET 10 i ASP.NET Core MVC
 - C# i Razor Views
 - JavaScript, Canvas API i Fetch API
 - HTML5, CSS3 i Bootstrap 5
@@ -53,7 +53,7 @@ Pozicijski podaci dohvaćaju se preko serverskog endpointa `/Home/Data`. Odgovor
 
 ### Preduvjeti
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - Visual Studio 2022, Visual Studio Code ili drugi editor po izboru
 
 ### Terminal
