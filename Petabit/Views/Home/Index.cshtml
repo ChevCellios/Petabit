@@ -190,18 +190,17 @@
 
             if (issPosition) {
                 const inclination = 51.6;
-                const latitudeRadians = issPosition.latitude * Math.PI / 180;
-                const inclinationRadians = inclination * Math.PI / 180;
-                const phase = Math.asin(Math.max(-1, Math.min(1, Math.sin(latitudeRadians) / Math.sin(inclinationRadians))));
-                const longitudeOffset = issPosition.longitude - phase * 180 / Math.PI;
+                const phase = Math.asin(Math.max(-1, Math.min(1, issPosition.latitude / inclination)));
+                const groundTrackDegreesPerOrbit = 336;
                 const orbit = [];
                 const orbitalCoordinate = angle => ({
-                    latitude: Math.asin(Math.sin(inclinationRadians) * Math.sin(angle)) * 180 / Math.PI,
-                    longitude: longitudeOffset + Math.atan2(Math.cos(inclinationRadians) * Math.sin(angle), Math.cos(angle)) * 180 / Math.PI
+                    latitude: inclination * Math.sin(angle),
+                    longitude: issPosition.longitude
+                        + (angle - phase) * groundTrackDegreesPerOrbit / (Math.PI * 2)
                 });
 
-                for (let degrees = -180; degrees <= 180; degrees += 2) {
-                    const angle = degrees * Math.PI / 180;
+                for (let offsetDegrees = -180; offsetDegrees <= 180; offsetDegrees += 2) {
+                    const angle = phase + offsetDegrees * Math.PI / 180;
                     const coordinate = orbitalCoordinate(angle);
                     orbit.push(projectGlobePoint(coordinate.latitude, coordinate.longitude, rotation, radius * 1.08, centerX, centerY));
                 }
