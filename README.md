@@ -7,6 +7,7 @@
 ![Language](https://img.shields.io/badge/language-C%23-orange)
 ![Localization](https://img.shields.io/badge/i18n-HR%20%7C%20EN%20%7C%20DE-green)
 ![Status](https://img.shields.io/badge/status-production-success)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Petabit je responzivna i višejezična ASP.NET Core MVC aplikacija za tehnološki sadržaj i praćenje Međunarodne svemirske postaje. Projekt kombinira Razor poglede, lokalizaciju, animirani ISS prikaz, vanjski API te automatiziran i nadziran produkcijski deployment.
 
@@ -187,6 +188,10 @@ Trenutačna funkcionalnost smatra se stabilnom. Buduća poboljšanja mogu se raz
 - dodatni testovi za rate limiting, timeout i circuit breaker scenarije
 - vanjski alerting za produkcijske iznimke
 - izvještaj o pokrivenosti testovima i periodično mjerenje performansi
+
+## 📄 Licenca
+
+Projekt je objavljen pod [MIT licencom](LICENSE). Dopušteni su korištenje, izmjene i distribucija uz zadržavanje obavijesti o autorskim pravima i tekstu licence.
 
 ## 📬 Kontakt
 
