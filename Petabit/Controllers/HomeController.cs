@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.AspNetCore.RateLimiting;
 using Petabit.Models;
 using System.Diagnostics;
 
@@ -63,14 +65,18 @@ public class HomeController : Controller
     public IActionResult Error() => View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 
     [HttpGet]
-    public async Task<IActionResult> Data()
+    [EnableRateLimiting("iss")]
+    [OutputCache(Duration = 10)]
+    public async Task<IActionResult> Data(CancellationToken cancellationToken)
     {
         var httpClient = _httpClientFactory.CreateClient();
         httpClient.Timeout = TimeSpan.FromSeconds(10);
 
         try
         {
-            var iss = await httpClient.GetFromJsonAsync<IssLocationResponse>("https://api.wheretheiss.at/v1/satellites/25544");
+            var iss = await httpClient.GetFromJsonAsync<IssLocationResponse>(
+                "https://api.wheretheiss.at/v1/satellites/25544",
+                cancellationToken);
             if (iss is null)
             {
                 return Problem("ISS service returned no data.", statusCode: StatusCodes.Status503ServiceUnavailable);

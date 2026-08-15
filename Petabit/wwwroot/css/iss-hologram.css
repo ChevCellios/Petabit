@@ -1,0 +1,355 @@
+body {
+    margin-bottom: 0;
+}
+
+.home-hero {
+    position: relative;
+    isolation: isolate;
+    min-height: calc(75vh - 1rem);
+    margin-top: 0 !important;
+    padding-block: 0.65rem;
+}
+
+.home-hero > :not(.iss-hologram) {
+    position: relative;
+    z-index: 2;
+}
+
+.iss-hologram {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 75vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0.48;
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 36%, transparent 76%);
+    mask-image: radial-gradient(ellipse at center, #000 36%, transparent 76%);
+    transition: opacity 0.5s ease, filter 0.5s ease;
+}
+
+.iss-hologram.is-tracking {
+    z-index: 4;
+    opacity: 1;
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+    filter: saturate(1.3) brightness(1.16) drop-shadow(0 0 24px rgba(98, 255, 225, 0.34));
+    animation: hologramReveal 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.iss-hologram.is-tracking .iss-hologram-stage {
+    overflow: visible;
+    transform: translateY(-5%) scale(2.32);
+}
+
+.iss-hologram-heading {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    text-align: left;
+}
+
+.iss-hologram-heading h3 {
+    margin: 0;
+}
+
+.iss-hologram-kicker {
+    margin: 0 0 0.2rem;
+    color: #62ffe1;
+    font: 600 0.72rem/1.2 monospace;
+    letter-spacing: 0.18em;
+}
+
+.iss-hologram-status {
+    flex: 0 0 auto;
+    padding: 0.35rem 0.65rem;
+    border: 1px solid rgba(98, 255, 225, 0.24);
+    border-radius: 999px;
+    color: #b8fff1;
+    font: 0.74rem/1.2 monospace;
+}
+
+.iss-hologram-status.is-live::before {
+    content: '';
+    display: inline-block;
+    width: 0.45rem;
+    height: 0.45rem;
+    margin-right: 0.4rem;
+    border-radius: 50%;
+    background: #62ffe1;
+    box-shadow: 0 0 10px #62ffe1;
+}
+
+.iss-hologram-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    transform: translateY(-9%) scale(2.15);
+    transform-origin: center;
+}
+
+#iss-globe-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.iss-scanline {
+    position: absolute;
+    inset: -20% 0 auto;
+    height: 26%;
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent, rgba(100, 255, 226, 0.07), transparent);
+    animation: issScan 6s linear infinite;
+}
+
+.iss-hologram-note {
+    display: none;
+    margin: 0;
+    color: rgba(220, 255, 248, 0.64);
+    font-size: 0.75rem;
+}
+
+.home-hero > h1 {
+    margin-bottom: 0.25rem;
+    font-size: clamp(2rem, 5vh, 3.2rem);
+}
+
+.home-hero > .lead {
+    margin-bottom: 0.45rem;
+}
+
+.iss-led-display {
+    --led-duration: 60s;
+    position: relative !important;
+    z-index: 6 !important;
+    width: 100%;
+    height: clamp(3.75rem, 8vh, 5rem);
+    margin: 0.4rem 0;
+    overflow: hidden;
+    border: 1px solid rgba(98, 255, 225, 0.34);
+    border-radius: 8px;
+    background-color: rgba(2, 10, 9, 0.92);
+    background-image: radial-gradient(circle, rgba(98, 255, 225, 0.10) 1px, transparent 1.5px);
+    background-size: 5px 5px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.85), 0 0 16px rgba(98, 255, 225, 0.12);
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
+}
+
+.iss-led-display::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.06), transparent 22%, transparent 78%, rgba(0, 0, 0, 0.28));
+}
+
+.iss-led-display[hidden] {
+    display: none;
+}
+
+.iss-led-display.is-main-led {
+    z-index: 1100 !important;
+    isolation: isolate;
+    flex: 0 0 auto;
+    width: 100%;
+    margin: 0.2rem 0 0.35rem;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+    background-color: transparent;
+}
+
+body.light-mode .iss-led-display.is-main-led {
+    background-color: transparent;
+}
+
+.iss-led-message {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    width: max-content;
+    color: #72ffe4;
+    font: 700 clamp(1.25rem, 3.8vh, 2rem)/1 monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    text-shadow: 0 0 4px #32d9bd, 0 0 10px rgba(98, 255, 225, 0.72);
+    transform: translate(0, -50%);
+}
+
+.iss-led-message.is-scrolling {
+    animation: ledScrollRightToLeft var(--led-duration) linear infinite;
+}
+
+body.light-mode .iss-led-display {
+    border-color: rgba(0, 94, 87, 0.36);
+    background-color: rgba(229, 245, 240, 0.95);
+    background-image: radial-gradient(circle, rgba(0, 94, 87, 0.12) 1px, transparent 1.5px);
+    box-shadow: inset 0 0 18px rgba(0, 65, 58, 0.16), 0 0 14px rgba(0, 94, 87, 0.12);
+}
+
+body.light-mode .iss-led-message {
+    color: #006b62;
+    text-shadow: 0 0 4px rgba(0, 107, 98, 0.35);
+}
+
+.home-hero > .mt-4 {
+    margin-top: 0.5rem !important;
+}
+
+.home-hero .mb-4 {
+    margin-bottom: 0.55rem !important;
+}
+
+.home-hero h2.mt-4 {
+    margin-top: 0.55rem !important;
+    margin-bottom: 0.45rem;
+}
+
+.iss-hologram.is-tracking + #iss-result:not(:empty):not(.is-led-report) {
+    z-index: 6;
+    margin-top: 100vh !important;
+    padding: 1rem;
+    border: 1px solid rgba(98, 255, 225, 0.28);
+    border-radius: 14px;
+    background: rgba(5, 18, 19, 0.92);
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.24);
+}
+
+#iss-result.is-led-report {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: -1px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    clip-path: inset(50%) !important;
+    border: 0 !important;
+    white-space: nowrap !important;
+}
+
+body.light-mode .iss-hologram.is-tracking + #iss-result:not(:empty):not(.is-led-report) {
+    color: #075e5b;
+    border-color: rgba(0, 112, 105, 0.25);
+    background: rgba(240, 252, 250, 0.94);
+    text-shadow: none;
+}
+
+main[role='main'] {
+    padding-bottom: 0 !important;
+}
+
+body.light-mode .iss-hologram {
+    opacity: 0.34;
+}
+
+body.light-mode .iss-hologram.is-tracking {
+    opacity: 0.92;
+    filter: saturate(1.15) contrast(1.08) drop-shadow(0 0 20px rgba(0, 112, 105, 0.24));
+}
+
+/* Oslobodi prostor ispod uvećanog globusa prije prikaza footera. */
+body:has(.iss-hologram.is-tracking) .site-footer {
+    margin-top: 48vh;
+}
+
+body.light-mode .iss-hologram-kicker,
+body.light-mode .iss-hologram-status,
+body.light-mode .iss-hologram-note {
+    color: #075e5b;
+}
+
+body.light-mode .iss-hologram-status {
+    border-color: rgba(0, 112, 105, 0.25);
+}
+
+@keyframes issScan {
+    to { transform: translateY(540%); }
+}
+
+@keyframes hologramReveal {
+    from {
+        opacity: 0.28;
+        filter: saturate(0.8) brightness(0.85) blur(2px);
+    }
+
+    to {
+        filter: saturate(1.2) brightness(1.08) blur(0);
+    }
+}
+
+@keyframes ledScrollRightToLeft {
+    from {
+        left: 100%;
+        transform: translate(0, -50%);
+    }
+
+    to {
+        left: 0;
+        transform: translate(-100%, -50%);
+    }
+}
+
+@media (max-width: 520px) {
+    .home-hero {
+        min-height: calc(75vh - 0.5rem);
+        padding-block: 0.4rem;
+    }
+
+    .iss-hologram-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .iss-hologram-stage {
+        height: 100%;
+        transform: translateY(-7%) scale(1.82);
+    }
+
+    .iss-hologram.is-tracking .iss-hologram-stage {
+        transform: translateY(-4%) scale(1.98);
+    }
+
+    body:has(.iss-hologram.is-tracking) .site-footer {
+        margin-top: 38vh;
+    }
+}
+
+@media (max-height: 720px) {
+    .home-hero > h1 {
+        font-size: 1.8rem;
+    }
+
+    .home-hero > .lead {
+        font-size: 0.95rem;
+    }
+
+    .home-hero .btn-home {
+        margin-bottom: 0.25rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .iss-scanline {
+        animation: none;
+        top: 40%;
+    }
+
+    .iss-hologram.is-tracking {
+        animation: none;
+    }
+
+    .iss-led-message.is-scrolling {
+        animation-duration: calc(var(--led-duration) * 1.75);
+    }
+}

@@ -5,13 +5,18 @@
     // Postavlja naslov stranice koji će se prikazati u pregledniku
     ViewData["Title"] = "Petabit – učenje, tehnologija i ISS Tracker";
     ViewData["Description"] = "Istraži Petabit: višejezičnu platformu za učenje, tehnološke preporuke, blockchain sadržaj i praćenje Međunarodne svemirske postaje uživo.";
+    var cspNonce = Context.Items["CspNonce"]?.ToString();
 }
 
-<div class="container text-center mt-5">
+<div class="container text-center mt-5 home-hero">
     <!-- Glavni naslov aplikacije -->
     <h1 class="display-4">Petabit 🌍</h1>
     <!-- Lokalizirani tekst dobrodošlice -->
     <p class="lead">@Localizer["WelcomeText"]</p>
+
+    <div id="iss-led-display" class="iss-led-display" role="status" aria-live="polite" hidden>
+        <span id="iss-led-message" class="iss-led-message"></span>
+    </div>
 
     <div class="mt-4">
         <!-- Gumbi u jednom redu, svaki u svojoj koloni -->
@@ -35,13 +40,226 @@
         <!-- Zvuk koji se reproducira prilikom pritiska na gumb -->
         <audio id="ping-sound" src="/sounds/zvuk.mp3" preload="auto"></audio>
 
+        <section class="iss-hologram" aria-labelledby="iss-hologram-title">
+            <div class="iss-hologram-heading">
+                <div>
+                    <p class="iss-hologram-kicker">ORBITAL VIEW</p>
+                    <h3 id="iss-hologram-title">Hologram Zemlje</h3>
+                </div>
+                <span id="iss-hologram-status" class="iss-hologram-status">Čeka Ping ISS</span>
+            </div>
+            <div class="iss-hologram-stage">
+                <canvas id="iss-globe-canvas" aria-label="Hologramski prikaz Zemlje i položaja ISS-a"></canvas>
+                <div class="iss-scanline" aria-hidden="true"></div>
+            </div>
+            <p class="iss-hologram-note">Trenutna oznaka koristi podatke primljene nakon pinga. Linija prikazuje projekciju ISS orbite.</p>
+        </section>
+
         <!-- Ovdje će se prikazati rezultati dohvaćenih podataka o ISS-u -->
         <div id="iss-result" class="mt-3"></div>
     </div>
 </div>
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/iss-hologram.css" asp-append-version="true" />
+}
+
 @section Scripts {
-    <script>
+    <script nonce="@cspNonce">
+        const globeCanvas = document.getElementById('iss-globe-canvas');
+        const globeContext = globeCanvas.getContext('2d');
+        const globeHologram = document.querySelector('.iss-hologram');
+        const globeStatus = document.getElementById('iss-hologram-status');
+        const ledDisplay = document.getElementById('iss-led-display');
+        const ledMessage = document.getElementById('iss-led-message');
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        let issPosition = null;
+        let globeAnimationFrame;
+
+        function showLedAtTop() {
+            if (!ledDisplay.classList.contains('is-main-led')) {
+                document.querySelector('main[role="main"]').prepend(ledDisplay);
+                ledDisplay.classList.add('is-main-led');
+            }
+            ledDisplay.hidden = false;
+        }
+        const continentOutlines = [
+            [[72,-168],[70,-140],[60,-128],[55,-122],[49,-125],[43,-124],[34,-117],[23,-110],[17,-96],[25,-82],[30,-81],[43,-70],[51,-58],[59,-64],[66,-80],[73,-105],[72,-135],[72,-168]],
+            [[12,-81],[8,-77],[-5,-81],[-18,-70],[-35,-72],[-55,-68],[-52,-55],[-34,-52],[-20,-40],[-5,-35],[7,-51],[12,-66],[12,-81]],
+            [[71,-10],[65,5],[58,10],[51,3],[44,-9],[36,-6],[35,10],[43,18],[39,29],[47,40],[55,58],[60,80],[72,105],[70,140],[61,163],[50,143],[43,132],[35,126],[22,114],[10,105],[7,80],[21,72],[30,50],[38,36],[45,28],[55,22],[62,14],[71,-10]],
+            [[36,-17],[37,10],[31,32],[15,43],[2,51],[-12,44],[-25,35],[-35,18],[-30,8],[-17,12],[-5,8],[5,-1],[15,-17],[28,-13],[36,-17]],
+            [[-11,113],[-18,122],[-25,113],[-35,117],[-39,146],[-29,154],[-17,146],[-11,132],[-11,113]],
+            [[83,-52],[77,-72],[68,-54],[60,-44],[64,-25],[76,-18],[83,-52]],
+            [[-66,-180],[-70,-135],[-68,-90],[-73,-45],[-70,0],[-74,45],[-69,90],[-72,135],[-66,180]]
+        ];
+
+        function resizeGlobeCanvas() {
+            const stage = globeCanvas.parentElement;
+            const ratio = Math.min(window.devicePixelRatio || 1, 2);
+            const width = stage.clientWidth;
+            const height = stage.clientHeight;
+            globeCanvas.width = Math.round(width * ratio);
+            globeCanvas.height = Math.round(height * ratio);
+            globeContext.setTransform(ratio, 0, 0, ratio, 0, 0);
+        }
+
+        function projectGlobePoint(latitude, longitude, rotation, radius, centerX, centerY) {
+            const lat = latitude * Math.PI / 180;
+            const lon = longitude * Math.PI / 180 + rotation;
+            const depth = Math.cos(lat) * Math.cos(lon);
+            return {
+                x: centerX + radius * Math.cos(lat) * Math.sin(lon),
+                y: centerY - radius * Math.sin(lat),
+                visible: depth >= 0,
+                depth
+            };
+        }
+
+        function drawProjectedLine(points, color, width, glow = 0) {
+            globeContext.strokeStyle = color;
+            globeContext.lineWidth = width;
+            globeContext.shadowColor = color;
+            globeContext.shadowBlur = glow;
+            globeContext.beginPath();
+            let drawing = false;
+            points.forEach(point => {
+                if (!point.visible) {
+                    drawing = false;
+                    return;
+                }
+                if (!drawing) globeContext.moveTo(point.x, point.y);
+                else globeContext.lineTo(point.x, point.y);
+                drawing = true;
+            });
+            globeContext.stroke();
+            globeContext.shadowBlur = 0;
+        }
+
+        function drawGlobe(time = 0) {
+            const width = globeCanvas.clientWidth;
+            const height = globeCanvas.clientHeight;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) * 0.36;
+            const isLight = document.body.classList.contains('light-mode');
+            const grid = isLight ? 'rgba(0, 105, 105, 0.32)' : 'rgba(72, 255, 218, 0.32)';
+            const bright = isLight ? '#007b78' : '#62ffe1';
+            const dim = isLight ? 'rgba(0, 120, 116, 0.12)' : 'rgba(75, 255, 220, 0.11)';
+            const baseRotation = issPosition ? -issPosition.longitude * Math.PI / 180 : 0;
+            const rotation = reduceMotion.matches
+                ? baseRotation
+                : baseRotation + (issPosition ? Math.sin(time * 0.00012) * 0.32 : time * 0.00006);
+
+            globeContext.clearRect(0, 0, width, height);
+            const aura = globeContext.createRadialGradient(centerX, centerY, radius * 0.25, centerX, centerY, radius * 1.25);
+            aura.addColorStop(0, dim);
+            aura.addColorStop(0.72, 'rgba(0, 0, 0, 0)');
+            globeContext.fillStyle = aura;
+            globeContext.fillRect(0, 0, width, height);
+
+            globeContext.strokeStyle = bright;
+            globeContext.lineWidth = 1.2;
+            globeContext.shadowColor = bright;
+            globeContext.shadowBlur = 14;
+            globeContext.beginPath();
+            globeContext.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            globeContext.stroke();
+            globeContext.shadowBlur = 0;
+
+            continentOutlines.forEach(continent => {
+                const outline = continent.map(([latitude, longitude]) =>
+                    projectGlobePoint(latitude, longitude, rotation, radius * 0.995, centerX, centerY));
+                drawProjectedLine(outline, isLight ? 'rgba(0, 92, 84, 0.58)' : 'rgba(116, 255, 226, 0.62)', 1.15, 3);
+            });
+
+            for (let latitude = -60; latitude <= 60; latitude += 30) {
+                const points = [];
+                for (let longitude = -180; longitude <= 180; longitude += 4) {
+                    points.push(projectGlobePoint(latitude, longitude, rotation, radius, centerX, centerY));
+                }
+                drawProjectedLine(points, grid, 0.7);
+            }
+
+            for (let longitude = -150; longitude <= 180; longitude += 30) {
+                const points = [];
+                for (let latitude = -90; latitude <= 90; latitude += 3) {
+                    points.push(projectGlobePoint(latitude, longitude, rotation, radius, centerX, centerY));
+                }
+                drawProjectedLine(points, grid, 0.7);
+            }
+
+            if (issPosition) {
+                const inclination = 51.6;
+                const latitudeRadians = issPosition.latitude * Math.PI / 180;
+                const inclinationRadians = inclination * Math.PI / 180;
+                const phase = Math.asin(Math.max(-1, Math.min(1, Math.sin(latitudeRadians) / Math.sin(inclinationRadians))));
+                const longitudeOffset = issPosition.longitude - phase * 180 / Math.PI;
+                const orbit = [];
+                const orbitalCoordinate = angle => ({
+                    latitude: Math.asin(Math.sin(inclinationRadians) * Math.sin(angle)) * 180 / Math.PI,
+                    longitude: longitudeOffset + Math.atan2(Math.cos(inclinationRadians) * Math.sin(angle), Math.cos(angle)) * 180 / Math.PI
+                });
+
+                for (let degrees = -180; degrees <= 180; degrees += 2) {
+                    const angle = degrees * Math.PI / 180;
+                    const coordinate = orbitalCoordinate(angle);
+                    orbit.push(projectGlobePoint(coordinate.latitude, coordinate.longitude, rotation, radius * 1.08, centerX, centerY));
+                }
+                drawProjectedLine(orbit, bright, 1.5, 7);
+
+                const arrowStartCoordinate = orbitalCoordinate(phase + 0.10);
+                const arrowTipCoordinate = orbitalCoordinate(phase + 0.18);
+                const arrowStart = projectGlobePoint(arrowStartCoordinate.latitude, arrowStartCoordinate.longitude, rotation, radius * 1.08, centerX, centerY);
+                const arrowTip = projectGlobePoint(arrowTipCoordinate.latitude, arrowTipCoordinate.longitude, rotation, radius * 1.08, centerX, centerY);
+
+                if (arrowStart.visible && arrowTip.visible) {
+                    const arrowAngle = Math.atan2(arrowTip.y - arrowStart.y, arrowTip.x - arrowStart.x);
+                    const arrowSize = 9;
+                    globeContext.fillStyle = bright;
+                    globeContext.shadowColor = bright;
+                    globeContext.shadowBlur = 9;
+                    globeContext.beginPath();
+                    globeContext.moveTo(arrowTip.x + Math.cos(arrowAngle) * arrowSize, arrowTip.y + Math.sin(arrowAngle) * arrowSize);
+                    globeContext.lineTo(arrowTip.x + Math.cos(arrowAngle + 2.45) * arrowSize, arrowTip.y + Math.sin(arrowAngle + 2.45) * arrowSize);
+                    globeContext.lineTo(arrowTip.x + Math.cos(arrowAngle - 2.45) * arrowSize, arrowTip.y + Math.sin(arrowAngle - 2.45) * arrowSize);
+                    globeContext.closePath();
+                    globeContext.fill();
+                    globeContext.shadowBlur = 0;
+                }
+
+                const marker = projectGlobePoint(issPosition.latitude, issPosition.longitude, rotation, radius * 1.08, centerX, centerY);
+                if (marker.visible) {
+                    const pulse = reduceMotion.matches ? 10 : 10 + Math.sin(time * 0.006) * 3;
+                    globeContext.strokeStyle = bright;
+                    globeContext.lineWidth = 1.5;
+                    globeContext.beginPath();
+                    globeContext.arc(marker.x, marker.y, pulse, 0, Math.PI * 2);
+                    globeContext.stroke();
+                    globeContext.fillStyle = bright;
+                    globeContext.font = '22px sans-serif';
+                    globeContext.textAlign = 'center';
+                    globeContext.textBaseline = 'middle';
+                    globeContext.fillText('🛰️', marker.x, marker.y);
+                    globeContext.font = '600 11px monospace';
+                    globeContext.textAlign = 'left';
+                    globeContext.fillText('ISS LIVE', marker.x + 18, marker.y - 13);
+                }
+            }
+
+            if (!reduceMotion.matches) globeAnimationFrame = requestAnimationFrame(drawGlobe);
+        }
+
+        function restartGlobe() {
+            cancelAnimationFrame(globeAnimationFrame);
+            resizeGlobeCanvas();
+            drawGlobe();
+        }
+
+        restartGlobe();
+        window.addEventListener('resize', restartGlobe, { passive: true });
+        reduceMotion.addEventListener('change', restartGlobe);
+        document.getElementById('toggle-dark-mode')?.addEventListener('click', restartGlobe);
+
         // Dodaje event listener na gumb za dohvat ISS podataka
         document.getElementById('iss-ping-button').addEventListener('click', () => {
             // Reproducira zvuk prilikom klika
@@ -54,27 +272,43 @@
                     return response.json();
                 })
                 .then(data => {
-                    const crew = data.astronauts
-                        .map(person => `<li>${person.name} — ${person.country} (${person.agency})</li>`)
-                        .join('');
-                    const vehicles = data.dockedVehicles
-                        .map(vehicle => `<li>${vehicle.name} — ${vehicle.purpose} (${vehicle.operator})</li>`)
-                        .join('');
+                    issPosition = {
+                        latitude: data.latitude,
+                        longitude: data.longitude
+                    };
+                    globeStatus.textContent = `${data.latitude.toFixed(2)}° / ${data.longitude.toFixed(2)}°`;
+                    globeStatus.classList.add('is-live');
+                    globeHologram.classList.add('is-tracking');
+                    const ledCrew = data.astronauts
+                        .map(person => `${person.name} — ${person.country} (${person.agency})`)
+                        .join('  |  ');
+                    const ledVehicles = data.dockedVehicles
+                        .map(vehicle => `${vehicle.name} — ${vehicle.purpose} (${vehicle.operator})`)
+                        .join('  |  ');
+                    const referenceDate = new Date(data.stationStatusUpdatedAt).toLocaleDateString('hr-HR');
+                    ledMessage.textContent = `ISS LIVE  •  LOKACIJA ISS-A  •  LATITUDE ${data.latitude.toFixed(2)}°  •  LONGITUDE ${data.longitude.toFixed(2)}°  •  BRZINA ${data.speed.toFixed(2)} KM/H  •  ASTRONAUTA NA ISS-U ${data.astronautCount}  •  POSADA: ${ledCrew}  •  SPOJENO NA ISS: ${ledVehicles}  •  REFERENTNO STANJE ${referenceDate}  •  IZVOR NASA`;
+                    showLedAtTop();
+                    ledMessage.classList.remove('is-scrolling');
+                    void ledMessage.offsetWidth;
+                    ledMessage.classList.add('is-scrolling');
+                    restartGlobe();
 
-                    document.getElementById('iss-result').innerHTML = `
-                        🌍 Lokacija ISS-a:<br>
-                        🧭 Latitude: ${data.latitude.toFixed(2)}°<br>
-                        🧭 Longitude: ${data.longitude.toFixed(2)}°<br>
-                        🚀 Brzina: ${data.speed.toFixed(2)} km/h<br>
-                        👨‍🚀 Astronauta na ISS-u: ${data.astronautCount}
-                        <h3 class="mt-3">Posada</h3><ul>${crew}</ul>
-                        <h3>Spojeno na ISS</h3><ul>${vehicles}</ul>
-                        <small>Referentno stanje: ${new Date(data.stationStatusUpdatedAt).toLocaleDateString('hr-HR')}, <a href="${data.stationStatusSource}" target="_blank" rel="noopener">NASA</a>.</small>
-                    `;
+                    const result = document.getElementById('iss-result');
+                    result.textContent = `Lokacija ISS-a: latitude ${data.latitude.toFixed(2)}°, longitude ${data.longitude.toFixed(2)}°. Brzina ${data.speed.toFixed(2)} km/h. Astronauta ${data.astronautCount}. Posada: ${ledCrew}. Spojeno na ISS: ${ledVehicles}. Referentno stanje ${referenceDate}. Izvor NASA.`;
+                    result.classList.add('is-led-report');
                 })
                 .catch(error => {
                     // Prikazuje poruku o grešci ako dohvat podataka ne uspije
-                    document.getElementById('iss-result').innerHTML = "❌ Greška pri dohvaćanju ISS podataka.";
+                    document.getElementById('iss-result').textContent = "❌ Greška pri dohvaćanju ISS podataka.";
+                    document.getElementById('iss-result').classList.add('is-led-report');
+                    globeStatus.textContent = 'Signal nije dostupan';
+                    globeStatus.classList.remove('is-live');
+                    globeHologram.classList.remove('is-tracking');
+                    ledMessage.textContent = 'ISS SIGNAL NIJE DOSTUPAN';
+                    showLedAtTop();
+                    ledMessage.classList.remove('is-scrolling');
+                    void ledMessage.offsetWidth;
+                    ledMessage.classList.add('is-scrolling');
                     console.error("Greška:", error);
                 });
         });
