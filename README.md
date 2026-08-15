@@ -1,5 +1,9 @@
 # 🌐 Petabit
 
+[![CI](https://github.com/ChevCellios/Petabit/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/ChevCellios/Petabit/actions/workflows/ci.yml)
+[![Security](https://github.com/ChevCellios/Petabit/actions/workflows/security.yml/badge.svg?branch=master)](https://github.com/ChevCellios/Petabit/actions/workflows/security.yml)
+[![Production](https://github.com/ChevCellios/Petabit/actions/workflows/uptime.yml/badge.svg?branch=master)](https://github.com/ChevCellios/Petabit/actions/workflows/uptime.yml)
+
 ![.NET](https://img.shields.io/badge/.NET-10.0-blueviolet)
 ![Language](https://img.shields.io/badge/language-C%23-orange)
 ![Localization](https://img.shields.io/badge/i18n-HR%20%7C%20EN%20%7C%20DE-green)
