@@ -5,6 +5,7 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
   <data name="LanguageSelector" xml:space="preserve"><value>Odabir jezika</value></data>
+  <data name="ChangeTheme" xml:space="preserve"><value>Promijeni temu</value></data>
   <data name="Home" xml:space="preserve"><value>Početna</value></data>
   <data name="Privacy" xml:space="preserve"><value>Privatnost</value></data>
   <data name="ExternalSources" xml:space="preserve"><value>Vanjski izvori</value></data>

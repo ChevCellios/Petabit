@@ -5,6 +5,7 @@
     ViewData["Title"] = Localizer["Title"];
 }
 
+<div class="content-page privacy-page">
 <h1>@Localizer["Title"]</h1>
 
 <p>@Localizer["WelcomeText"]</p>
@@ -27,6 +28,7 @@
 <p>Petabit koristi samo nužne funkcionalne tehnologije i, uz vašu privolu, analitičke kolačiće. Analitika nije potrebna za korištenje stranice.</p>
 
 <h3>Nužne funkcionalne tehnologije</h3>
+<div class="table-responsive">
 <table class="table">
     <thead>
         <tr><th>Naziv</th><th>Svrha</th><th>Trajanje</th></tr>
@@ -36,9 +38,11 @@
         <tr><td>petabit-analytics-consent</td><td>Lokalna pohrana odluke o analitičkim kolačićima u pregledniku.</td><td>Dok ne promijenite odluku ili ne obrišete podatke preglednika</td></tr>
     </tbody>
 </table>
+</div>
 
 <h3>Analitički kolačići – Google Analytics 4</h3>
 <p>Google Analytics učitava se samo nakon odabira <strong>Prihvaćam</strong>. Prikuplja zbirne podatke kao što su broj korisnika i sesija, približna lokacija, preglednik, uređaj i izvor dolaska. Ne koristimo ga za izravno utvrđivanje identiteta posjetitelja.</p>
+<div class="table-responsive">
 <table class="table">
     <thead>
         <tr><th>Naziv</th><th>Svrha</th><th>Trajanje</th></tr>
@@ -48,6 +52,7 @@
         <tr><td>_ga_W5Z2EDHVY4</td><td>Čuva stanje sesije za Google Analytics 4.</td><td>Do 2 godine</td></tr>
     </tbody>
 </table>
+</div>
 <p>Više o GA4 kolačićima: <a href="https://support.google.com/analytics/answer/11397207" target="_blank" rel="noopener noreferrer">Google Analytics dokumentacija</a>.</p>
 
 <h3>Upravljanje privolom</h3>
@@ -67,5 +72,6 @@
 
 <h2>@Localizer["Contact"]</h2>
 <p>@Localizer["ContactText"] <a href="https://github.com/ChevCellios/Petabit/issues">GitHub Issues</a>.</p>
+</div>
 
 

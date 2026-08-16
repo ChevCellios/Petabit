@@ -300,10 +300,17 @@ body.light-mode .iss-hologram-status {
     }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 767px) {
+    html,
+    body {
+        max-width: 100%;
+        overflow-x: clip;
+    }
+
     .home-hero {
         min-height: calc(75vh - 0.5rem);
         padding-block: 0.4rem;
+        overflow: clip;
     }
 
     .iss-hologram-heading {
@@ -311,13 +318,34 @@ body.light-mode .iss-hologram-status {
         flex-direction: column;
     }
 
-    .iss-hologram-stage {
-        height: 100%;
-        transform: translateY(-7%) scale(1.82);
+    .iss-hologram,
+    .iss-hologram.is-tracking {
+        overflow: hidden;
     }
 
+    .iss-hologram-stage,
     .iss-hologram.is-tracking .iss-hologram-stage {
-        transform: translateY(-4%) scale(1.98);
+        height: 100%;
+        max-width: 100%;
+        transform: translateY(-2%) scale(1.25);
+        transform-origin: 50% 35%;
+    }
+
+    .home-hero .row {
+        margin-inline: 0;
+        row-gap: 0.5rem;
+    }
+
+    .home-hero .col-auto {
+        flex: 0 0 100%;
+        width: 100%;
+        padding-inline: 0;
+    }
+
+    .home-hero .btn-home {
+        width: min(100%, 18rem);
+        min-width: 0;
+        max-width: none;
     }
 
     body:has(.iss-hologram.is-tracking) .site-footer {
