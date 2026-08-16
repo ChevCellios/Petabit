@@ -150,6 +150,12 @@ Lokalni Docker image koristi port `3000` kada varijabla `PORT` nije postavljena.
 
 Railway automatski postavlja varijablu `PORT`; produkcijski servis trenutačno koristi target port `8080`.
 
+Railway deployment automatski se prepoznaje preko sistemske varijable `RAILWAY_ENVIRONMENT_ID` i
+sigurno obrađuje točno jedan ingress proxy hop, pa proxy IP ne treba unositi ručno. Na drugim hosting
+platformama pojedinačne pouzdane adrese postavljaju se varijablama poput
+`ForwardedHeaders__KnownProxies__0`, a CIDR mreže varijablama poput
+`ForwardedHeaders__KnownNetworks__0`. Neusklađena forwarded zaglavlja se odbacuju.
+
 ## 📁 Struktura projekta
 
 ```text

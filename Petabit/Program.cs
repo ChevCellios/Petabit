@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
+using System.Net;
 using System.Security.Cryptography;
 using System.Threading.RateLimiting;
 
@@ -37,8 +38,44 @@ namespace Petabit
             builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-                options.KnownIPNetworks.Clear();
-                options.KnownProxies.Clear();
+                options.ForwardLimit = 1;
+                options.RequireHeaderSymmetry = true;
+
+                // Railway's public ingress is the only route to the container and appends the
+                // real client address to X-Forwarded-For. Its proxy addresses are dynamic and
+                // no stable CIDR is published, so trust exactly one ingress hop on Railway.
+                if (!string.IsNullOrWhiteSpace(builder.Configuration["RAILWAY_ENVIRONMENT_ID"]))
+                {
+                    options.KnownProxies.Clear();
+                    options.KnownIPNetworks.Clear();
+                    return;
+                }
+
+                foreach (var configuredProxy in builder.Configuration
+                             .GetSection("ForwardedHeaders:KnownProxies")
+                             .Get<string[]>() ?? [])
+                {
+                    if (!IPAddress.TryParse(configuredProxy, out var proxyAddress))
+                    {
+                        throw new InvalidOperationException(
+                            $"Invalid trusted proxy address in ForwardedHeaders:KnownProxies: '{configuredProxy}'.");
+                    }
+
+                    options.KnownProxies.Add(proxyAddress);
+                }
+
+                foreach (var configuredNetwork in builder.Configuration
+                             .GetSection("ForwardedHeaders:KnownNetworks")
+                             .Get<string[]>() ?? [])
+                {
+                    if (!System.Net.IPNetwork.TryParse(configuredNetwork, out var network))
+                    {
+                        throw new InvalidOperationException(
+                            $"Invalid trusted proxy network in ForwardedHeaders:KnownNetworks: '{configuredNetwork}'.");
+                    }
+
+                    options.KnownIPNetworks.Add(network);
+                }
             });
             builder.Services.AddAntiforgery(options =>
             {
