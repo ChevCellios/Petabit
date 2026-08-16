@@ -129,4 +129,14 @@
   <data name="BlockchainLink" xml:space="preserve">
     <value>Blockchain</value>
   </data>
+  <data name="LedLocation" xml:space="preserve"><value>ISS-Position</value></data>
+  <data name="LedLatitude" xml:space="preserve"><value>Breitengrad</value></data>
+  <data name="LedLongitude" xml:space="preserve"><value>Längengrad</value></data>
+  <data name="LedSpeed" xml:space="preserve"><value>Geschwindigkeit</value></data>
+  <data name="LedAstronauts" xml:space="preserve"><value>Astronauten auf der ISS</value></data>
+  <data name="LedCrew" xml:space="preserve"><value>Besatzung</value></data>
+  <data name="LedDocked" xml:space="preserve"><value>An die ISS angedockt</value></data>
+  <data name="LedReference" xml:space="preserve"><value>Referenzstand</value></data>
+  <data name="LedSource" xml:space="preserve"><value>Quelle</value></data>
+  <data name="LedUnavailable" xml:space="preserve"><value>ISS-SIGNAL NICHT VERFÜGBAR</value></data>
 </root>

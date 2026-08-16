@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
+@using System.Globalization
 
 @{
     // Postavlja naslov stranice koji će se prikazati u pregledniku
@@ -17,6 +18,18 @@
     <div id="iss-led-display" class="iss-led-display" role="status" aria-live="polite" hidden>
         <span id="iss-led-message" class="iss-led-message"></span>
     </div>
+    <div id="iss-led-localization" hidden
+         data-locale="@CultureInfo.CurrentUICulture.Name"
+         data-location="@Localizer["LedLocation"]"
+         data-latitude="@Localizer["LedLatitude"]"
+         data-longitude="@Localizer["LedLongitude"]"
+         data-speed="@Localizer["LedSpeed"]"
+         data-astronauts="@Localizer["LedAstronauts"]"
+         data-crew="@Localizer["LedCrew"]"
+         data-docked="@Localizer["LedDocked"]"
+         data-reference="@Localizer["LedReference"]"
+         data-source="@Localizer["LedSource"]"
+         data-unavailable="@Localizer["LedUnavailable"]"></div>
 
     <div class="mt-4">
         <!-- Gumbi u jednom redu, svaki u svojoj koloni -->
@@ -72,6 +85,7 @@
         const globeStatus = document.getElementById('iss-hologram-status');
         const ledDisplay = document.getElementById('iss-led-display');
         const ledMessage = document.getElementById('iss-led-message');
+        const ledStrings = document.getElementById('iss-led-localization').dataset;
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
         let issPosition = null;
         let globeAnimationFrame;
@@ -284,8 +298,19 @@
                     const ledVehicles = data.dockedVehicles
                         .map(vehicle => `${vehicle.name} — ${vehicle.purpose} (${vehicle.operator})`)
                         .join('  |  ');
-                    const referenceDate = new Date(data.stationStatusUpdatedAt).toLocaleDateString('hr-HR');
-                    ledMessage.textContent = `ISS LIVE  •  LOKACIJA ISS-A  •  LATITUDE ${data.latitude.toFixed(2)}°  •  LONGITUDE ${data.longitude.toFixed(2)}°  •  BRZINA ${data.speed.toFixed(2)} KM/H  •  ASTRONAUTA NA ISS-U ${data.astronautCount}  •  POSADA: ${ledCrew}  •  SPOJENO NA ISS: ${ledVehicles}  •  REFERENTNO STANJE ${referenceDate}  •  IZVOR NASA`;
+                    const referenceDate = new Date(data.stationStatusUpdatedAt).toLocaleDateString(ledStrings.locale);
+                    ledMessage.textContent = [
+                        'ISS LIVE',
+                        ledStrings.location,
+                        `${ledStrings.latitude} ${data.latitude.toFixed(2)}°`,
+                        `${ledStrings.longitude} ${data.longitude.toFixed(2)}°`,
+                        `${ledStrings.speed} ${data.speed.toFixed(2)} KM/H`,
+                        `${ledStrings.astronauts} ${data.astronautCount}`,
+                        `${ledStrings.crew}: ${ledCrew}`,
+                        `${ledStrings.docked}: ${ledVehicles}`,
+                        `${ledStrings.reference} ${referenceDate}`,
+                        `${ledStrings.source} NASA`
+                    ].join('  •  ');
                     showLedAtTop();
                     ledMessage.classList.remove('is-scrolling');
                     void ledMessage.offsetWidth;
@@ -303,7 +328,7 @@
                     globeStatus.textContent = 'Signal nije dostupan';
                     globeStatus.classList.remove('is-live');
                     globeHologram.classList.remove('is-tracking');
-                    ledMessage.textContent = 'ISS SIGNAL NIJE DOSTUPAN';
+                    ledMessage.textContent = ledStrings.unavailable;
                     showLedAtTop();
                     ledMessage.classList.remove('is-scrolling');
                     void ledMessage.offsetWidth;
