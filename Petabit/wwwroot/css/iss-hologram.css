@@ -1,3 +1,9 @@
+html,
+body {
+    max-width: 100%;
+    overflow-x: clip;
+}
+
 body {
     margin-bottom: 0;
 }
@@ -5,7 +11,6 @@ body {
 .home-hero {
     position: relative;
     isolation: isolate;
-    overflow-x: clip;
     min-height: calc(75vh - 1rem);
     margin-top: 0 !important;
     padding-block: 0.65rem;
@@ -302,12 +307,6 @@ body.light-mode .iss-hologram-status {
 }
 
 @media (max-width: 767px) {
-    html,
-    body {
-        max-width: 100%;
-        overflow-x: clip;
-    }
-
     .home-hero {
         min-height: calc(75vh - 0.5rem);
         padding-block: 0.4rem;
