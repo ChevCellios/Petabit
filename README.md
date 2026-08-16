@@ -198,4 +198,4 @@ Projekt je objavljen pod [MIT licencom](LICENSE). Dopušteni su korištenje, izm
 ## 📬 Kontakt
 
 - GitHub: [ChevCellios](https://github.com/ChevCellios)
-- E-mail: [midom.croatia@yahoo.com](mailto:midom.croatia@yahoo.com)
+- Pitanja i prijedlozi: [GitHub Issues](https://github.com/ChevCellios/Petabit/issues)
