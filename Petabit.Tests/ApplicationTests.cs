@@ -253,6 +253,40 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
         Assert.Contains($"data-unavailable=\"{unavailableText}\"", body);
     }
 
+    [Theory]
+    [InlineData("en", "Earth hologram", "United States", "Crew spacecraft")]
+    [InlineData("hr", "Hologram Zemlje", "SAD", "Posadna letjelica")]
+    [InlineData("de", "Erde-Hologramm", "USA", "Bemannte Raumfähre")]
+    public async Task HomePageLocalizesHologramAndStationDetails(
+        string culture,
+        string hologramTitle,
+        string countryText,
+        string purposeText)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/");
+        request.Headers.AcceptLanguage.ParseAdd(culture);
+
+        var response = await _client.SendAsync(request);
+        var body = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains($">{hologramTitle}</h3>", body);
+        Assert.Contains($"data-country-usa=\"{countryText}\"", body);
+        Assert.Contains($"data-purpose-crewed=\"{purposeText}\"", body);
+    }
+
+    [Fact]
+    public async Task MobileAnalyticsConsentStylesProvideBottomSheetBehavior()
+    {
+        var styles = await _client.GetStringAsync("/Petabit.styles.css");
+
+        Assert.Contains("max-height: min(45vh, 18rem)", styles);
+        Assert.Contains("overscroll-behavior: contain", styles);
+        Assert.Contains("touch-action: pan-y", styles);
+        Assert.Contains("min-height: 44px", styles);
+        Assert.Contains("safe-area-inset-bottom", styles);
+    }
+
     [Fact]
     public async Task IssDataReturnsJsonWhenUpstreamSucceeds()
     {

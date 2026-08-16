@@ -90,6 +90,8 @@ button.accept-policy {
     padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
     border-radius: 0.85rem 0.85rem 0 0 !important;
     overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
     font-size: 0.78rem;
   }
 
