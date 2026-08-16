@@ -142,7 +142,7 @@
     <value>The application may collect technical data such as IP address and browser information for performance and security analysis, but this data is not linked to your identity.</value>
   </data>
   <data name="DataSecurity" xml:space="preserve">
-    <value>Data Secutity</value>
+    <value>Data Security</value>
   </data>
   <data name="DataSecurityText" xml:space="preserve">
     <value>We take reasonable technical and organizational measures to protect data from unauthorised access, loss, or misuse.</value>
@@ -157,7 +157,7 @@
     <value>We may update this privacy policy from time to time. All charges will be posted on this page.</value>
   </data>
   <data name="ThankYou" xml:space="preserve">
-    <value>Thank you for usnig Petabit! : )</value>
+    <value>Thank you for using Petabit! : )</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>Privacy Policy</value>
