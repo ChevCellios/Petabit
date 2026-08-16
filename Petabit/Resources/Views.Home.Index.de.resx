@@ -139,4 +139,14 @@
   <data name="LedReference" xml:space="preserve"><value>Referenzstand</value></data>
   <data name="LedSource" xml:space="preserve"><value>Quelle</value></data>
   <data name="LedUnavailable" xml:space="preserve"><value>ISS-SIGNAL NICHT VERFÜGBAR</value></data>
+  <data name="HologramKicker" xml:space="preserve"><value>ORBITALANSICHT</value></data>
+  <data name="HologramTitle" xml:space="preserve"><value>Erde-Hologramm</value></data>
+  <data name="HologramWaiting" xml:space="preserve"><value>Warten auf Ping ISS</value></data>
+  <data name="HologramCanvasLabel" xml:space="preserve"><value>Holografische Ansicht der Erde und der ISS-Position</value></data>
+  <data name="HologramNote" xml:space="preserve"><value>Die aktuelle Markierung verwendet die nach dem Ping empfangenen Daten. Die Linie zeigt die projizierte ISS-Umlaufbahn.</value></data>
+  <data name="CountryUsa" xml:space="preserve"><value>USA</value></data>
+  <data name="CountryFrance" xml:space="preserve"><value>Frankreich</value></data>
+  <data name="CountryRussia" xml:space="preserve"><value>Russland</value></data>
+  <data name="PurposeCrewed" xml:space="preserve"><value>Bemannte Raumfähre</value></data>
+  <data name="PurposeCargo" xml:space="preserve"><value>Frachter</value></data>
 </root>

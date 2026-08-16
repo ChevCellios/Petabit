@@ -29,7 +29,12 @@
          data-docked="@Localizer["LedDocked"]"
          data-reference="@Localizer["LedReference"]"
          data-source="@Localizer["LedSource"]"
-         data-unavailable="@Localizer["LedUnavailable"]"></div>
+         data-unavailable="@Localizer["LedUnavailable"]"
+         data-country-usa="@Localizer["CountryUsa"]"
+         data-country-france="@Localizer["CountryFrance"]"
+         data-country-russia="@Localizer["CountryRussia"]"
+         data-purpose-crewed="@Localizer["PurposeCrewed"]"
+         data-purpose-cargo="@Localizer["PurposeCargo"]"></div>
 
     <div class="mt-4">
         <!-- Gumbi u jednom redu, svaki u svojoj koloni -->
@@ -56,16 +61,16 @@
         <section class="iss-hologram" aria-labelledby="iss-hologram-title">
             <div class="iss-hologram-heading">
                 <div>
-                    <p class="iss-hologram-kicker">ORBITAL VIEW</p>
-                    <h3 id="iss-hologram-title">Hologram Zemlje</h3>
+                    <p class="iss-hologram-kicker">@Localizer["HologramKicker"]</p>
+                    <h3 id="iss-hologram-title">@Localizer["HologramTitle"]</h3>
                 </div>
-                <span id="iss-hologram-status" class="iss-hologram-status">Čeka Ping ISS</span>
+                <span id="iss-hologram-status" class="iss-hologram-status">@Localizer["HologramWaiting"]</span>
             </div>
             <div class="iss-hologram-stage">
-                <canvas id="iss-globe-canvas" aria-label="Hologramski prikaz Zemlje i položaja ISS-a"></canvas>
+                <canvas id="iss-globe-canvas" aria-label="@Localizer["HologramCanvasLabel"]"></canvas>
                 <div class="iss-scanline" aria-hidden="true"></div>
             </div>
-            <p class="iss-hologram-note">Trenutna oznaka koristi podatke primljene nakon pinga. Linija prikazuje projekciju ISS orbite.</p>
+            <p class="iss-hologram-note">@Localizer["HologramNote"]</p>
         </section>
 
         <!-- Ovdje će se prikazati rezultati dohvaćenih podataka o ISS-u -->
@@ -97,6 +102,15 @@
             }
             ledDisplay.hidden = false;
         }
+        const localizedCountry = country => ({
+            'SAD': ledStrings.countryUsa,
+            'Francuska': ledStrings.countryFrance,
+            'Rusija': ledStrings.countryRussia
+        })[country] ?? country;
+        const localizedPurpose = purpose => ({
+            'Posadna letjelica': ledStrings.purposeCrewed,
+            'Teretna letjelica': ledStrings.purposeCargo
+        })[purpose] ?? purpose;
         const continentOutlines = [
             [[72,-168],[70,-140],[60,-128],[55,-122],[49,-125],[43,-124],[34,-117],[23,-110],[17,-96],[25,-82],[30,-81],[43,-70],[51,-58],[59,-64],[66,-80],[73,-105],[72,-135],[72,-168]],
             [[12,-81],[8,-77],[-5,-81],[-18,-70],[-35,-72],[-55,-68],[-52,-55],[-34,-52],[-20,-40],[-5,-35],[7,-51],[12,-66],[12,-81]],
@@ -293,10 +307,10 @@
                     globeStatus.classList.add('is-live');
                     globeHologram.classList.add('is-tracking');
                     const ledCrew = data.astronauts
-                        .map(person => `${person.name} — ${person.country} (${person.agency})`)
+                        .map(person => `${person.name} — ${localizedCountry(person.country)} (${person.agency})`)
                         .join('  |  ');
                     const ledVehicles = data.dockedVehicles
-                        .map(vehicle => `${vehicle.name} — ${vehicle.purpose} (${vehicle.operator})`)
+                        .map(vehicle => `${vehicle.name} — ${localizedPurpose(vehicle.purpose)} (${vehicle.operator})`)
                         .join('  |  ');
                     const referenceDate = new Date(data.stationStatusUpdatedAt).toLocaleDateString(ledStrings.locale);
                     ledMessage.textContent = [

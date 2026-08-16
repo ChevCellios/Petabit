@@ -139,4 +139,14 @@
   <data name="LedReference" xml:space="preserve"><value>Referentno stanje</value></data>
   <data name="LedSource" xml:space="preserve"><value>Izvor</value></data>
   <data name="LedUnavailable" xml:space="preserve"><value>ISS SIGNAL NIJE DOSTUPAN</value></data>
+  <data name="HologramKicker" xml:space="preserve"><value>ORBITALNI PRIKAZ</value></data>
+  <data name="HologramTitle" xml:space="preserve"><value>Hologram Zemlje</value></data>
+  <data name="HologramWaiting" xml:space="preserve"><value>Čeka Ping ISS</value></data>
+  <data name="HologramCanvasLabel" xml:space="preserve"><value>Hologramski prikaz Zemlje i položaja ISS-a</value></data>
+  <data name="HologramNote" xml:space="preserve"><value>Trenutna oznaka koristi podatke primljene nakon pinga. Linija prikazuje projekciju ISS orbite.</value></data>
+  <data name="CountryUsa" xml:space="preserve"><value>SAD</value></data>
+  <data name="CountryFrance" xml:space="preserve"><value>Francuska</value></data>
+  <data name="CountryRussia" xml:space="preserve"><value>Rusija</value></data>
+  <data name="PurposeCrewed" xml:space="preserve"><value>Posadna letjelica</value></data>
+  <data name="PurposeCargo" xml:space="preserve"><value>Teretna letjelica</value></data>
 </root>
