@@ -1,10 +1,12 @@
 using System.Net;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Petabit.Tests;
@@ -62,6 +64,34 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
 
         Assert.Equal("4d5f2c879eb445b6bc5304e44960bd8d", correlationId);
         Assert.True(Guid.TryParseExact(correlationId, "N", out _));
+    }
+
+    [Fact]
+    public void ForwardedHeadersOnlyTrustExplicitlyConfiguredProxies()
+    {
+        using var factory = new WebApplicationFactory<Program>();
+        var options = factory.Services.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
+
+        Assert.Equal(1, options.ForwardLimit);
+        Assert.True(options.RequireHeaderSymmetry);
+        Assert.DoesNotContain(options.KnownProxies, address =>
+            address.Equals(IPAddress.Parse("203.0.113.10")));
+        Assert.DoesNotContain(options.KnownIPNetworks, network =>
+            network.Contains(IPAddress.Parse("203.0.113.10")));
+    }
+
+    [Fact]
+    public void RailwayDeploymentTrustsExactlyOneIngressHop()
+    {
+        using var factory = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(builder =>
+                builder.UseSetting("RAILWAY_ENVIRONMENT_ID", "test-environment"));
+        var options = factory.Services.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
+
+        Assert.Equal(1, options.ForwardLimit);
+        Assert.True(options.RequireHeaderSymmetry);
+        Assert.Empty(options.KnownProxies);
+        Assert.Empty(options.KnownIPNetworks);
     }
 
     [Fact]
