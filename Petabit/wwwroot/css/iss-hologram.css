@@ -331,23 +331,6 @@ body.light-mode .iss-hologram-status {
         transform-origin: 50% 35%;
     }
 
-    .home-hero .row {
-        margin-inline: 0;
-        row-gap: 0.5rem;
-    }
-
-    .home-hero .col-auto {
-        flex: 0 0 100%;
-        width: 100%;
-        padding-inline: 0;
-    }
-
-    .home-hero .btn-home {
-        width: min(100%, 18rem);
-        min-width: 0;
-        max-width: none;
-    }
-
     body:has(.iss-hologram.is-tracking) .site-footer {
         margin-top: 38vh;
     }
