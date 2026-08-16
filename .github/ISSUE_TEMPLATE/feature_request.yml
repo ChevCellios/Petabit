@@ -1,0 +1,34 @@
+name: Prijedlog funkcionalnosti
+description: Predloži korisno i obrazloženo poboljšanje projekta.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem ili potreba
+      description: Koji problem prijedlog rješava i komu bi koristio?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Predloženo rješenje
+      description: Opiši željeno ponašanje bez nepotrebnih implementacijskih detalja.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Razmotrene alternative
+      description: Postoji li jednostavniji način rješavanja iste potrebe?
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Završna provjera
+      options:
+        - label: Provjerio/la sam da sličan prijedlog već ne postoji.
+          required: true
+        - label: Prijedlog ne sadrži osobne ni osjetljive podatke.
+          required: true

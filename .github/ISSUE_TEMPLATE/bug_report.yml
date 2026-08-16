@@ -1,0 +1,54 @@
+name: Prijava greške
+description: Prijavi problem koji se može ponoviti u Petabit aplikaciji.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Hvala na prijavi. Nemoj uključivati lozinke, ključeve ni osobne podatke.
+  - type: textarea
+    id: description
+    attributes:
+      label: Opis problema
+      description: Ukratko objasni što ne radi kako očekuješ.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Koraci za reprodukciju
+      description: Navedi precizne korake kojima se problem može ponoviti.
+      placeholder: |
+        1. Otvori...
+        2. Klikni...
+        3. Primijeti...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Očekivano ponašanje
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Stvarno ponašanje
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Okruženje
+      description: Preglednik, operacijski sustav i uređaj, ako su relevantni.
+      placeholder: Firefox 128, Windows 11, desktop
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Završna provjera
+      options:
+        - label: Provjerio/la sam da slična prijava već ne postoji.
+          required: true
+        - label: U prijavi nema lozinki, ključeva ni osobnih podataka.
+          required: true
