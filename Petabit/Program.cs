@@ -104,17 +104,23 @@ namespace Petabit
                 options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
                 options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(30);
             });
-            builder.Services.AddHealthChecks();
+            builder.Services.AddHttpClient("iss-health", client =>
+            {
+                client.BaseAddress = new Uri("https://api.wheretheiss.at/v1/");
+                client.Timeout = TimeSpan.FromSeconds(3);
+            });
+            builder.Services.AddHealthChecks()
+                .AddCheck<IssApiHealthCheck>("iss-api", tags: ["ready"]);
             builder.Services.AddOutputCache();
             builder.Services.AddRateLimiter(options =>
             {
                 options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                options.AddPolicy("iss", _ =>
+                options.AddPolicy("iss", context =>
                     RateLimitPartition.GetFixedWindowLimiter(
-                        "iss-endpoint",
+                        context.Connection.RemoteIpAddress?.MapToIPv6().ToString() ?? "unknown-client",
                         _ => new FixedWindowRateLimiterOptions
                         {
-                            PermitLimit = 60,
+                            PermitLimit = 10,
                             Window = TimeSpan.FromMinutes(1),
                             QueueLimit = 0,
                             AutoReplenishment = true
