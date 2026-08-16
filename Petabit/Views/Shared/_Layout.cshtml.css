@@ -75,10 +75,23 @@ button.accept-policy {
   font-size: 0.66rem;
 }
 
+#toggle-dark-mode {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+body.dark-mode .table {
+  --bs-table-bg: transparent;
+  --bs-table-color: #e7f8ea;
+  --bs-table-border-color: rgba(133, 255, 154, 0.28);
+  color: #e7f8ea;
+}
+
 @media (max-width: 420px) {
   .analytics-consent-compact {
-    right: 0.4rem;
-    bottom: 0.4rem;
-    width: min(280px, calc(100vw - 0.8rem));
+    right: 0.75rem;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    width: auto;
   }
 }
