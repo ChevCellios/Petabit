@@ -104,7 +104,13 @@ namespace Petabit
                 options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
                 options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(30);
             });
-            builder.Services.AddHealthChecks();
+            builder.Services.AddHttpClient("iss-health", client =>
+            {
+                client.BaseAddress = new Uri("https://api.wheretheiss.at/v1/");
+                client.Timeout = TimeSpan.FromSeconds(3);
+            });
+            builder.Services.AddHealthChecks()
+                .AddCheck<IssApiHealthCheck>("iss-api", tags: ["ready"]);
             builder.Services.AddOutputCache();
             builder.Services.AddRateLimiter(options =>
             {

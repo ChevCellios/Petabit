@@ -62,7 +62,7 @@ Izvori podataka:
 ## 🧯 Pouzdanost i nadzor
 
 - timeout, retry i circuit breaker za vanjski ISS servis
-- `/health/live` i `/health/ready` health endpointi
+- `/health/live` provjera procesa i `/health/ready` provjera dostupnosti ISS servisa
 - post-deployment smoke test nakon svakog pusha u `master`
 - uptime provjera produkcije svakih 15 minuta
 - smoke test početne stranice, readiness endpointa i ISS trackera

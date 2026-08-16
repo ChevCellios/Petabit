@@ -22,7 +22,14 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
             {
                 builder.ConfigureLogging(logging => logging.ClearProviders());
                 builder.ConfigureServices(services =>
-                    services.AddDataProtection().UseEphemeralDataProtectionProvider());
+                {
+                    services.AddDataProtection().UseEphemeralDataProtectionProvider();
+                    services.RemoveAll<IHttpClientFactory>();
+                    services.AddSingleton<IHttpClientFactory>(
+                        new StubHttpClientFactory(new StubHttpMessageHandler(
+                            HttpStatusCode.OK,
+                            """{"latitude":45.81,"longitude":15.98,"velocity":27600}""")));
+                });
             })
             .CreateClient(new WebApplicationFactoryClientOptions
             {
@@ -37,6 +44,28 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
     public async Task HealthEndpointsReturnSuccess(string endpoint)
     {
         var response = await _client.GetAsync(endpoint);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("Healthy", await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
+    public async Task ReadinessReturnsServiceUnavailableWhenIssApiFails()
+    {
+        using var client = CreateClientWithIssResponse(HttpStatusCode.ServiceUnavailable, "Unavailable");
+
+        var response = await client.GetAsync("/health/ready");
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Equal("Unhealthy", await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
+    public async Task LivenessStaysHealthyWhenIssApiFails()
+    {
+        using var client = CreateClientWithIssResponse(HttpStatusCode.ServiceUnavailable, "Unavailable");
+
+        var response = await client.GetAsync("/health/live");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal("Healthy", await response.Content.ReadAsStringAsync());
