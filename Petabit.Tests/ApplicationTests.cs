@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Polly.CircuitBreaker;
 using Xunit;
 
 namespace Petabit.Tests;
@@ -80,6 +82,70 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
         Assert.Equal("text/html", response.Content.Headers.ContentType?.MediaType);
         Assert.True(response.Headers.Contains("Content-Security-Policy"));
         Assert.True(response.Headers.Contains("X-Content-Type-Options"));
+    }
+
+    [Fact]
+    public async Task ContentSecurityPolicyMatchesEveryInlineScriptNonce()
+    {
+        var response = await _client.GetAsync("/");
+        var body = await response.Content.ReadAsStringAsync();
+        var policy = Assert.Single(response.Headers.GetValues("Content-Security-Policy"));
+        var nonce = Regex.Match(policy, "script-src[^;]*'nonce-([^']+)'", RegexOptions.CultureInvariant)
+            .Groups[1].Value;
+
+        Assert.NotEmpty(nonce);
+        Assert.Contains("default-src 'self'", policy);
+        Assert.Contains("frame-ancestors 'none'", policy);
+        Assert.Contains("object-src 'none'", policy);
+
+        var inlineScripts = Regex.Matches(
+            body,
+            "<script(?![^>]*\\bsrc=)[^>]*>",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        Assert.NotEmpty(inlineScripts);
+        Assert.All(inlineScripts.Cast<Match>(), script =>
+            Assert.Contains($"nonce=\"{nonce}\"", WebUtility.HtmlDecode(script.Value)));
+    }
+
+    [Fact]
+    public async Task LanguageChangeRejectsMissingAntiforgeryToken()
+    {
+        using var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["culture"] = "hr",
+            ["returnUrl"] = "/"
+        });
+
+        var response = await _client.PostAsync("/Home/SetLanguage", content);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task LanguageChangeSetsCultureAndReturnsToLocalUrl()
+    {
+        var token = await GetAntiforgeryTokenAsync(_client);
+        using var content = CreateLanguageForm("hr", "/Home/Privacy", token);
+
+        var response = await _client.PostAsync("/Home/SetLanguage", content);
+
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Equal("/Home/Privacy", response.Headers.Location?.OriginalString);
+
+        var localizedPage = await _client.GetStringAsync("/");
+        Assert.Contains("<html lang=\"hr\">", localizedPage);
+    }
+
+    [Fact]
+    public async Task LanguageChangeDoesNotRedirectToExternalUrl()
+    {
+        var token = await GetAntiforgeryTokenAsync(_client);
+        using var content = CreateLanguageForm("de", "https://attacker.example/", token);
+
+        var response = await _client.PostAsync("/Home/SetLanguage", content);
+
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Equal("/", response.Headers.Location?.OriginalString);
     }
 
     [Fact]
@@ -181,6 +247,44 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
+    public async Task IssDataReturnsGatewayTimeoutWhenUpstreamTimesOut()
+    {
+        using var client = CreateClientWithHandler(
+            new ExceptionHttpMessageHandler(new TaskCanceledException("Timed out.")));
+
+        var response = await client.GetAsync("/Home/Data?test=timeout");
+
+        Assert.Equal(HttpStatusCode.GatewayTimeout, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task IssDataReturnsServiceUnavailableWhenCircuitIsOpen()
+    {
+        using var client = CreateClientWithHandler(
+            new ExceptionHttpMessageHandler(new BrokenCircuitException("Circuit is open.")));
+
+        var response = await client.GetAsync("/Home/Data?test=open-circuit");
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task IssOutputCacheAvoidsDuplicateUpstreamRequests()
+    {
+        var handler = new CountingHttpMessageHandler(
+            HttpStatusCode.OK,
+            """{"latitude":45.81,"longitude":15.98,"velocity":27600}""");
+        using var client = CreateClientWithHandler(handler);
+
+        using var firstResponse = await client.GetAsync("/Home/Data?test=output-cache");
+        using var secondResponse = await client.GetAsync("/Home/Data?test=output-cache");
+
+        Assert.Equal(HttpStatusCode.OK, firstResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, secondResponse.StatusCode);
+        Assert.Equal(1, handler.RequestCount);
+    }
+
+    [Fact]
     public async Task IssRateLimitRejectsEleventhRequestFromSameClient()
     {
         using var client = CreateClientWithIssResponse(
@@ -198,6 +302,9 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     private HttpClient CreateClientWithIssResponse(HttpStatusCode statusCode, string content)
+        => CreateClientWithHandler(new StubHttpMessageHandler(statusCode, content));
+
+    private HttpClient CreateClientWithHandler(HttpMessageHandler handler)
     {
         return new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
@@ -208,7 +315,7 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
                     services.AddDataProtection().UseEphemeralDataProtectionProvider();
                     services.RemoveAll<IHttpClientFactory>();
                     services.AddSingleton<IHttpClientFactory>(
-                        new StubHttpClientFactory(new StubHttpMessageHandler(statusCode, content)));
+                        new StubHttpClientFactory(handler));
                 });
             })
             .CreateClient(new WebApplicationFactoryClientOptions
@@ -216,6 +323,28 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
                 BaseAddress = new Uri("https://localhost")
             });
     }
+
+    private static async Task<string> GetAntiforgeryTokenAsync(HttpClient client)
+    {
+        var body = await client.GetStringAsync("/");
+        var match = Regex.Match(
+            body,
+            "name=\"__RequestVerificationToken\"[^>]*value=\"([^\"]+)\"",
+            RegexOptions.CultureInvariant);
+
+        Assert.True(match.Success, "The antiforgery form token was not rendered.");
+        return WebUtility.HtmlDecode(match.Groups[1].Value);
+    }
+
+    private static FormUrlEncodedContent CreateLanguageForm(
+        string culture,
+        string returnUrl,
+        string token) => new(new Dictionary<string, string>
+        {
+            ["culture"] = culture,
+            ["returnUrl"] = returnUrl,
+            ["__RequestVerificationToken"] = token
+        });
 
     private sealed class StubHttpClientFactory(HttpMessageHandler handler) : IHttpClientFactory
     {
@@ -231,6 +360,30 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
+            return Task.FromResult(new HttpResponseMessage(statusCode)
+            {
+                Content = new StringContent(content)
+            });
+        }
+    }
+
+    private sealed class ExceptionHttpMessageHandler(Exception exception) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken) => Task.FromException<HttpResponseMessage>(exception);
+    }
+
+    private sealed class CountingHttpMessageHandler(HttpStatusCode statusCode, string content)
+        : HttpMessageHandler
+    {
+        public int RequestCount { get; private set; }
+
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken)
+        {
+            RequestCount++;
             return Task.FromResult(new HttpResponseMessage(statusCode)
             {
                 Content = new StringContent(content)
