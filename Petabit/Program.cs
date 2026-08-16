@@ -109,12 +109,12 @@ namespace Petabit
             builder.Services.AddRateLimiter(options =>
             {
                 options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                options.AddPolicy("iss", _ =>
+                options.AddPolicy("iss", context =>
                     RateLimitPartition.GetFixedWindowLimiter(
-                        "iss-endpoint",
+                        context.Connection.RemoteIpAddress?.MapToIPv6().ToString() ?? "unknown-client",
                         _ => new FixedWindowRateLimiterOptions
                         {
-                            PermitLimit = 60,
+                            PermitLimit = 10,
                             Window = TimeSpan.FromMinutes(1),
                             QueueLimit = 0,
                             AutoReplenishment = true

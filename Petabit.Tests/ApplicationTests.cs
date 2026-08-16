@@ -130,6 +130,23 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
     }
 
+    [Fact]
+    public async Task IssRateLimitRejectsEleventhRequestFromSameClient()
+    {
+        using var client = CreateClientWithIssResponse(
+            HttpStatusCode.OK,
+            """{"latitude":45.81,"longitude":15.98,"velocity":27600}""");
+
+        for (var requestNumber = 1; requestNumber <= 10; requestNumber++)
+        {
+            using var response = await client.GetAsync("/Home/Data?test=rate-limit");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        using var rejectedResponse = await client.GetAsync("/Home/Data?test=rate-limit");
+        Assert.Equal(HttpStatusCode.TooManyRequests, rejectedResponse.StatusCode);
+    }
+
     private HttpClient CreateClientWithIssResponse(HttpStatusCode statusCode, string content)
     {
         return new WebApplicationFactory<Program>()
