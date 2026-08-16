@@ -14,7 +14,8 @@
     var pageTitle = ViewData["Title"]?.ToString() ?? siteName;
     var description = ViewData["Description"]?.ToString() ?? "Petabit je višejezična tehnološka platforma za učenje, digitalne alate i praćenje ISS-a.";
     var canonicalUrl = $"{siteUrl}{Context.Request.PathBase}{Context.Request.Path}";
-    var image = $"{siteUrl}/img/petabit-app-preview.png";
+    var image = $"{siteUrl}/img/petabit-app-preview.png?v=2";
+    const string imageAlt = "Petabit aplikacija s prikazom ISS trackera";
     var ogLocale = culture switch { "hr" => "hr_HR", "de" => "de_DE", _ => "en_US" };
     var structuredData = JsonSerializer.Serialize(
         new Dictionary<string, string>
@@ -56,6 +57,11 @@
     <meta property="og:title" content="@pageTitle" />
     <meta property="og:description" content="@description" />
     <meta property="og:image" content="@image" />
+    <meta property="og:image:secure_url" content="@image" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1323" />
+    <meta property="og:image:height" content="660" />
+    <meta property="og:image:alt" content="@imageAlt" />
     <meta property="og:site_name" content="@siteName" />
     <meta property="og:locale" content="@ogLocale" />
 
@@ -65,6 +71,7 @@
     <meta name="twitter:title" content="@pageTitle" />
     <meta name="twitter:description" content="@description" />
     <meta name="twitter:image" content="@image" />
+    <meta name="twitter:image:alt" content="@imageAlt" />
 
     <script type="application/ld+json" nonce="@cspNonce">@Html.Raw(structuredData)</script>
 
