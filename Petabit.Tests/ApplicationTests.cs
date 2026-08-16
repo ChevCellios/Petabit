@@ -184,7 +184,7 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
         var options = factory.Services.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
 
         Assert.Equal(1, options.ForwardLimit);
-        Assert.True(options.RequireHeaderSymmetry);
+        Assert.False(options.RequireHeaderSymmetry);
         Assert.Empty(options.KnownProxies);
         Assert.Empty(options.KnownIPNetworks);
     }

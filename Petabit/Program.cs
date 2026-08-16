@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.RateLimiting;
@@ -17,6 +18,15 @@ namespace Petabit
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            if (!string.IsNullOrWhiteSpace(builder.Configuration["RAILWAY_ENVIRONMENT_ID"]))
+            {
+                var keyDirectory = new DirectoryInfo(
+                    Path.Combine(Path.GetTempPath(), "petabit-data-protection-keys"));
+                builder.Services.AddDataProtection()
+                    .SetApplicationName("Petabit")
+                    .PersistKeysToFileSystem(keyDirectory);
+            }
 
             if (!builder.Environment.IsDevelopment())
             {
@@ -46,6 +56,7 @@ namespace Petabit
                 // no stable CIDR is published, so trust exactly one ingress hop on Railway.
                 if (!string.IsNullOrWhiteSpace(builder.Configuration["RAILWAY_ENVIRONMENT_ID"]))
                 {
+                    options.RequireHeaderSymmetry = false;
                     options.KnownProxies.Clear();
                     options.KnownIPNetworks.Clear();
                     return;
