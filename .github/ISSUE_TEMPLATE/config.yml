@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Privatna prijava sigurnosne ranjivosti
+    url: https://github.com/ChevCellios/Petabit/security/advisories/new
+    about: Sigurnosne probleme prijavi privatno; nemoj ih objavljivati kao javni Issue.
   - name: Petabit produkcijska aplikacija
     url: https://petabit-production.up.railway.app/
     about: Otvori trenutačnu produkcijsku verziju aplikacije.

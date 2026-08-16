@@ -195,6 +195,10 @@ Trenutačna funkcionalnost smatra se stabilnom. Buduća poboljšanja mogu se raz
 
 Prijave grešaka i obrazloženi prijedlozi dobrodošli su kroz [GitHub Issues](https://github.com/ChevCellios/Petabit/issues). Prije prvog doprinosa pročitaj [vodič za doprinos projektu](CONTRIBUTING.md).
 
+## 🔐 Sigurnosne prijave
+
+Moguće ranjivosti nemoj objavljivati kroz javni Issue. Prijavi ih privatno prema [sigurnosnoj politici projekta](SECURITY.md).
+
 ## 📄 Licenca
 
 Projekt je objavljen pod [MIT licencom](LICENSE). Dopušteni su korištenje, izmjene i distribucija uz zadržavanje obavijesti o autorskim pravima i tekstu licence.
