@@ -5,6 +5,7 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
   <data name="LanguageSelector" xml:space="preserve"><value>Sprache auswählen</value></data>
+  <data name="ChangeTheme" xml:space="preserve"><value>Darstellung ändern</value></data>
   <data name="Home" xml:space="preserve"><value>Startseite</value></data>
   <data name="Privacy" xml:space="preserve"><value>Datenschutz</value></data>
   <data name="ExternalSources" xml:space="preserve"><value>Externe Quellen</value></data>
