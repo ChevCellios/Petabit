@@ -5,6 +5,7 @@ body {
 .home-hero {
     position: relative;
     isolation: isolate;
+    overflow-x: clip;
     min-height: calc(75vh - 1rem);
     margin-top: 0 !important;
     padding-block: 0.65rem;

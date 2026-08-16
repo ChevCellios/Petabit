@@ -75,22 +75,9 @@ button.accept-policy {
   font-size: 0.66rem;
 }
 
-.content-page {
-  width: 100%;
-  max-width: 880px;
-  margin-inline: auto;
-}
-
 #toggle-dark-mode {
   min-width: 44px;
   min-height: 44px;
-}
-
-body.dark-mode .table {
-  --bs-table-bg: transparent;
-  --bs-table-color: #e7f8ea;
-  --bs-table-border-color: rgba(133, 255, 154, 0.28);
-  color: #e7f8ea;
 }
 
 @media (max-width: 520px) {
