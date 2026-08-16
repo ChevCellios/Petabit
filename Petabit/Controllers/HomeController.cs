@@ -92,7 +92,8 @@ public class HomeController : Controller
                 astronauts = StationStatus.Crew,
                 dockedVehicles = StationStatus.DockedVehicles,
                 stationStatusUpdatedAt = StationStatus.LastVerified,
-                stationStatusSource = StationStatus.SourceUrl
+                stationStatusSource = StationStatus.SourceUrl,
+                stationStatusIsStale = StationStatus.IsStale(DateTimeOffset.UtcNow)
             });
         }
         catch (HttpRequestException exception)

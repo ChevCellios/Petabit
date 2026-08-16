@@ -58,7 +58,12 @@
             sourceLink.target = "_blank";
             sourceLink.rel = "noopener noreferrer";
             sourceLink.textContent = "NASA";
-            sourceDiv.replaceChildren(sourceText, sourceLink, document.createTextNode("."));
+            const sourceNodes = [sourceText, sourceLink, document.createTextNode(".")];
+            if (data.stationStatusIsStale) {
+                sourceNodes.push(document.createTextNode(` ⚠️ ${strings.staleWarning}`));
+            }
+            sourceDiv.classList.toggle("text-warning", data.stationStatusIsStale);
+            sourceDiv.replaceChildren(...sourceNodes);
 
             pingSound.play();
         } catch (error) {
