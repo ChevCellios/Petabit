@@ -75,6 +75,12 @@ button.accept-policy {
   font-size: 0.66rem;
 }
 
+.content-page {
+  width: 100%;
+  max-width: 880px;
+  margin-inline: auto;
+}
+
 #toggle-dark-mode {
   min-width: 44px;
   min-height: 44px;
@@ -87,11 +93,26 @@ body.dark-mode .table {
   color: #e7f8ea;
 }
 
-@media (max-width: 420px) {
+@media (max-width: 520px) {
   .analytics-consent-compact {
-    right: 0.75rem;
-    bottom: 0.75rem;
-    left: 0.75rem;
-    width: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: min(45vh, 18rem);
+    padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+    border-radius: 0.85rem 0.85rem 0 0 !important;
+    overflow-y: auto;
+    font-size: 0.78rem;
+  }
+
+  .analytics-consent-compact .btn {
+    min-height: 36px;
+    padding: 0.3rem 0.65rem;
+    font-size: 0.75rem;
+  }
+
+  body:has(#analytics-consent:not([hidden])) .site-main-shell {
+    padding-bottom: min(45vh, 18rem);
   }
 }
