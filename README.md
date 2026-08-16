@@ -65,6 +65,7 @@ Izvori podataka:
 - `/health/live` provjera procesa i `/health/ready` provjera dostupnosti ISS servisa
 - post-deployment smoke test nakon svakog pusha u `master`
 - uptime provjera produkcije svakih 15 minuta
+- tjedna provjera starosti kuriranih podataka o ISS posadi i letjelicama
 - smoke test početne stranice, readiness endpointa i ISS trackera
 - strukturirani JSON logovi u produkciji
 - validirani `X-Correlation-ID` za povezivanje korisničkog zahtjeva s Railway logovima

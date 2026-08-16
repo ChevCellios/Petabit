@@ -1,0 +1,30 @@
+name: Station Status Freshness
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-station-status:
+    name: Verify curated ISS data age
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore Petabit.sln --configfile NuGet.Config
+
+      - name: Check station-status freshness
+        run: dotnet test Petabit.Tests/Petabit.Tests.csproj --configuration Release --no-restore --filter "Category=StationStatusFreshness"
