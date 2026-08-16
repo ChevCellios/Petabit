@@ -221,6 +221,26 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
         Assert.Contains(analyticsText, body);
     }
 
+    [Theory]
+    [InlineData("en", "ISS location", "ISS SIGNAL UNAVAILABLE")]
+    [InlineData("hr", "Lokacija ISS-a", "ISS SIGNAL NIJE DOSTUPAN")]
+    [InlineData("de", "ISS-Position", "ISS-SIGNAL NICHT VERFÜGBAR")]
+    public async Task HomePageLocalizesLedDisplay(
+        string culture,
+        string locationText,
+        string unavailableText)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/");
+        request.Headers.AcceptLanguage.ParseAdd(culture);
+
+        var response = await _client.SendAsync(request);
+        var body = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains($"data-location=\"{locationText}\"", body);
+        Assert.Contains($"data-unavailable=\"{unavailableText}\"", body);
+    }
+
     [Fact]
     public async Task IssDataReturnsJsonWhenUpstreamSucceeds()
     {
