@@ -121,7 +121,7 @@
     <value>Contact Us</value>
   </data>
   <data name="ContactText" xml:space="preserve">
-    <value>If you have any questions or concerns about privacy, feel free to contact us at: midom.croatia@yahoo.com</value>
+    <value>If you have any questions or concerns about privacy, open an issue through</value>
   </data>
   <data name="Cookies" xml:space="preserve">
     <value>Cookies</value>
