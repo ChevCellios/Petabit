@@ -300,7 +300,7 @@ body.light-mode .iss-hologram-status {
     }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 520px) {
     html,
     body {
         max-width: 100%;
