@@ -85,6 +85,18 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
+    public async Task PrivacyPageLoadsGlobalReadableContentStyles()
+    {
+        var page = await _client.GetStringAsync("/Home/Privacy");
+        var styles = await _client.GetStringAsync("/css/content-pages.css");
+
+        Assert.Contains("class=\"content-page privacy-page\"", page);
+        Assert.Contains("/css/content-pages.css", page);
+        Assert.Contains("max-width: 880px", styles);
+        Assert.Contains("body.dark-mode .table", styles);
+    }
+
+    [Fact]
     public async Task ContentSecurityPolicyMatchesEveryInlineScriptNonce()
     {
         var response = await _client.GetAsync("/");
