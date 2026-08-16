@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="LanguageSelector" xml:space="preserve"><value>Sprache auswählen</value></data>
+  <data name="Home" xml:space="preserve"><value>Startseite</value></data>
+  <data name="Privacy" xml:space="preserve"><value>Datenschutz</value></data>
+  <data name="ExternalSources" xml:space="preserve"><value>Externe Quellen</value></data>
+  <data name="AnalyticsSettings" xml:space="preserve"><value>Analytics-Einstellungen</value></data>
+  <data name="AnalyticsDescription" xml:space="preserve"><value>Petabit verwendet Analytics-Cookies zur anonymen Reichweitenmessung und Verbesserung der Inhalte.</value></data>
+  <data name="Accept" xml:space="preserve"><value>Akzeptieren</value></data>
+  <data name="Reject" xml:space="preserve"><value>Ablehnen</value></data>
+  <data name="LearnMore" xml:space="preserve"><value>Mehr erfahren</value></data>
+</root>
