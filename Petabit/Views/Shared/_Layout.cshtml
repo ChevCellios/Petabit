@@ -161,7 +161,7 @@
                     <ul class="navbar-nav flex-row align-items-center gap-2">
                         <li class="nav-item">
                             <form asp-controller="Home" asp-action="SetLanguage" method="post" class="d-inline">
-                                <select id="culture-selector" name="culture" class="form-select form-select-sm w-auto d-inline" aria-label="Odabir jezika">
+                                <select id="culture-selector" name="culture" class="form-select form-select-sm w-auto d-inline" aria-label="@Localizer["LanguageSelector"]">
                                     <option value="en" selected="@(culture == "en" ? "selected" : null)">EN</option>
                                     <option value="hr" selected="@(culture == "hr" ? "selected" : null)">HR</option>
                                     <option value="de" selected="@(culture == "de" ? "selected" : null)">DE</option>
@@ -171,10 +171,10 @@
                             
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">@Localizer["Home"]</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">@Localizer["Privacy"]</a>
                         </li>
                     </ul>
                 </div>
@@ -194,20 +194,20 @@
     <!-- Footer -->
     <footer class="site-footer border-top">
         <div class="container">
-            &copy; @DateTime.UtcNow.Year - Petabit - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-            <span class="footer-source-links" aria-label="Vanjski izvori">
+            &copy; @DateTime.UtcNow.Year - Petabit - <a asp-area="" asp-controller="Home" asp-action="Privacy">@Localizer["Privacy"]</a>
+            <span class="footer-source-links" aria-label="@Localizer["ExternalSources"]">
                 · <a href="https://www.nasa.gov/" target="_blank" rel="noopener noreferrer">NASA</a>
                 · <a href="https://wheretheiss.at/" target="_blank" rel="noopener noreferrer">Open API</a>
             </span>
         </div>
     </footer>
 
-    <section id="analytics-consent" class="analytics-consent-compact border rounded bg-dark text-light" role="dialog" aria-label="Postavke analitičkih kolačića" aria-live="polite" hidden>
-        <p class="mb-1">Petabit koristi analitičke kolačiće za anonimizirano praćenje posjećenosti i poboljšanje sadržaja.</p>
+    <section id="analytics-consent" class="analytics-consent-compact border rounded bg-dark text-light" role="dialog" aria-label="@Localizer["AnalyticsSettings"]" aria-live="polite" hidden>
+        <p class="mb-1">@Localizer["AnalyticsDescription"]</p>
         <div class="d-flex gap-1 align-items-center flex-wrap">
-            <button id="analytics-accept" type="button" class="btn btn-success btn-sm">Prihvaćam</button>
-            <button id="analytics-reject" type="button" class="btn btn-outline-light btn-sm">Odbijam</button>
-            <a asp-controller="Home" asp-action="Privacy">Saznaj više</a>
+            <button id="analytics-accept" type="button" class="btn btn-success btn-sm">@Localizer["Accept"]</button>
+            <button id="analytics-reject" type="button" class="btn btn-outline-light btn-sm">@Localizer["Reject"]</button>
+            <a asp-controller="Home" asp-action="Privacy">@Localizer["LearnMore"]</a>
         </div>
     </section>
 

@@ -7,6 +7,12 @@
     const dockedVehiclesDiv = document.getElementById("docked-vehicles");
     const sourceDiv = document.getElementById("iss-source");
     const pingSound = document.getElementById("ping-sound");
+    const strings = document.getElementById("iss-localization").dataset;
+
+    const format = (template, ...values) => values.reduce(
+        (result, value, index) => result.replaceAll(`{${index}}`, value), template);
+    const countries = { SAD: strings.usa, Francuska: strings.france, Rusija: strings.russia };
+    const purposes = { "Posadna letjelica": strings.crewed, "Teretna letjelica": strings.cargo };
 
     function renderList(container, title, items, formatItem) {
         const heading = document.createElement("h2");
@@ -24,7 +30,7 @@
 
     async function pingISS() {
         pingButton.disabled = true;
-        resultDiv.textContent = "⏳ Dohvaćam podatke...";
+        resultDiv.textContent = `⏳ ${strings.loading}`;
 
         try {
             const response = await fetch("/Home/Data");
@@ -36,17 +42,17 @@
             const lon = data.longitude.toFixed(2);
             const velocity = data.speed.toFixed(2);
 
-            resultDiv.textContent = `🌍 Lokacija: ${lat}, ${lon}`;
-            speedDiv.textContent = `🚀 Brzina: ${velocity} km/h`;
+            resultDiv.textContent = `🌍 ${format(strings.location, lat, lon)}`;
+            speedDiv.textContent = `🚀 ${format(strings.speed, velocity)}`;
 
-            astronautCountDiv.textContent = `👨‍🚀 Ukupno na ISS-u: ${data.astronautCount}`;
-            renderList(astronautsDiv, "Posada", data.astronauts,
-                person => `${person.name} — ${person.country} (${person.agency})`);
-            renderList(dockedVehiclesDiv, "Spojeno na ISS", data.dockedVehicles,
-                vehicle => `${vehicle.name} — ${vehicle.purpose} (${vehicle.operator})`);
+            astronautCountDiv.textContent = `👨‍🚀 ${format(strings.count, data.astronautCount)}`;
+            renderList(astronautsDiv, strings.crew, data.astronauts,
+                person => `${person.name} — ${countries[person.country] ?? person.country} (${person.agency})`);
+            renderList(dockedVehiclesDiv, strings.docked, data.dockedVehicles,
+                vehicle => `${vehicle.name} — ${purposes[vehicle.purpose] ?? vehicle.purpose} (${vehicle.operator})`);
 
             const sourceText = document.createTextNode(
-                `Referentno stanje: ${new Date(data.stationStatusUpdatedAt).toLocaleDateString("hr-HR")}, `);
+                `${format(strings.reference, new Date(data.stationStatusUpdatedAt).toLocaleDateString(document.documentElement.lang))}, `);
             const sourceLink = document.createElement("a");
             sourceLink.href = "https://www.nasa.gov/international-space-station/space-station-visiting-vehicles/";
             sourceLink.target = "_blank";
@@ -56,7 +62,7 @@
 
             pingSound.play();
         } catch (error) {
-            resultDiv.textContent = "❌ Greška prilikom dohvaćanja podataka.";
+            resultDiv.textContent = `❌ ${strings.error}`;
             console.error("Greška:", error);
         }
 

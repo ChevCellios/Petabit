@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="LanguageSelector" xml:space="preserve"><value>Odabir jezika</value></data>
+  <data name="Home" xml:space="preserve"><value>Početna</value></data>
+  <data name="Privacy" xml:space="preserve"><value>Privatnost</value></data>
+  <data name="ExternalSources" xml:space="preserve"><value>Vanjski izvori</value></data>
+  <data name="AnalyticsSettings" xml:space="preserve"><value>Postavke analitičkih kolačića</value></data>
+  <data name="AnalyticsDescription" xml:space="preserve"><value>Petabit koristi analitičke kolačiće za anonimno praćenje posjećenosti i poboljšanje sadržaja.</value></data>
+  <data name="Accept" xml:space="preserve"><value>Prihvaćam</value></data>
+  <data name="Reject" xml:space="preserve"><value>Odbijam</value></data>
+  <data name="LearnMore" xml:space="preserve"><value>Saznaj više</value></data>
+</root>

@@ -130,8 +130,29 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
         var body = await response.Content.ReadAsStringAsync();
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("ISS Tracker – Minimalni prikaz", body);
+        Assert.Contains("ISS Tracker – Minimal view", body);
         Assert.Contains("/Home/Data", body);
+    }
+
+    [Theory]
+    [InlineData("en", "Minimal view", "Analytics settings")]
+    [InlineData("hr", "Minimalni prikaz", "Postavke analitičkih kolačića")]
+    [InlineData("de", "Minimalansicht", "Analytics-Einstellungen")]
+    public async Task LayoutAndMinimalIssTrackerUseRequestedLanguage(
+        string culture,
+        string trackerText,
+        string analyticsText)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/Home/ISSTracker");
+        request.Headers.AcceptLanguage.ParseAdd(culture);
+
+        var response = await _client.SendAsync(request);
+        var body = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains($"<html lang=\"{culture}\">", body);
+        Assert.Contains(trackerText, body);
+        Assert.Contains(analyticsText, body);
     }
 
     [Fact]
