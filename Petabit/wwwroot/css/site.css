@@ -1,4 +1,4 @@
-/* ========== Globalna podeöavanja ========== */
+/* ========== Globalna pode≈°avanja ========== */
 html {
     font-size: 14px;
     position: relative;
@@ -86,7 +86,7 @@ body.dark-mode :is(h1, h2, h3, h4, h5, h6, .btn, .nav-link) {
     margin-right: auto;
     display: block;
 }
-/* Ali na veÊim ekranima neka bude normalno poravnat */
+/* Ali na ve√¶im ekranima neka bude normalno poravnat */
 @media (min-width: 992px) {
     .navbar-toggler {
         margin: 0;
@@ -95,8 +95,7 @@ body.dark-mode :is(h1, h2, h3, h4, h5, h6, .btn, .nav-link) {
 
 /* ========== Dark/Light Mode gumb ========== */
 
-.mode-toggle 
-{20000000000
+.mode-toggle {
     background: none;
     border: none;
     color: inherit;
@@ -104,14 +103,16 @@ body.dark-mode :is(h1, h2, h3, h4, h5, h6, .btn, .nav-link) {
     cursor: pointer;
     padding: 0.25rem 0.5rem;
 }
-    .mode-toggle:focus {
-        outline: none;
-        box-shadow: none !important;
-    }
-    .mode-toggle:focus-visible {
-        outline: 2px solid currentColor;
-        outline-offset: 3px;
-    }
+
+.mode-toggle:focus {
+    outline: none;
+    box-shadow: none !important;
+}
+
+.mode-toggle:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+}
 
 .icon-button:hover {
     opacity: 0.75;
