@@ -8,11 +8,13 @@ html {
 .btn {
     font-weight: 700 !important;
 }
+
 /* ========== Neon glow za sve gumbe ========== */
 .btn {
     font-weight: 700 !important;
     box-shadow: 0 0 5px rgba(0, 255, 0, 0.55), 0 0 10px rgba(0, 255, 0, 0.25);
 }
+
 
 @media (min-width: 768px) {
     html {
@@ -172,7 +174,8 @@ select.form-select {
 
 /* Blockchain - bolji kontrast u dark modu */
 /* Blockchain - Bitcoin orange, dark mode */
-/* Blockchain - zajednièki izgled */
+
+/* Blockchain - zajedniï¿½ki izgled */
 a.btn.btn-warning.btn-home {
     background-color: #d97706 !important;
     border-color: #f7931a !important;
@@ -197,6 +200,27 @@ a.btn.btn-warning.btn-home:hover {
     border-color: #ffad33 !important;
     box-shadow: 0 0 8px rgba(247, 147, 26, 1), 0 0 20px rgba(247, 147, 26, 0.7) !important;
 }
+
+body.dark-mode a.btn.btn-warning.btn-home {
+    background-color: #d97706 !important;
+    border-color: #f7931a !important;
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9) !important;
+    box-shadow: 0 0 6px rgba(247, 147, 26, 0.8), 0 0 14px rgba(247, 147, 26, 0.45) !important;
+}
+
+    body.dark-mode a.btn.btn-warning.btn-home:hover {
+        background-color: #f7931a !important;
+        border-color: #ffad33 !important;
+        box-shadow: 0 0 8px rgba(247, 147, 26, 1), 0 0 20px rgba(247, 147, 26, 0.7) !important;
+    }
+    body.dark-mode a.btn.btn-warning.btn-home:hover {
+        background-color: #b67d00 !important;
+        border-color: #e0a000 !important;
+        color: #ffffff !important;
+    }
+
+
 #iss-result, #iss-speed, #iss-astronauts, #astronaut-count {
     font-size: 1.2rem;
     margin-top: 10px;
