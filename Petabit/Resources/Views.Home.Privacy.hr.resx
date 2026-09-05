@@ -173,4 +173,24 @@
   <data name="YourRightsText" xml:space="preserve">
     <value>Budući da ne prikupljamo osobne podatke, nemate zahtjeve za pristup, ispravak ili brisanje osobnih podataka.</value>
   </data>
+  <data name="CookiePolicy" xml:space="preserve"><value>Politika kolačića</value></data>
+  <data name="CookiePolicyIntro" xml:space="preserve"><value>Petabit koristi samo nužne funkcionalne tehnologije i, uz vašu privolu, analitičke kolačiće. Analitika nije potrebna za korištenje stranice.</value></data>
+  <data name="NecessaryTechnologies" xml:space="preserve"><value>Nužne funkcionalne tehnologije</value></data>
+  <data name="Name" xml:space="preserve"><value>Naziv</value></data>
+  <data name="Purpose" xml:space="preserve"><value>Svrha</value></data>
+  <data name="Duration" xml:space="preserve"><value>Trajanje</value></data>
+  <data name="CulturePurpose" xml:space="preserve"><value>Pamti odabrani jezik stranice.</value></data>
+  <data name="OneYear" xml:space="preserve"><value>1 godina</value></data>
+  <data name="ConsentPurpose" xml:space="preserve"><value>Lokalna pohrana odluke o analitičkim kolačićima u pregledniku.</value></data>
+  <data name="ConsentDuration" xml:space="preserve"><value>Dok ne promijenite odluku ili ne obrišete podatke preglednika</value></data>
+  <data name="AnalyticsCookies" xml:space="preserve"><value>Analitički kolačići – Google Analytics 4</value></data>
+  <data name="AnalyticsDescription" xml:space="preserve"><value>Google Analytics učitava se samo nakon odabira Prihvaćam. Prikuplja zbirne podatke kao što su broj korisnika i sesija, približna lokacija, preglednik, uređaj i izvor dolaska. Ne koristimo ga za izravno utvrđivanje identiteta posjetitelja.</value></data>
+  <data name="GaPurpose" xml:space="preserve"><value>Razlikuje jedinstvene korisnike.</value></data>
+  <data name="GaSessionPurpose" xml:space="preserve"><value>Čuva stanje sesije za Google Analytics 4.</value></data>
+  <data name="UpToTwoYears" xml:space="preserve"><value>Do 2 godine</value></data>
+  <data name="GaMoreInfo" xml:space="preserve"><value>Više o GA4 kolačićima:</value></data>
+  <data name="GaDocumentation" xml:space="preserve"><value>Google Analytics dokumentacija</value></data>
+  <data name="ConsentManagement" xml:space="preserve"><value>Upravljanje privolom</value></data>
+  <data name="ConsentManagementText" xml:space="preserve"><value>Analitičke kolačiće možete prihvatiti ili odbiti pri prvom posjetu. Svoju odluku možete promijeniti u bilo kojem trenutku.</value></data>
+  <data name="ManageConsent" xml:space="preserve"><value>Upravljaj analitičkim kolačićima</value></data>
 </root>

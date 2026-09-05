@@ -4,7 +4,9 @@
 
 [![CI](https://github.com/ChevCellios/Petabit/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/ChevCellios/Petabit/actions/workflows/ci.yml)
 [![Security](https://github.com/ChevCellios/Petabit/actions/workflows/security.yml/badge.svg?branch=master)](https://github.com/ChevCellios/Petabit/actions/workflows/security.yml)
-[![Production](https://github.com/ChevCellios/Petabit/actions/workflows/uptime.yml/badge.svg?branch=master)](https://github.com/ChevCellios/Petabit/actions/workflows/uptime.yml)
+[![Production smoke test](https://github.com/ChevCellios/Petabit/actions/workflows/uptime.yml/badge.svg?branch=master)](https://github.com/ChevCellios/Petabit/actions/workflows/uptime.yml)
+[![Station status freshness](https://github.com/ChevCellios/Petabit/actions/workflows/station-status-freshness.yml/badge.svg?branch=master)](https://github.com/ChevCellios/Petabit/actions/workflows/station-status-freshness.yml)
+[![Monitored by Better Stack](https://img.shields.io/badge/uptime-Better%20Stack-5B45FF)](https://betterstack.com/uptime)
 ![.NET](https://img.shields.io/badge/.NET-10.0-blueviolet)
 ![Language](https://img.shields.io/badge/language-C%23-orange)
 ![Localization](https://img.shields.io/badge/i18n-HR%20%7C%20EN%20%7C%20DE-green)
@@ -64,7 +66,7 @@ Izvori podataka:
 - timeout, retry i circuit breaker za vanjski ISS servis
 - `/health/live` provjera procesa i `/health/ready` provjera dostupnosti ISS servisa
 - post-deployment smoke test nakon svakog pusha u `master`
-- uptime provjera produkcije svakih 15 minuta
+- Better Stack provjera produkcijskih liveness, readiness i ISS API endpointova svake 3 minute
 - tjedna provjera starosti kuriranih podataka o ISS posadi i letjelicama
 - smoke test početne stranice, readiness endpointa i ISS trackera
 - strukturirani JSON logovi u produkciji
