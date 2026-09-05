@@ -96,6 +96,34 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
         Assert.Contains("body.dark-mode .table", styles);
     }
 
+    [Theory]
+    [InlineData("en", "Cookie policy", "Manage analytics cookies")]
+    [InlineData("hr", "Politika kolačića", "Upravljaj analitičkim kolačićima")]
+    [InlineData("de", "Cookie-Richtlinie", "Analyse-Cookies verwalten")]
+    public async Task PrivacyCookieDetailsUseRequestedLanguage(string culture, string heading, string manageText)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/Home/Privacy");
+        request.Headers.AcceptLanguage.ParseAdd(culture);
+
+        var response = await _client.SendAsync(request);
+        var body = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains($"<html lang=\"{culture}\">", body);
+        Assert.Contains(heading, body);
+        Assert.Contains(manageText, body);
+    }
+
+    [Fact]
+    public async Task BooksPageUsesRealPublisherLinks()
+    {
+        var body = await _client.GetStringAsync("/Home/Books");
+
+        Assert.DoesNotContain("example.com", body);
+        Assert.Contains("informit.com/store/clean-code", body);
+        Assert.Contains("store.pragprog.com/titles/tpp20", body);
+    }
+
     [Fact]
     public async Task ContentSecurityPolicyMatchesEveryInlineScriptNonce()
     {
