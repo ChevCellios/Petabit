@@ -1,6 +1,13 @@
 name: Station Status Freshness
 
 on:
+  push:
+    branches:
+      - master
+    paths:
+      - "Petabit/Models/StationStatus.cs"
+      - "Petabit.Tests/StationStatusTests.cs"
+      - ".github/workflows/station-status-freshness.yml"
   schedule:
     - cron: "0 7 * * 1"
   workflow_dispatch:
