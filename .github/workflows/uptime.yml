@@ -17,66 +17,58 @@ jobs:
   check-production:
     name: Check production availability
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
 
     env:
       SITE_URL: https://petabit-production.up.railway.app
-      MAX_ATTEMPTS: ${{ github.event_name == 'push' && '30' || '3' }}
+      MAX_ATTEMPTS: ${{ github.event_name == 'push' && '8' || '3' }}
 
     steps:
       - name: Allow Railway deployment to start
         if: github.event_name == 'push'
-        run: sleep 60
+        run: sleep 90
 
-      - name: Check production endpoints
+      - name: Wait for production liveness
+        run: |
+          for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
+            status_code="$(curl               --silent               --output /dev/null               --write-out "%{http_code}"               --connect-timeout 5               --max-time 15               "$SITE_URL/health/live" || true)"
+
+            if [ "$status_code" = "200" ]; then
+              echo "Production is live on attempt $attempt."
+              exit 0
+            fi
+
+            if [ "$status_code" = "429" ]; then
+              echo "Railway returned 429 on attempt $attempt/$MAX_ATTEMPTS; backing off for 60 seconds."
+              sleep 60
+            else
+              echo "Liveness returned HTTP ${status_code:-000} on attempt $attempt/$MAX_ATTEMPTS; retrying in 30 seconds."
+              sleep 30
+            fi
+          done
+
+          echo "Production did not become live within the retry window."
+          exit 1
+
+      - name: Run production smoke test
         run: |
           tracker_response="$(mktemp)"
           trap 'rm -f "$tracker_response"' EXIT
 
-          for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
-            home_ok=false
-            ready_response=""
-            tracker_ok=false
+          curl             --fail             --silent             --show-error             --connect-timeout 5             --max-time 15             "$SITE_URL/" > /dev/null
 
-            if curl \
-              --fail \
-              --silent \
-              --show-error \
-              --connect-timeout 5 \
-              --max-time 15 \
-              "$SITE_URL/" > /dev/null; then
-              home_ok=true
-            fi
+          ready_response="$(curl             --fail             --silent             --show-error             --connect-timeout 5             --max-time 15             "$SITE_URL/health/ready")"
 
-            ready_response="$(curl \
-              --fail \
-              --silent \
-              --show-error \
-              --connect-timeout 5 \
-              --max-time 15 \
-              "$SITE_URL/health/ready" || true)"
+          curl             --fail             --silent             --show-error             --connect-timeout 5             --max-time 15             "$SITE_URL/Home/ISSTracker" > "$tracker_response"
 
-            if curl \
-              --fail \
-              --silent \
-              --show-error \
-              --connect-timeout 5 \
-              --max-time 15 \
-              "$SITE_URL/Home/ISSTracker" > "$tracker_response" \
-              && grep --fixed-strings --quiet "ISS Tracker" "$tracker_response"; then
-              tracker_ok=true
-            fi
+          if [ "$ready_response" != "Healthy" ]; then
+            echo "Readiness endpoint returned an unexpected response: $ready_response"
+            exit 1
+          fi
 
-            if [ "$home_ok" = true ] \
-              && [ "$ready_response" = "Healthy" ] \
-              && [ "$tracker_ok" = true ]; then
-              echo "Production is healthy on attempt $attempt."
-              exit 0
-            fi
+          if ! grep --fixed-strings --quiet "ISS Tracker" "$tracker_response"; then
+            echo "ISS tracker response did not contain the expected marker."
+            exit 1
+          fi
 
-            echo "Attempt $attempt/$MAX_ATTEMPTS failed; retrying in 10 seconds."
-            sleep 10
-          done
-
-          echo "Production did not become healthy within the retry window."
-          exit 1
+          echo "Production smoke test passed."
