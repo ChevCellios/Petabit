@@ -52,7 +52,8 @@ Izvori podataka:
 - Content Security Policy s jednokratnim nonceom za inline skripte i stilove
 - sigurnosna zaglavlja `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` i `Permissions-Policy`
 - antiforgery validacija za POST zahtjeve
-- rate limiting ISS endpointa na 10 zahtjeva u minuti po IP adresi klijenta
+- globalni rate limiting dinamičkih ruta na 120 zahtjeva u minuti po IP adresi klijenta
+- stroži rate limiting ISS endpointa na 10 zahtjeva u minuti po IP adresi klijenta
 - sigurno DOM renderiranje API podataka bez umetanja preko `innerHTML`
 - culture cookie s atributima `HttpOnly`, `Secure` i `SameSite=Lax`
 - analitika tek nakon izričite korisničke privole
@@ -63,7 +64,7 @@ Izvori podataka:
 ## 🧯 Pouzdanost i nadzor
 
 - timeout, retry i circuit breaker za vanjski ISS servis
-- `/health/live` provjera procesa i `/health/ready` provjera dostupnosti ISS servisa
+- `/health/live` provjera procesa i `/health/ready` provjera dostupnosti ISS servisa, izuzete iz rate limitinga
 - ručno pokretljiv GitHub produkcijski smoke test za ciljanu dijagnostiku
 - Better Stack provjera produkcijskog liveness endpointa svakih 10 minuta
 - tjedna provjera starosti kuriranih podataka o ISS posadi i letjelicama
