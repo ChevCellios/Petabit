@@ -1,6 +1,9 @@
 name: Uptime Monitor
 
 on:
+  push:
+    branches:
+      - master
   workflow_dispatch:
 
 permissions:
@@ -18,9 +21,12 @@ jobs:
 
     env:
       SITE_URL: https://petabit-production.up.railway.app
-      MAX_ATTEMPTS: 3
+      MAX_ATTEMPTS: ${{ github.event_name == 'push' && '8' || '3' }}
 
     steps:
+      - name: Allow Railway deployment to start
+        if: github.event_name == 'push'
+        run: sleep 90
 
       - name: Wait for production liveness
         run: |

@@ -4,6 +4,7 @@
 
 [![CI](https://github.com/ChevCellios/Petabit/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/ChevCellios/Petabit/actions/workflows/ci.yml)
 [![Security](https://github.com/ChevCellios/Petabit/actions/workflows/security.yml/badge.svg?branch=master)](https://github.com/ChevCellios/Petabit/actions/workflows/security.yml)
+[![Production smoke test](https://github.com/ChevCellios/Petabit/actions/workflows/uptime.yml/badge.svg?branch=master)](https://github.com/ChevCellios/Petabit/actions/workflows/uptime.yml)
 [![Station status freshness](https://github.com/ChevCellios/Petabit/actions/workflows/station-status-freshness.yml/badge.svg?branch=master)](https://github.com/ChevCellios/Petabit/actions/workflows/station-status-freshness.yml)
 [![Monitored by Better Stack](https://img.shields.io/badge/uptime-Better%20Stack-5B45FF)](https://betterstack.com/uptime)
 ![.NET](https://img.shields.io/badge/.NET-10.0-blueviolet)
@@ -52,7 +53,8 @@ Izvori podataka:
 - Content Security Policy s jednokratnim nonceom za inline skripte i stilove
 - sigurnosna zaglavlja `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` i `Permissions-Policy`
 - antiforgery validacija za POST zahtjeve
-- rate limiting ISS endpointa na 10 zahtjeva u minuti po IP adresi klijenta
+- globalni rate limiting dinamičkih ruta na 120 zahtjeva u minuti po IP adresi klijenta
+- stroži rate limiting ISS endpointa na 10 zahtjeva u minuti po IP adresi klijenta
 - sigurno DOM renderiranje API podataka bez umetanja preko `innerHTML`
 - culture cookie s atributima `HttpOnly`, `Secure` i `SameSite=Lax`
 - analitika tek nakon izričite korisničke privole
@@ -63,11 +65,11 @@ Izvori podataka:
 ## 🧯 Pouzdanost i nadzor
 
 - timeout, retry i circuit breaker za vanjski ISS servis
-- `/health/live` provjera procesa i `/health/ready` provjera dostupnosti ISS servisa
-- ručno pokretljiv GitHub produkcijski smoke test za ciljanu dijagnostiku
+- `/health/live` provjera procesa i `/health/ready` provjera dostupnosti ISS servisa, izuzete iz rate limitinga
+- automatski GitHub produkcijski smoke test nakon svakog pusha u `master`, uz ručno pokretanje za ciljanu dijagnostiku
 - Better Stack provjera produkcijskog liveness endpointa svakih 10 minuta
 - tjedna provjera starosti kuriranih podataka o ISS posadi i letjelicama
-- ručni smoke test početne stranice, readiness endpointa i ISS trackera
+- smoke test početne stranice, readiness endpointa i ISS trackera
 - strukturirani JSON logovi u produkciji
 - validirani `X-Correlation-ID` za povezivanje korisničkog zahtjeva s Railway logovima
 - sigurna produkcijska error stranica bez izlaganja detalja iznimke
@@ -90,7 +92,7 @@ Grana `master` zaštićena je pull request pravilima i zahtijeva prolazak sljede
 - `Audit NuGet dependencies`
 - `Analyze C# with CodeQL`
 
-Nakon mergea Railway automatski deploya novu verziju. Better Stack nadzire liveness svakih 10 minuta, a puni produkcijski smoke test pokreće se ručno kada je potrebna ciljana provjera.
+Nakon mergea Railway automatski deploya novu verziju, a produkcijski smoke test čeka pokretanje deploya i potvrđuje dostupnost aplikacije. Better Stack dodatno nadzire liveness svakih 10 minuta.
 
 ## ✅ Testiranje
 

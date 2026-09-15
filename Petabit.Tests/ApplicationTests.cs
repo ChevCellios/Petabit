@@ -395,6 +395,26 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
         Assert.Equal(HttpStatusCode.TooManyRequests, rejectedResponse.StatusCode);
     }
 
+    [Fact]
+    public async Task GlobalRateLimitProtectsDynamicPagesButNotLiveness()
+    {
+        using var client = CreateClientWithIssResponse(
+            HttpStatusCode.OK,
+            """{"latitude":45.81,"longitude":15.98,"velocity":27600}""");
+
+        for (var requestNumber = 1; requestNumber <= 120; requestNumber++)
+        {
+            using var response = await client.GetAsync("/Home/Privacy");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        using var rejectedResponse = await client.GetAsync("/Home/Privacy");
+        Assert.Equal(HttpStatusCode.TooManyRequests, rejectedResponse.StatusCode);
+
+        using var healthResponse = await client.GetAsync("/health/live");
+        Assert.Equal(HttpStatusCode.OK, healthResponse.StatusCode);
+    }
+
     private HttpClient CreateClientWithIssResponse(HttpStatusCode statusCode, string content)
         => CreateClientWithHandler(new StubHttpMessageHandler(statusCode, content));
 
