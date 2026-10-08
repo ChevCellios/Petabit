@@ -122,6 +122,23 @@ namespace Petabit
             });
             builder.Services.AddHealthChecks()
                 .AddCheck<IssApiHealthCheck>("iss-api", tags: ["ready"]);
+            builder.Services.Configure<Petabit.Services.StationSyncOptions>(builder.Configuration.GetSection("StationSync"));
+            builder.Services.AddSingleton<Petabit.Services.StationStatusService>();
+            builder.Services.AddSingleton<Petabit.Services.NasaLiveVideoService>();
+            builder.Services.AddSingleton<Petabit.Services.StarlinkService>();
+            builder.Services.AddHttpClient("celestrak", client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(25);
+                client.MaxResponseContentBufferSize = 12_000_000;
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Petabit/1.0 (+https://petabit-production.up.railway.app)");
+            });
+            builder.Services.AddHostedService(services => services.GetRequiredService<Petabit.Services.StationStatusService>());
+            builder.Services.AddHttpClient("nasa", client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(15);
+                client.MaxResponseContentBufferSize = 2_000_000;
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Petabit/1.0 (+https://petabit-production.up.railway.app)");
+            });
             builder.Services.AddOutputCache();
             builder.Services.AddRateLimiter(options =>
             {
@@ -197,7 +214,8 @@ namespace Petabit
                         "form-action 'self'; " +
                         "frame-ancestors 'none'; " +
                         "object-src 'none'; " +
-                        $"script-src 'self' 'nonce-{cspNonce}' https://www.googletagmanager.com; " +
+                        $"script-src 'self' 'nonce-{cspNonce}' https://www.googletagmanager.com https://www.youtube.com; " +
+                        "frame-src https://www.youtube-nocookie.com; " +
                         $"style-src 'self' 'nonce-{cspNonce}'; " +
                         "img-src 'self' data:; " +
                         "font-src 'self' data:; " +

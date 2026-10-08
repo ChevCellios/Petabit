@@ -15,12 +15,11 @@ public sealed class StationStatusTests
     }
 
     [Fact]
-    [Trait("Category", "StationStatusFreshness")]
-    public void CuratedStationStatusWasVerifiedRecently()
+    public void OfflineBootstrapDoesNotPretendToHaveCheckedNasaLive()
     {
-        Assert.False(
-            StationStatus.IsStale(DateTimeOffset.UtcNow),
-            $"Curated ISS status was last verified on {StationStatus.LastVerified:yyyy-MM-dd}. " +
-            "Check the NASA source, update the data and move LastVerified forward.");
+        var state = StationSnapshot.Bootstrap();
+        Assert.Null(state.CheckedAt);
+        Assert.Equal(11, state.Crew.Length);
+        Assert.Contains(state.DockedVehicles, v => v.Name == "Crew-13 Dragon");
     }
 }

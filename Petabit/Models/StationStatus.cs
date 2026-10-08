@@ -1,6 +1,6 @@
 namespace Petabit.Models;
 
-public record CrewMember(string Name, string Country, string Agency);
+public record CrewMember(string Name, string Country, string Agency, string Mission = "");
 
 public record DockedVehicle(string Name, string Purpose, string Operator);
 
@@ -8,29 +8,35 @@ public static class StationStatus
 {
     public static readonly TimeSpan MaximumVerificationAge = TimeSpan.FromDays(45);
 
-    // NASA's public station-status pages were checked on 14 September 2026.
-    // Keep this curated data separate from the live orbital-position feed.
+    // Offline bootstrap, confirmed by NASA's 2 October station report.
+    // The background synchronizer replaces this with persisted NASA observations.
     public static readonly IReadOnlyList<CrewMember> Crew =
     [
-        new("Jessica Meir", "SAD", "NASA"),
-        new("Jack Hathaway", "SAD", "NASA"),
-        new("Sophie Adenot", "Francuska", "ESA"),
-        new("Andrey Fedyaev", "Rusija", "Roscosmos"),
-        new("Anil Menon", "SAD", "NASA"),
-        new("Pyotr Dubrov", "Rusija", "Roscosmos"),
-        new("Anna Kikina", "Rusija", "Roscosmos")
+        new("Jessica Meir", "SAD", "NASA", "Crew-12"),
+        new("Jack Hathaway", "SAD", "NASA", "Crew-12"),
+        new("Sophie Adenot", "Francuska", "ESA", "Crew-12"),
+        new("Andrey Fedyaev", "Rusija", "Roscosmos", "Crew-12"),
+        new("Anil Menon", "SAD", "NASA", "Soyuz MS-29"),
+        new("Pyotr Dubrov", "Rusija", "Roscosmos", "Soyuz MS-29"),
+        new("Anna Kikina", "Rusija", "Roscosmos", "Soyuz MS-29"),
+        new("Jessica Watkins", "SAD", "NASA", "Crew-13"),
+        new("Luke Delaney", "SAD", "NASA", "Crew-13"),
+        new("Joshua Kutryk", "Kanada", "CSA", "Crew-13"),
+        new("Sergey Teteryatnikov", "Rusija", "Roscosmos", "Crew-13")
     ];
 
     public static readonly IReadOnlyList<DockedVehicle> DockedVehicles =
     [
         new("Crew-12 Dragon", "Posadna letjelica", "SpaceX / NASA"),
+        new("Crew-13 Dragon", "Posadna letjelica", "SpaceX / NASA"),
         new("Cygnus XL", "Teretna letjelica", "Northrop Grumman / NASA"),
         new("Soyuz MS-29", "Posadna letjelica", "Roscosmos"),
-        new("Progress 95", "Teretna letjelica", "Roscosmos")
+        new("Progress 95", "Teretna letjelica", "Roscosmos"),
+        new("Progress 96", "Teretna letjelica", "Roscosmos")
     ];
 
-    public static readonly DateTimeOffset LastVerified = new(2026, 9, 14, 0, 0, 0, TimeSpan.Zero);
-    public const string SourceUrl = "https://www.nasa.gov/international-space-station/space-station-visiting-vehicles/";
+    public static readonly DateTimeOffset LastVerified = new(2026, 10, 2, 18, 14, 13, TimeSpan.Zero);
+    public const string SourceUrl = "https://www.nasa.gov/international-space-station/space-station-overview/";
 
     public static bool IsStale(DateTimeOffset now) => now - LastVerified > MaximumVerificationAge;
 }

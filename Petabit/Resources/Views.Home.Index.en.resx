@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -129,24 +129,196 @@
   <data name="BlockchainLink" xml:space="preserve">
     <value>Blockchain</value>
   </data>
-  <data name="LedLocation" xml:space="preserve"><value>ISS location</value></data>
-  <data name="LedLatitude" xml:space="preserve"><value>Latitude</value></data>
-  <data name="LedLongitude" xml:space="preserve"><value>Longitude</value></data>
-  <data name="LedSpeed" xml:space="preserve"><value>Speed</value></data>
-  <data name="LedAstronauts" xml:space="preserve"><value>Astronauts on the ISS</value></data>
-  <data name="LedCrew" xml:space="preserve"><value>Crew</value></data>
-  <data name="LedDocked" xml:space="preserve"><value>Docked with the ISS</value></data>
-  <data name="LedReference" xml:space="preserve"><value>Reference status</value></data>
-  <data name="LedSource" xml:space="preserve"><value>Source</value></data>
-  <data name="LedUnavailable" xml:space="preserve"><value>ISS SIGNAL UNAVAILABLE</value></data>
-  <data name="HologramKicker" xml:space="preserve"><value>ORBITAL VIEW</value></data>
-  <data name="HologramTitle" xml:space="preserve"><value>Earth hologram</value></data>
-  <data name="HologramWaiting" xml:space="preserve"><value>Waiting for Ping ISS</value></data>
-  <data name="HologramCanvasLabel" xml:space="preserve"><value>Holographic view of Earth and the ISS position</value></data>
-  <data name="HologramNote" xml:space="preserve"><value>The current marker uses data received after the ping. The line shows the projected ISS orbit.</value></data>
-  <data name="CountryUsa" xml:space="preserve"><value>United States</value></data>
-  <data name="CountryFrance" xml:space="preserve"><value>France</value></data>
-  <data name="CountryRussia" xml:space="preserve"><value>Russia</value></data>
-  <data name="PurposeCrewed" xml:space="preserve"><value>Crew spacecraft</value></data>
-  <data name="PurposeCargo" xml:space="preserve"><value>Cargo spacecraft</value></data>
+  <data name="LedLocation" xml:space="preserve">
+    <value>ISS location</value>
+  </data>
+  <data name="LedLatitude" xml:space="preserve">
+    <value>Latitude</value>
+  </data>
+  <data name="LedLongitude" xml:space="preserve">
+    <value>Longitude</value>
+  </data>
+  <data name="LedSpeed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="LedAstronauts" xml:space="preserve">
+    <value>Astronauts on the ISS</value>
+  </data>
+  <data name="LedCrew" xml:space="preserve">
+    <value>Crew</value>
+  </data>
+  <data name="LedDocked" xml:space="preserve">
+    <value>Docked with the ISS</value>
+  </data>
+  <data name="LedReference" xml:space="preserve">
+    <value>Reference status</value>
+  </data>
+  <data name="LedSource" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="LedUnavailable" xml:space="preserve">
+    <value>ISS SIGNAL UNAVAILABLE</value>
+  </data>
+  <data name="HologramKicker" xml:space="preserve">
+    <value>ORBITAL VIEW</value>
+  </data>
+  <data name="HologramTitle" xml:space="preserve">
+    <value>Earth hologram</value>
+  </data>
+  <data name="HologramWaiting" xml:space="preserve">
+    <value>Connecting to ISS</value>
+  </data>
+  <data name="HologramCanvasLabel" xml:space="preserve">
+    <value>Holographic view of Earth and the ISS position</value>
+  </data>
+  <data name="HologramNote" xml:space="preserve">
+    <value>The marker uses the latest position feed. The orbit line is an illustration, not a predicted flight path.</value>
+  </data>
+  <data name="CountryUsa" xml:space="preserve">
+    <value>United States</value>
+  </data>
+  <data name="CountryFrance" xml:space="preserve">
+    <value>France</value>
+  </data>
+  <data name="CountryRussia" xml:space="preserve">
+    <value>Russia</value>
+  </data>
+  <data name="PurposeCrewed" xml:space="preserve">
+    <value>Crew spacecraft</value>
+  </data>
+  <data name="PurposeCargo" xml:space="preserve">
+    <value>Cargo spacecraft</value>
+  </data>
+  <data name="VehiclesTitle">
+    <value>Spacecraft</value>
+  </data>
+  <data name="NoEvents">
+    <value>NASA updates will appear after the first successful check.</value>
+  </data>
+  <data name="DockedStatus">
+    <value>Attached to the station</value>
+  </data>
+  <data name="PositionUpdated">
+    <value>Position updated</value>
+  </data>
+  <data name="Review">
+    <value>A NASA event needs review. Uncertain changes have not been applied.</value>
+  </data>
+  <data name="Stale">
+    <value>Live verification is unavailable or overdue. Showing the last confirmed station status.</value>
+  </data>
+  <data name="CountryCanada">
+    <value>Canada</value>
+  </data>
+  <data name="Refresh">
+    <value>📡 Ping ISS</value>
+  </data>
+  <data name="EventNews">
+    <value>NASA update</value>
+  </data>
+  <data name="EventsNote">
+    <value>NASA headlines are shown in their original language. Times below refer to publication; announcements do not change station status.</value>
+  </data>
+  <data name="OnStation">
+    <value>People aboard</value>
+  </data>
+  <data name="PersistenceWarning">
+    <value>The latest status could not be saved for the next restart.</value>
+  </data>
+  <data name="EventsTitle">
+    <value>From the station</value>
+  </data>
+  <data name="Confirmed">
+    <value>Status confirmed</value>
+  </data>
+  <data name="Sound">
+    <value>Sound on refresh</value>
+  </data>
+  <data name="EventCrewArrival">
+    <value>Crew arrival confirmed</value>
+  </data>
+  <data name="Checked">
+    <value>NASA last checked</value>
+  </data>
+  <data name="Loading">
+    <value>Loading…</value>
+  </data>
+  <data name="EventDeparture">
+    <value>Departure confirmed</value>
+  </data>
+  <data name="EventArrival">
+    <value>Arrival confirmed</value>
+  </data>
+  <data name="VideoTitle">
+    <value>Live view from the ISS · 5 seconds</value>
+  </data>
+  <data name="VideoNote">
+    <value>Five seconds of NASA's current live camera via YouTube, without sound. Camera images depend on the station connection and daylight.</value>
+  </data>
+  <data name="VideoSource">
+    <value>Open the NASA camera source</value>
+  </data>
+  <data name="VideoLoading">
+    <value>Connecting to the NASA live camera…</value>
+  </data>
+  <data name="VideoPlaying">
+    <value>Live preview playing · pauses after 5 seconds</value>
+  </data>
+  <data name="VideoEnded">
+    <value>Five-second preview finished. Press Ping ISS for a new live view.</value>
+  </data>
+  <data name="VideoError">
+    <value>The live camera is unavailable or cannot be embedded. Try Ping ISS again or open the NASA source.</value>
+  </data>
+  <data name="VideoBlocked">
+    <value>Press Play in the player to start the five-second preview.</value>
+  </data>
+  <data name="StarlinkTitle" xml:space="preserve">
+    <value>Starlink around Earth</value>
+  </data>
+  <data name="StarlinkLoading" xml:space="preserve">
+    <value>Fetching Starlink data…</value>
+  </data>
+  <data name="StarlinkError" xml:space="preserve">
+    <value>Starlink data is temporarily unavailable. Please try again later.</value>
+  </data>
+  <data name="StarlinkStale" xml:space="preserve">
+    <value>Data is older or the source is unavailable. Showing the last successful fetch; positions may differ.</value>
+  </data>
+  <data name="StarlinkMapped" xml:space="preserve">
+    <value>Orbital tracks displayed</value>
+  </data>
+  <data name="StarlinkMotion" xml:space="preserve">
+    <value>Motion at current time · 1×</value>
+  </data>
+  <data name="StarlinkPaused" xml:space="preserve">
+    <value>Motion paused</value>
+  </data>
+  <data name="StarlinkUpdated" xml:space="preserve">
+    <value>Retrieved</value>
+  </data>
+  <data name="StarlinkEpoch" xml:space="preserve">
+    <value>Orbital data age · epoch range</value>
+  </data>
+  <data name="StarlinkOperational" xml:space="preserve">
+    <value>Operational in orbit (+)</value>
+  </data>
+  <data name="StarlinkOnOrbit" xml:space="preserve">
+    <value>Total in orbit</value>
+  </data>
+  <data name="StarlinkPartial" xml:space="preserve">
+    <value>Partially operational (P)</value>
+  </data>
+  <data name="StarlinkAnimate" xml:space="preserve">
+    <value>Satellite motion</value>
+  </data>
+  <data name="StarlinkCanvas" xml:space="preserve">
+    <value>Globe showing operational Starlink satellite positions</value>
+  </data>
+  <data name="StarlinkNote" xml:space="preserve">
+    <value>Blue dots show calculated positions of operational satellites from CelesTrak orbital data. This is not direct telemetry. Drag the globe to change the view. The operational count follows the catalog + flag and does not guarantee internet service.</value>
+  </data>
+  <data name="StarlinkSource" xml:space="preserve">
+    <value>Status and data source</value>
+  </data>
 </root>

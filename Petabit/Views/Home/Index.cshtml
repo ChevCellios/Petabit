@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @using System.Globalization
 
@@ -9,17 +9,33 @@
     var cspNonce = Context.Items["CspNonce"]?.ToString();
 }
 
-<div class="container text-center mt-5 home-hero">
+<div class="container home-hero">
     <!-- Glavni naslov aplikacije -->
     <h1 class="display-4">Petabit 🌍</h1>
     <!-- Lokalizirani tekst dobrodošlice -->
     <p class="lead">@Localizer["WelcomeText"]</p>
 
-    <div id="iss-led-display" class="iss-led-display" role="status" aria-live="polite" hidden>
-        <span id="iss-led-message" class="iss-led-message"></span>
-    </div>
     <div id="iss-led-localization" hidden
          data-locale="@CultureInfo.CurrentUICulture.Name"
+         data-loading="@Localizer["Loading"]"
+         data-checked="@Localizer["Checked"]"
+         data-position-updated="@Localizer["PositionUpdated"]"
+         data-stale="@Localizer["Stale"]"
+         data-review="@Localizer["Review"]"
+         data-persistence="@Localizer["PersistenceWarning"]"
+         data-no-events="@Localizer["NoEvents"]"
+         data-news="@Localizer["EventNews"]"
+         data-arrival="@Localizer["EventArrival"]"
+         data-departure="@Localizer["EventDeparture"]"
+         data-crew-arrival="@Localizer["EventCrewArrival"]"
+         data-refresh="@Localizer["Refresh"]"
+         data-confirmed="@Localizer["Confirmed"]"
+         data-video-loading="@Localizer["VideoLoading"]"
+         data-video-playing="@Localizer["VideoPlaying"]"
+         data-video-ended="@Localizer["VideoEnded"]"
+         data-video-error="@Localizer["VideoError"]"
+         data-video-blocked="@Localizer["VideoBlocked"]"
+         data-video-title="@Localizer["VideoTitle"]"
          data-location="@Localizer["LedLocation"]"
          data-latitude="@Localizer["LedLatitude"]"
          data-longitude="@Localizer["LedLongitude"]"
@@ -31,6 +47,7 @@
          data-source="@Localizer["LedSource"]"
          data-unavailable="@Localizer["LedUnavailable"]"
          data-country-usa="@Localizer["CountryUsa"]"
+         data-country-canada="@Localizer["CountryCanada"]"
          data-country-france="@Localizer["CountryFrance"]"
          data-country-russia="@Localizer["CountryRussia"]"
          data-purpose-crewed="@Localizer["PurposeCrewed"]"
@@ -54,9 +71,21 @@
         <h2 class="text-center mt-4">🌐 ISS Tracker</h2>
 
         <!-- Gumb za dohvat trenutnih podataka o ISS-u -->
-        <button id="iss-ping-button" class="btn btn-primary">📡🛰️ Ping ISS</button>
+        <button id="iss-ping-button" class="btn btn-primary">@Localizer["Refresh"]</button> <label class="iss-sound-option"><input id="iss-sound-enabled" type="checkbox" /> @Localizer["Sound"]</label>
+        <button id="starlink-ping-button" class="btn btn-outline-info starlink-ping-button">🛰 Ping Starlink</button>
         <!-- Zvuk koji se reproducira prilikom pritiska na gumb -->
         <audio id="ping-sound" src="/sounds/zvuk.mp3" preload="auto"></audio>
+
+        <div id="iss-led-display" class="iss-led-display" aria-hidden="true" hidden>
+            <span id="iss-led-message" class="iss-led-message"></span>
+        </div>
+        <section id="iss-video-panel" class="station-panel iss-video-panel" aria-labelledby="iss-video-title" hidden>
+            <h3 id="iss-video-title">@Localizer["VideoTitle"]</h3>
+            <p class="panel-reference">@Localizer["VideoNote"]</p>
+            <div id="iss-video-stage" class="iss-video-stage"></div>
+            <p id="iss-video-status" class="iss-video-status" role="status" aria-live="polite"></p>
+            <a href="https://eol.jsc.nasa.gov/ESRS/HDEV/" target="_blank" rel="noopener noreferrer">@Localizer["VideoSource"]</a>
+        </section>
 
         <section class="iss-hologram" aria-labelledby="iss-hologram-title">
             <div class="iss-hologram-heading">
@@ -74,7 +103,42 @@
         </section>
 
         <!-- Ovdje će se prikazati rezultati dohvaćenih podataka o ISS-u -->
-        <div id="iss-result" class="mt-3"></div>
+        <section id="starlink-panel" class="station-panel starlink-panel" aria-labelledby="starlink-title" hidden
+                 data-locale="@CultureInfo.CurrentUICulture.Name"
+                 data-loading="@Localizer["StarlinkLoading"]" data-error="@Localizer["StarlinkError"]"
+                 data-stale="@Localizer["StarlinkStale"]" data-mapped="@Localizer["StarlinkMapped"]"
+                 data-motion="@Localizer["StarlinkMotion"]" data-paused="@Localizer["StarlinkPaused"]"
+                 data-updated="@Localizer["StarlinkUpdated"]" data-epoch="@Localizer["StarlinkEpoch"]">
+            <div class="starlink-heading"><div><p class="iss-hologram-kicker">STARLINK · ORBITAL NETWORK</p><h3 id="starlink-title">@Localizer["StarlinkTitle"]</h3></div>
+                <label class="starlink-motion"><input id="starlink-motion" type="checkbox" checked /> @Localizer["StarlinkAnimate"]</label></div>
+            <div class="starlink-metrics">
+                <div><strong id="starlink-operational">—</strong><span>@Localizer["StarlinkOperational"]</span></div>
+                <div><strong id="starlink-orbit">—</strong><span>@Localizer["StarlinkOnOrbit"]</span></div>
+                <div><strong id="starlink-partial">—</strong><span>@Localizer["StarlinkPartial"]</span></div>
+            </div>
+            <p id="starlink-status" class="panel-reference" role="status" aria-live="polite"></p>
+            <p id="starlink-warning" class="station-warning" role="status" hidden></p>
+            <div class="starlink-stage"><canvas id="starlink-globe" aria-label="@Localizer["StarlinkCanvas"]"></canvas></div>
+            <p class="starlink-note">@Localizer["StarlinkNote"]</p>
+            <p id="starlink-coverage" class="panel-reference"></p><p id="starlink-freshness" class="panel-reference"></p>
+            <a href="https://celestrak.org/satcat/status.php" target="_blank" rel="noopener noreferrer">CelesTrak · @Localizer["StarlinkSource"]</a>
+        </section>
+        <div id="iss-result" class="mt-3" role="status" aria-live="polite"></div>
+        <div id="station-dashboard" class="station-dashboard">
+            <div class="iss-metrics">
+                <div class="iss-metric"><span>@Localizer["LedLocation"]</span><strong id="metric-position">—</strong><small id="position-freshness">@Localizer["Loading"]</small></div>
+                <div class="iss-metric"><span>@Localizer["LedSpeed"]</span><strong id="metric-speed">—</strong><small>km/h</small></div>
+                <div class="iss-metric"><span>@Localizer["LedCrew"]</span><strong id="metric-crew">—</strong><small>@Localizer["OnStation"]</small></div>
+                <div class="iss-metric"><span>@Localizer["VehiclesTitle"]</span><strong id="metric-vehicles">—</strong><small>@Localizer["DockedStatus"]</small></div>
+            </div>
+            <p id="station-freshness" class="station-freshness" role="status">@Localizer["Loading"]</p>
+            <p id="station-warning" class="station-warning" role="status" hidden></p>
+            <div class="station-columns">
+                <section class="station-panel" aria-labelledby="crew-title"><h3 id="crew-title">@Localizer["LedCrew"]</h3><p id="crew-reference" class="panel-reference"></p><ul id="station-crew" class="station-list"></ul></section>
+                <section class="station-panel" aria-labelledby="vehicles-title"><h3 id="vehicles-title">@Localizer["VehiclesTitle"]</h3><p id="vehicles-reference" class="panel-reference"></p><ul id="station-vehicles" class="station-list"></ul></section>
+            </div>
+            <section class="station-panel station-events" aria-labelledby="events-title"><h3 id="events-title">@Localizer["EventsTitle"]</h3><p class="panel-reference">@Localizer["EventsNote"]</p><ol id="station-events" class="station-list"></ol></section>
+        </div>
     </div>
 </div>
 
@@ -83,34 +147,18 @@
 }
 
 @section Scripts {
+    <script src="~/js/station-dashboard.js" asp-append-version="true"></script>
+    <script src="~/js/iss-video-preview.js" asp-append-version="true"></script>
+    <script type="module" src="~/js/starlink-dashboard.js" asp-append-version="true"></script>
     <script nonce="@cspNonce">
         const globeCanvas = document.getElementById('iss-globe-canvas');
         const globeContext = globeCanvas.getContext('2d');
         const globeHologram = document.querySelector('.iss-hologram');
         const globeStatus = document.getElementById('iss-hologram-status');
-        const ledDisplay = document.getElementById('iss-led-display');
-        const ledMessage = document.getElementById('iss-led-message');
-        const ledStrings = document.getElementById('iss-led-localization').dataset;
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
         let issPosition = null;
         let globeAnimationFrame;
 
-        function showLedAtTop() {
-            if (!ledDisplay.classList.contains('is-main-led')) {
-                document.querySelector('main[role="main"]').prepend(ledDisplay);
-                ledDisplay.classList.add('is-main-led');
-            }
-            ledDisplay.hidden = false;
-        }
-        const localizedCountry = country => ({
-            'SAD': ledStrings.countryUsa,
-            'Francuska': ledStrings.countryFrance,
-            'Rusija': ledStrings.countryRussia
-        })[country] ?? country;
-        const localizedPurpose = purpose => ({
-            'Posadna letjelica': ledStrings.purposeCrewed,
-            'Teretna letjelica': ledStrings.purposeCargo
-        })[purpose] ?? purpose;
         const continentOutlines = [
             [[72,-168],[70,-140],[60,-128],[55,-122],[49,-125],[43,-124],[34,-117],[23,-110],[17,-96],[25,-82],[30,-81],[43,-70],[51,-58],[59,-64],[66,-80],[73,-105],[72,-135],[72,-168]],
             [[12,-81],[8,-77],[-5,-81],[-18,-70],[-35,-72],[-55,-68],[-52,-55],[-34,-52],[-20,-40],[-5,-35],[7,-51],[12,-66],[12,-81]],
@@ -269,7 +317,7 @@
                     globeContext.fillText('🛰️', marker.x, marker.y);
                     globeContext.font = '600 11px monospace';
                     globeContext.textAlign = 'left';
-                    globeContext.fillText('ISS LIVE', marker.x + 18, marker.y - 13);
+                    globeContext.fillText(globeStatus.classList.contains('is-live') ? 'ISS LIVE' : 'ISS', marker.x + 18, marker.y - 13);
                 }
             }
 
@@ -287,70 +335,18 @@
         reduceMotion.addEventListener('change', restartGlobe);
         document.getElementById('toggle-dark-mode')?.addEventListener('click', restartGlobe);
 
-        // Dodaje event listener na gumb za dohvat ISS podataka
-        document.getElementById('iss-ping-button').addEventListener('click', () => {
-            // Reproducira zvuk prilikom klika
-            document.getElementById('ping-sound').play();
-
-            // Poziva backend endpoint za dohvat podataka o ISS-u
-            fetch('@Url.Action("Data", "Home")')
-                .then(response => {
-                    if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
-                    return response.json();
-                })
-                .then(data => {
-                    issPosition = {
-                        latitude: data.latitude,
-                        longitude: data.longitude
-                    };
-                    globeStatus.textContent = `${data.latitude.toFixed(2)}° / ${data.longitude.toFixed(2)}°`;
-                    globeStatus.classList.add('is-live');
-                    globeHologram.classList.add('is-tracking');
-                    const ledCrew = data.astronauts
-                        .map(person => `${person.name} — ${localizedCountry(person.country)} (${person.agency})`)
-                        .join('  |  ');
-                    const ledVehicles = data.dockedVehicles
-                        .map(vehicle => `${vehicle.name} — ${localizedPurpose(vehicle.purpose)} (${vehicle.operator})`)
-                        .join('  |  ');
-                    const referenceDate = new Date(data.stationStatusUpdatedAt).toLocaleDateString(ledStrings.locale);
-                    ledMessage.textContent = [
-                        'ISS LIVE',
-                        ledStrings.location,
-                        `${ledStrings.latitude} ${data.latitude.toFixed(2)}°`,
-                        `${ledStrings.longitude} ${data.longitude.toFixed(2)}°`,
-                        `${ledStrings.speed} ${data.speed.toFixed(2)} KM/H`,
-                        `${ledStrings.astronauts} ${data.astronautCount}`,
-                        `${ledStrings.crew}: ${ledCrew}`,
-                        `${ledStrings.docked}: ${ledVehicles}`,
-                        `${ledStrings.reference} ${referenceDate}`,
-                        `${ledStrings.source} NASA`
-                    ].join('  •  ');
-                    showLedAtTop();
-                    ledMessage.classList.remove('is-scrolling');
-                    void ledMessage.offsetWidth;
-                    ledMessage.classList.add('is-scrolling');
-                    restartGlobe();
-
-                    const result = document.getElementById('iss-result');
-                    result.textContent = `Lokacija ISS-a: latitude ${data.latitude.toFixed(2)}°, longitude ${data.longitude.toFixed(2)}°. Brzina ${data.speed.toFixed(2)} km/h. Astronauta ${data.astronautCount}. Posada: ${ledCrew}. Spojeno na ISS: ${ledVehicles}. Referentno stanje ${referenceDate}. Izvor NASA.`;
-                    result.classList.add('is-led-report');
-                })
-                .catch(error => {
-                    // Prikazuje poruku o grešci ako dohvat podataka ne uspije
-                    document.getElementById('iss-result').textContent = "❌ Greška pri dohvaćanju ISS podataka.";
-                    document.getElementById('iss-result').classList.add('is-led-report');
-                    globeStatus.textContent = 'Signal nije dostupan';
-                    globeStatus.classList.remove('is-live');
-                    globeHologram.classList.remove('is-tracking');
-                    ledMessage.textContent = ledStrings.unavailable;
-                    showLedAtTop();
-                    ledMessage.classList.remove('is-scrolling');
-                    void ledMessage.offsetWidth;
-                    ledMessage.classList.add('is-scrolling');
-                    console.error("Greška:", error);
-                });
+        window.addEventListener('iss-position', event => {
+            issPosition = event.detail;
+            globeStatus.textContent = `${issPosition.latitude.toFixed(2)}° / ${issPosition.longitude.toFixed(2)}°`;
+            globeStatus.classList.add('is-live');
+            globeHologram.classList.add('is-tracking');
+            restartGlobe();
         });
-    </script>
+        window.addEventListener('iss-position-unavailable', restartGlobe);
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) cancelAnimationFrame(globeAnimationFrame);
+            else restartGlobe();
+        });    </script>
 }
 
 

@@ -40,6 +40,15 @@ jobs:
       - name: Run tests
         run: dotnet test Petabit.sln --configuration Release --no-build --verbosity normal
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Test ISS video playback
+        run: node --test Petabit.Tests/*.test.cjs Petabit.Tests/*.test.mjs
+
   docker-build:
     name: Build Docker image
     runs-on: ubuntu-latest

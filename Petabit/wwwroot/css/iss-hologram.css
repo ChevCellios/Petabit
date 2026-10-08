@@ -1,366 +1,127 @@
-body {
-    margin-bottom: 0;
-}
-
 .home-hero {
-    position: relative;
-    isolation: isolate;
-    min-height: calc(75vh - 1rem);
-    margin-top: 0 !important;
-    padding-block: 0.65rem;
+    --station-bg: #101f27; --station-border: #29424b; --station-accent: #72e5ce; --station-muted: #aec0c8;
+    max-width: 1120px; margin-top: 0 !important; padding: 2rem 1rem 3rem; text-align: left !important;
 }
-
-.home-hero > :not(.iss-hologram) {
-    position: relative;
-    z-index: 2;
-}
-
-.iss-hologram {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    width: 100%;
-    height: 75vh;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    pointer-events: none;
-    opacity: 0.48;
-    -webkit-mask-image: radial-gradient(ellipse at center, #000 36%, transparent 76%);
-    mask-image: radial-gradient(ellipse at center, #000 36%, transparent 76%);
-    transition: opacity 0.5s ease, filter 0.5s ease;
-}
-
-.iss-hologram.is-tracking {
-    z-index: 4;
-    opacity: 1;
-    overflow: visible;
-    -webkit-mask-image: none;
-    mask-image: none;
-    filter: saturate(1.3) brightness(1.16) drop-shadow(0 0 24px rgba(98, 255, 225, 0.34));
-    animation: hologramReveal 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.iss-hologram.is-tracking .iss-hologram-stage {
-    overflow: visible;
-    transform: translateY(-5%) scale(2.32);
-}
-
-.iss-hologram-heading {
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    text-align: left;
-}
-
-.iss-hologram-heading h3 {
-    margin: 0;
-}
-
-.iss-hologram-kicker {
-    margin: 0 0 0.2rem;
-    color: #62ffe1;
-    font: 600 0.72rem/1.2 monospace;
-    letter-spacing: 0.18em;
-}
-
-.iss-hologram-status {
-    flex: 0 0 auto;
-    padding: 0.35rem 0.65rem;
-    border: 1px solid rgba(98, 255, 225, 0.24);
-    border-radius: 999px;
-    color: #b8fff1;
-    font: 0.74rem/1.2 monospace;
-}
-
-.iss-hologram-status.is-live::before {
-    content: '';
-    display: inline-block;
-    width: 0.45rem;
-    height: 0.45rem;
-    margin-right: 0.4rem;
-    border-radius: 50%;
-    background: #62ffe1;
-    box-shadow: 0 0 10px #62ffe1;
-}
-
-.iss-hologram-stage {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-    transform: translateY(-9%) scale(2.15);
-    transform-origin: center;
-}
-
-#iss-globe-canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-.iss-scanline {
-    position: absolute;
-    inset: -20% 0 auto;
-    height: 26%;
-    pointer-events: none;
-    background: linear-gradient(to bottom, transparent, rgba(100, 255, 226, 0.07), transparent);
-    animation: issScan 6s linear infinite;
-}
-
-.iss-hologram-note {
-    display: none;
-    margin: 0;
-    color: rgba(220, 255, 248, 0.64);
-    font-size: 0.75rem;
-}
-
-.home-hero > h1 {
-    margin-bottom: 0.25rem;
-    font-size: clamp(2rem, 5vh, 3.2rem);
-}
-
-.home-hero > .lead {
-    margin-bottom: 0.45rem;
-}
-
+body .home-hero :is(h1, h2, h3, .btn) { text-shadow: none !important; }
+body.dark-mode .home-hero a.btn.btn-home, body.light-mode .home-hero a.btn.btn-home { box-shadow: none !important; }
+body.light-mode:has(.home-hero) { background: #edf4f6; color: #1d3038; }
+.home-hero > h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; letter-spacing: -.04em; }
+.home-hero > .lead { color: var(--station-muted); max-width: 42rem; }
+.home-hero .row { justify-content: flex-start !important; row-gap: .5rem; }
+.home-hero .btn-home { box-shadow: none; font-size: .9rem; padding: .5rem 1rem; }
+.home-hero h2 { text-align: left !important; margin: 2rem 0 1rem; font-weight: 700; }
+.home-hero #iss-ping-button { background: #72e5ce; color: #092029; border: 0; box-shadow: none; text-shadow: none; min-height: 44px; padding: .65rem 1.2rem; }
+.iss-sound-option { display: inline-flex; align-items: center; gap: .5rem; margin-left: 1rem; color: var(--station-muted); font-size: .9rem; min-height: 44px; }
+.iss-hologram { position: relative; margin: 1.5rem 0 0; padding: 1.25rem; border: 1px solid var(--station-border); border-radius: 20px; background: radial-gradient(ellipse at center, #153b40, #0b1822 75%); overflow: hidden; }
+.iss-hologram-heading { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.iss-hologram-heading h3 { font-size: 1.1rem; margin: 0; }
+.iss-hologram-kicker { color: var(--station-accent); font: 600 .7rem/1.5 monospace; letter-spacing: .18em; margin-bottom: .25rem; }
+.iss-hologram-status { color: var(--station-muted); border: 1px solid var(--station-border); border-radius: 30px; padding: .4rem .75rem; font: .75rem/1.4 monospace; }
+.iss-hologram-status.is-live { color: var(--station-accent); }
+.iss-hologram-status.is-live::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: .5rem; border-radius: 50%; background: var(--station-accent); }
+.iss-hologram-stage { position: relative; height: clamp(250px, 35vw, 370px); }
+#iss-globe-canvas { display: block; width: 100%; height: 100%; }
+.iss-scanline { display: none; }
 .iss-led-display {
     --led-duration: 60s;
-    position: relative !important;
-    z-index: 6 !important;
+    position: relative;
     width: 100%;
     height: clamp(3.75rem, 8vh, 5rem);
-    margin: 0.4rem 0;
+    margin: 1rem 0;
     overflow: hidden;
-    border: 1px solid rgba(98, 255, 225, 0.34);
+    border: 1px solid rgba(98, 255, 225, .34);
     border-radius: 8px;
-    background-color: rgba(2, 10, 9, 0.92);
-    background-image: radial-gradient(circle, rgba(98, 255, 225, 0.10) 1px, transparent 1.5px);
-    background-size: 5px 5px;
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.85), 0 0 16px rgba(98, 255, 225, 0.12);
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
-    mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
+    background: radial-gradient(circle, rgba(98, 255, 225, .1) 1px, transparent 1.5px) 0 0 / 5px 5px, rgba(2, 10, 9, .92);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, .85), 0 0 16px rgba(98, 255, 225, .12);
 }
-
-.iss-led-display::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.06), transparent 22%, transparent 78%, rgba(0, 0, 0, 0.28));
-}
-
-.iss-led-display[hidden] {
-    display: none;
-}
-
-.iss-led-display.is-main-led {
-    z-index: 1100 !important;
-    isolation: isolate;
-    flex: 0 0 auto;
-    width: 100%;
-    margin: 0.2rem 0 0.35rem;
-    border-right: 0;
-    border-left: 0;
-    border-radius: 0;
-    background-color: transparent;
-}
-
-body.light-mode .iss-led-display.is-main-led {
-    background-color: transparent;
-}
-
+.iss-led-display[hidden], .iss-video-panel[hidden] { display: none; }
 .iss-led-message {
-    position: absolute;
-    top: 50%;
-    left: 100%;
-    width: max-content;
-    color: #72ffe4;
-    font: 700 clamp(1.25rem, 3.8vh, 2rem)/1 monospace;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    text-shadow: 0 0 4px #32d9bd, 0 0 10px rgba(98, 255, 225, 0.72);
+    position: absolute; top: 50%; left: 0; width: max-content;
+    color: #72ffe4; font: 700 clamp(1.25rem, 3.8vh, 2rem)/1 monospace;
+    letter-spacing: .12em; text-transform: uppercase; white-space: nowrap;
+    text-shadow: 0 0 4px #32d9bd, 0 0 10px rgba(98, 255, 225, .72);
     transform: translate(0, -50%);
 }
-
-.iss-led-message.is-scrolling {
-    animation: ledScrollRightToLeft var(--led-duration) linear infinite;
-}
-
-body.light-mode .iss-led-display {
-    border-color: rgba(0, 94, 87, 0.36);
-    background-color: rgba(229, 245, 240, 0.95);
-    background-image: radial-gradient(circle, rgba(0, 94, 87, 0.12) 1px, transparent 1.5px);
-    box-shadow: inset 0 0 18px rgba(0, 65, 58, 0.16), 0 0 14px rgba(0, 94, 87, 0.12);
-}
-
-body.light-mode .iss-led-message {
-    color: #006b62;
-    text-shadow: 0 0 4px rgba(0, 107, 98, 0.35);
-}
-
-.home-hero > .mt-4 {
-    margin-top: 0.5rem !important;
-}
-
-.home-hero .mb-4 {
-    margin-bottom: 0.55rem !important;
-}
-
-.home-hero h2.mt-4 {
-    margin-top: 0.55rem !important;
-    margin-bottom: 0.45rem;
-}
-
-.iss-hologram.is-tracking + #iss-result:not(:empty):not(.is-led-report) {
-    z-index: 6;
-    margin-top: 100vh !important;
-    padding: 1rem;
-    border: 1px solid rgba(98, 255, 225, 0.28);
-    border-radius: 14px;
-    background: rgba(5, 18, 19, 0.92);
-    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.24);
-}
-
-#iss-result.is-led-report {
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    margin: -1px !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    clip: rect(0 0 0 0) !important;
-    clip-path: inset(50%) !important;
-    border: 0 !important;
-    white-space: nowrap !important;
-}
-
-body.light-mode .iss-hologram.is-tracking + #iss-result:not(:empty):not(.is-led-report) {
-    color: #075e5b;
-    border-color: rgba(0, 112, 105, 0.25);
-    background: rgba(240, 252, 250, 0.94);
-    text-shadow: none;
-}
-
-main[role='main'] {
-    padding-bottom: 0 !important;
-}
-
-body.light-mode .iss-hologram {
-    opacity: 0.34;
-}
-
-body.light-mode .iss-hologram.is-tracking {
-    opacity: 0.92;
-    filter: saturate(1.15) contrast(1.08) drop-shadow(0 0 20px rgba(0, 112, 105, 0.24));
-}
-
-/* Oslobodi prostor ispod uvećanog globusa prije prikaza footera. */
-body:has(.iss-hologram.is-tracking) .site-footer {
-    margin-top: 48vh;
-}
-
-body.light-mode .iss-hologram-kicker,
-body.light-mode .iss-hologram-status,
-body.light-mode .iss-hologram-note {
-    color: #075e5b;
-}
-
-body.light-mode .iss-hologram-status {
-    border-color: rgba(0, 112, 105, 0.25);
-}
-
-@keyframes issScan {
-    to { transform: translateY(540%); }
-}
-
-@keyframes hologramReveal {
-    from {
-        opacity: 0.28;
-        filter: saturate(0.8) brightness(0.85) blur(2px);
-    }
-
-    to {
-        filter: saturate(1.2) brightness(1.08) blur(0);
-    }
-}
-
+.iss-led-message.is-scrolling { animation: ledScrollRightToLeft var(--led-duration) linear infinite; }
 @keyframes ledScrollRightToLeft {
-    from {
-        left: 100%;
-        transform: translate(0, -50%);
-    }
-
-    to {
-        left: 0;
-        transform: translate(-100%, -50%);
-    }
+    from { transform: translate(1rem, -50%); }
+    to { transform: translate(-100%, -50%); }
 }
-
-@media (max-width: 520px) {
-    html,
-    body {
-        max-width: 100%;
-        overflow-x: clip;
-    }
-
-    .home-hero {
-        min-height: calc(75vh - 0.5rem);
-        padding-block: 0.4rem;
-        overflow: clip;
-    }
-
-    .iss-hologram-heading {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .iss-hologram,
-    .iss-hologram.is-tracking {
-        overflow: hidden;
-    }
-
-    .iss-hologram-stage,
-    .iss-hologram.is-tracking .iss-hologram-stage {
-        height: 100%;
-        max-width: 100%;
-        transform: translateY(-2%) scale(1.25);
-        transform-origin: 50% 35%;
-    }
-
-    body:has(.iss-hologram.is-tracking) .site-footer {
-        margin-top: 38vh;
-    }
+body.light-mode .iss-led-display { background-color: #e5f5f0; }
+body.light-mode .iss-led-message { color: #006b62; text-shadow: 0 0 4px rgba(0, 107, 98, .35); }
+.station-panel.iss-video-panel {
+    position: fixed;
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    z-index: 1040;
+    width: 384px;
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    margin: 0;
+    padding: .75rem;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .4);
 }
-
-@media (max-height: 720px) {
-    .home-hero > h1 {
-        font-size: 1.8rem;
-    }
-
-    .home-hero > .lead {
-        font-size: 0.95rem;
-    }
-
-    .home-hero .btn-home {
-        margin-bottom: 0.25rem;
-    }
+.iss-video-panel h3 { font-size: .95rem; }
+.iss-video-panel .panel-reference { font-size: .7rem; margin-bottom: .5rem; }
+.iss-video-panel > a { font-size: .75rem; }
+.iss-video-stage { aspect-ratio: 16 / 9; margin-inline: auto; background: #030a10; border-radius: 10px; overflow: hidden; }
+.iss-video-stage iframe { display: block; width: 100%; height: 100%; border: 0; }
+.iss-video-status { color: var(--station-accent); margin-block: .5rem; font-size: .75rem; }
+.starlink-ping-button { margin-left: .6rem; min-height: 44px; }
+.starlink-panel[hidden] { display: none; }
+.starlink-panel { margin-top: 1.5rem; scroll-margin-top: 1rem; background: radial-gradient(ellipse at center, #122d42, var(--station-bg)); }
+.starlink-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.starlink-motion { display: inline-flex; align-items: center; gap: .5rem; font-size: .8rem; color: var(--station-muted); min-height: 44px; }
+.starlink-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin: 1rem 0; }
+.starlink-metrics > div { padding: .8rem; background: var(--station-bg); border: 1px solid var(--station-border); border-radius: 12px; }
+.starlink-metrics strong { display: block; font-size: clamp(1.25rem, 3vw, 2rem); color: #71cfff; font-variant-numeric: tabular-nums; }
+.starlink-metrics span, .starlink-note { font-size: .8rem; color: var(--station-muted); }
+.starlink-stage { height: clamp(300px, 45vw, 460px); }
+#starlink-globe { width: 100%; height: 100%; display: block; touch-action: pan-y; cursor: grab; }
+#starlink-globe:active { cursor: grabbing; }
+.starlink-panel .panel-reference { margin-bottom: .5rem; }
+body.light-mode .starlink-panel { background: radial-gradient(ellipse at center, #d9eef9, var(--station-bg)); }
+body.light-mode .starlink-metrics strong { color: #006799; }
+@media (max-width: 650px) {
+    .starlink-heading { align-items: flex-start; flex-direction: column; gap: 0; }
+    .starlink-panel { padding: .8rem; }
+    .starlink-metrics { gap: .4rem; }
+    .starlink-metrics > div { padding: .5rem; }
+    .starlink-ping-button { margin: .5rem 0 0; }
 }
-
-@media (prefers-reduced-motion: reduce) {
-    .iss-scanline {
-        animation: none;
-        top: 40%;
-    }
-
-    .iss-hologram.is-tracking {
-        animation: none;
-    }
-
-    .iss-led-message.is-scrolling {
-        animation-duration: calc(var(--led-duration) * 1.75);
-    }
+.iss-hologram-note { font-size: .8rem; color: var(--station-muted); margin: 0; max-width: 45rem; }
+#iss-result:empty { display: none; }
+.home-hero #iss-result { color: #ffd49c; text-shadow: none; font-family: inherit; }
+.iss-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; margin-top: 1rem; }
+.iss-metric, .station-panel { background: var(--station-bg); border: 1px solid var(--station-border); border-radius: 16px; }
+.iss-metric { padding: 1.1rem; display: flex; flex-direction: column; gap: .45rem; min-width: 0; }
+.iss-metric > span { color: var(--station-muted); font-size: .85rem; }
+.iss-metric strong { color: var(--station-accent); font-size: clamp(1.1rem, 2.4vw, 1.7rem); font-variant-numeric: tabular-nums; line-height: 1.2; overflow-wrap: anywhere; }
+.iss-metric small { color: var(--station-muted); font-size: .72rem; }
+.station-freshness { color: var(--station-muted); font-size: .8rem; margin: 1rem .2rem; }
+.station-warning { background: #382818; color: #ffe0ad; padding: 1rem; border: 1px solid #745125; border-radius: 12px; font-size: .9rem; }
+.station-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.station-panel { padding: 1.3rem; min-width: 0; }
+.station-panel h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: .4rem; }
+.panel-reference { color: var(--station-muted); font-size: .75rem; margin-bottom: 1rem; }
+.station-list { list-style: none; padding: 0; margin: 0; }
+.station-list li { padding: .8rem 0; border-top: 1px solid var(--station-border); display: flex; flex-direction: column; gap: .25rem; overflow-wrap: anywhere; }
+.station-list li strong { font-size: .95rem; }
+.station-list li span { color: var(--station-muted); font-size: .8rem; }
+.home-hero a:not(.btn) { color: var(--station-accent); }
+.station-events { margin-top: 1rem; }
+.station-events a { font-size: .95rem; text-decoration: none; }
+.station-events a:hover { text-decoration: underline; }
+body.light-mode .home-hero { --station-bg: #f6fbfc; --station-border: #c6d9df; --station-accent: #00675d; --station-muted: #48636f; }
+body.light-mode .iss-hologram { background: radial-gradient(ellipse at center, #d8f3ee, #eff7fa 75%); }
+body.light-mode .station-warning { background: #fff4df; color: #6c4615; border-color: #e0b875; }
+body.light-mode #iss-result { color: #6c4615; }
+@media (max-width: 650px) {
+    .home-hero { padding-top: 1.25rem; }
+    .iss-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .station-columns { grid-template-columns: 1fr; }
+    .iss-hologram-heading { align-items: flex-start; flex-direction: column; }
+    .iss-hologram { padding: 1rem; }
+    .iss-sound-option { margin-left: .5rem; font-size: .8rem; }
 }

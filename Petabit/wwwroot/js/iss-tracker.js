@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
     const pingButton = document.getElementById("iss-ping-button");
     const resultDiv = document.getElementById("iss-result");
     const speedDiv = document.getElementById("iss-speed");
@@ -11,7 +11,7 @@
 
     const format = (template, ...values) => values.reduce(
         (result, value, index) => result.replaceAll(`{${index}}`, value), template);
-    const countries = { SAD: strings.usa, Francuska: strings.france, Rusija: strings.russia };
+    const countries = { SAD: strings.usa, Francuska: strings.france, Rusija: strings.russia, Kanada: strings.canada };
     const purposes = { "Posadna letjelica": strings.crewed, "Teretna letjelica": strings.cargo };
 
     function renderList(container, title, items, formatItem) {
@@ -28,7 +28,8 @@
         container.replaceChildren(heading, list);
     }
 
-    async function pingISS() {
+    async function pingISS(manual = false) {
+        if (pingButton.disabled || (!manual && document.hidden)) return;
         pingButton.disabled = true;
         resultDiv.textContent = `⏳ ${strings.loading}`;
 
@@ -54,7 +55,7 @@
             const sourceText = document.createTextNode(
                 `${format(strings.reference, new Date(data.stationStatusUpdatedAt).toLocaleDateString(document.documentElement.lang))}, `);
             const sourceLink = document.createElement("a");
-            sourceLink.href = "https://www.nasa.gov/international-space-station/space-station-visiting-vehicles/";
+            sourceLink.href = "https://www.nasa.gov/international-space-station/space-station-overview/";
             sourceLink.target = "_blank";
             sourceLink.rel = "noopener noreferrer";
             sourceLink.textContent = "NASA";
@@ -65,7 +66,7 @@
             sourceDiv.classList.toggle("text-warning", data.stationStatusIsStale);
             sourceDiv.replaceChildren(...sourceNodes);
 
-            pingSound.play();
+            if (manual) pingSound.play().catch(() => {});
         } catch (error) {
             resultDiv.textContent = `❌ ${strings.error}`;
             console.error("Greška:", error);
@@ -74,5 +75,7 @@
         pingButton.disabled = false;
     }
 
-    pingButton.addEventListener("click", pingISS);
+    pingButton.addEventListener("click", () => pingISS(true));
+    pingISS();
+    setInterval(pingISS, 30000);
 });
