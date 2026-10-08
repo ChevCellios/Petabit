@@ -145,14 +145,17 @@ button.addEventListener('click', async () => {
         worker?.terminate();
         cancelAnimationFrame(animation);
         frame = undefined;
-        worker = new Worker(new URL('./starlink-worker.js', import.meta.url), { type: 'module' });
+        const workerUrl = new URL(strings.workerUrl, location.origin);
+        workerUrl.searchParams.set('orbits', new URL(strings.orbitsUrl, location.origin).searchParams.get('v'));
+        workerUrl.searchParams.set('clock', new URL(strings.clockUrl, location.origin).searchParams.get('v'));
+        worker = new Worker(workerUrl, { type: 'module' });
         worker.onmessage = ({ data: next }) => {
             if (panel.hidden) return;
             frame = next;
             if (!next.count) status.textContent = strings.error;
             canvas.dataset.mappedCount = String(next.count);
             canvas.dataset.positionTime = String(next.timestamp);
-            const nonoperationalMapped = next.statuses.reduce((count, value) => count + (value === 2 ? 1 : 0), 0);
+            const nonoperationalMapped = next.statuses?.reduce((count, value) => count + (value === 2 ? 1 : 0), 0) ?? 0;
             const coverage = `${strings.mapped}: ${number.format(next.count)} / ${number.format(data.onOrbitCount)}`;
             document.getElementById('starlink-coverage').textContent = data.statusCoverageComplete
                 ? `${coverage} · ${strings.nonoperational}: ${number.format(nonoperationalMapped)} / ${number.format(data.nonOperationalCount)}`

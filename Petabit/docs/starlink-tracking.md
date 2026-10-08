@@ -26,6 +26,8 @@ Production should use one app replica and a persistent `/app/App_Data` volume, a
 
 Snapshots now contain catalog-derived `PETABIT_STATUS` on each orbital element and `NonOperationalCount`, `OtherCount`, `StatusCoverageComplete`. Older operational-only snapshots remain readable: the UI shows an unknown nonoperational count rather than zero, until the next scheduled two-hour refresh provides the complete classification. Migration does not bypass the source download cooldown.
 
+The page emits content hashes for the worker, orbital module and clock. The worker URL carries each dependency hash and uses it for module imports, so returning visitors cannot combine a new dashboard with cached old frame formats or clocks. A missing status array is handled defensively.
+
 ## Validation
 
 `dotnet test Petabit.sln --configuration Release` covers catalog classification, invalid data, six-digit IDs, deduplication, persisted cache/restart and failure retention. `node --test Petabit.Tests/*.test.cjs Petabit.Tests/*.test.mjs` covers real-time propagation, Earth-fixed velocity interpolation and invalid-orbit omission, plus ISS preview playback.
