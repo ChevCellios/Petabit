@@ -143,6 +143,16 @@ namespace Petabit
             builder.Services.AddRateLimiter(options =>
             {
                 options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        context.Connection.RemoteIpAddress?.MapToIPv6().ToString() ?? "unknown-client",
+                        _ => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 120,
+                            Window = TimeSpan.FromMinutes(1),
+                            QueueLimit = 0,
+                            AutoReplenishment = true
+                        }));
                 options.AddPolicy("iss", context =>
                     RateLimitPartition.GetFixedWindowLimiter(
                         context.Connection.RemoteIpAddress?.MapToIPv6().ToString() ?? "unknown-client",
@@ -230,11 +240,11 @@ namespace Petabit
             app.MapHealthChecks("/health/live", new HealthCheckOptions
             {
                 Predicate = _ => false
-            });
+            }).DisableRateLimiting();
             app.MapHealthChecks("/health/ready", new HealthCheckOptions
             {
                 Predicate = registration => registration.Tags.Contains("ready")
-            });
+            }).DisableRateLimiting();
 
             app.MapControllerRoute(
                 name: "default",

@@ -171,4 +171,24 @@
   <data name="YourRightsText" xml:space="preserve">
     <value>Since we do not collect personal data, you have no requests for access, correction, or deletion of personal data. If you have privacy-related questions, feel free to contact us.</value>
   </data>
+  <data name="CookiePolicy" xml:space="preserve"><value>Cookie policy</value></data>
+  <data name="CookiePolicyIntro" xml:space="preserve"><value>Petabit uses only necessary functional technologies and, with your consent, analytics cookies. Analytics is not required to use the site.</value></data>
+  <data name="NecessaryTechnologies" xml:space="preserve"><value>Necessary functional technologies</value></data>
+  <data name="Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Purpose" xml:space="preserve"><value>Purpose</value></data>
+  <data name="Duration" xml:space="preserve"><value>Duration</value></data>
+  <data name="CulturePurpose" xml:space="preserve"><value>Remembers the selected site language.</value></data>
+  <data name="OneYear" xml:space="preserve"><value>1 year</value></data>
+  <data name="ConsentPurpose" xml:space="preserve"><value>Stores the analytics-cookie choice locally in the browser.</value></data>
+  <data name="ConsentDuration" xml:space="preserve"><value>Until you change your choice or clear browser data</value></data>
+  <data name="AnalyticsCookies" xml:space="preserve"><value>Analytics cookies – Google Analytics 4</value></data>
+  <data name="AnalyticsDescription" xml:space="preserve"><value>Google Analytics loads only after you select Accept. It collects aggregate data such as user and session counts, approximate location, browser, device, and traffic source. We do not use it to directly identify visitors.</value></data>
+  <data name="GaPurpose" xml:space="preserve"><value>Distinguishes unique users.</value></data>
+  <data name="GaSessionPurpose" xml:space="preserve"><value>Stores session state for Google Analytics 4.</value></data>
+  <data name="UpToTwoYears" xml:space="preserve"><value>Up to 2 years</value></data>
+  <data name="GaMoreInfo" xml:space="preserve"><value>More about GA4 cookies:</value></data>
+  <data name="GaDocumentation" xml:space="preserve"><value>Google Analytics documentation</value></data>
+  <data name="ConsentManagement" xml:space="preserve"><value>Consent management</value></data>
+  <data name="ConsentManagementText" xml:space="preserve"><value>You can accept or reject analytics cookies on your first visit. You can change your choice at any time.</value></data>
+  <data name="ManageConsent" xml:space="preserve"><value>Manage analytics cookies</value></data>
 </root>
