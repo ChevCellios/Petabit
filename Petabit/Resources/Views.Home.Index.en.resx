@@ -337,4 +337,8 @@
   <data name="StarlinkZoomIn" xml:space="preserve"><value>Zoom in</value></data>
   <data name="StarlinkZoomOut" xml:space="preserve"><value>Zoom out</value></data>
   <data name="StarlinkReset" xml:space="preserve"><value>Reset view</value></data>
+  <data name="StarlinkLayerEmpty" xml:space="preserve"><value>No positions are available for the selected layers.</value></data>
+  <data name="StarlinkAllHidden" xml:space="preserve"><value>All available layers are hidden. Enable at least one layer.</value></data>
+  <data name="StarlinkNoPositions" xml:space="preserve"><value>No positions available</value></data>
+  <data name="StarlinkLayerHelp" xml:space="preserve"><value>Layer counts show satellites with available positions, not catalog totals. Layers without positions are unavailable.</value></data>
 </root>

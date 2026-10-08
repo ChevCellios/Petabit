@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Globalization;
 using System.Text.Json;
 
@@ -14,6 +15,7 @@ public sealed class StarlinkService
     private readonly IHttpClientFactory clients;
     private readonly ILogger<StarlinkService> logger;
     private readonly string path;
+    private readonly string bootstrapPath;
     private readonly SemaphoreSlim gate = new(1, 1);
     private readonly object refreshLock = new();
     private Task<StarlinkSnapshot>? refresh;
@@ -28,6 +30,7 @@ public sealed class StarlinkService
         this.clients = clients;
         this.logger = logger;
         path = Path.Combine(environment.ContentRootPath, "App_Data", "starlink-status.json");
+        bootstrapPath = Path.Combine(environment.ContentRootPath, "Data", "starlink-bootstrap.json.gz");
     }
 
     public Task<StarlinkSnapshot> GetAsync(CancellationToken cancellationToken)
@@ -64,6 +67,35 @@ public sealed class StarlinkService
                 }
                 catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException or FormatException)
                 { logger.LogWarning(error, "Unable to restore Starlink cache."); }
+                // Recover older operational-only deployments without inventing missing positions.
+                if (File.Exists(bootstrapPath))
+                {
+                    try
+                    {
+                        if (new FileInfo(bootstrapPath).Length > 12_000_000) throw new FormatException("Oversized recovery snapshot.");
+                        await using var source = File.OpenRead(bootstrapPath);
+                        await using var compressed = new GZipStream(source, CompressionMode.Decompress);
+                        using var buffer = new MemoryStream();
+                        var chunk = new byte[8192];
+                        int length;
+                        while ((length = await compressed.ReadAsync(chunk, cancellationToken)) > 0)
+                        {
+                            if (buffer.Length + length > 12_000_000) throw new FormatException("Oversized expanded recovery snapshot.");
+                            buffer.Write(chunk, 0, length);
+                        }
+                        var recovered = JsonSerializer.Deserialize<StarlinkSnapshot>(buffer.ToArray());
+                        if (recovered is not null && recovered.StatusCoverageComplete && ValidCache(recovered)
+                            && DateTimeOffset.UtcNow - recovered.RetrievedAt < TimeSpan.FromDays(7)
+                            && (snapshot is null || recovered.RetrievedAt > snapshot.RetrievedAt))
+                        {
+                            snapshot = recovered;
+                            await PersistAsync(recovered, cancellationToken);
+                            logger.LogInformation("Recovered complete Starlink status coverage from validated snapshot dated {RetrievedAt}.", recovered.RetrievedAt);
+                        }
+                    }
+                    catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException or FormatException)
+                    { logger.LogWarning(error, "Unable to load Starlink recovery snapshot."); }
+                }
             }
             // CelesTrak publishes GP updates every two hours. A click must not re-download identical data.
             var now = DateTimeOffset.UtcNow;
@@ -88,21 +120,26 @@ public sealed class StarlinkService
                 if (snapshot is null) throw new HttpRequestException("Starlink data unavailable.", error);
                 return snapshot;
             }
-            try
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                await File.WriteAllTextAsync(path + ".tmp", JsonSerializer.Serialize(snapshot), cancellationToken);
-                File.Move(path + ".tmp", path, overwrite: true);
-                PersistenceFailed = false;
-            }
-            catch (Exception error) when (error is IOException or UnauthorizedAccessException)
-            {
-                PersistenceFailed = true;
-                logger.LogWarning(error, "Unable to persist Starlink cache.");
-            }
+            await PersistAsync(snapshot, cancellationToken);
             return snapshot;
         }
         finally { gate.Release(); }
+    }
+
+    private async Task PersistAsync(StarlinkSnapshot value, CancellationToken cancellationToken)
+    {
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            await File.WriteAllTextAsync(path + ".tmp", JsonSerializer.Serialize(value), cancellationToken);
+            File.Move(path + ".tmp", path, overwrite: true);
+            PersistenceFailed = false;
+        }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+        {
+            PersistenceFailed = true;
+            logger.LogWarning(error, "Unable to persist Starlink cache.");
+        }
     }
 
     public static StarlinkSnapshot Parse(string catalogJson, string elementsJson, DateTimeOffset retrievedAt)
@@ -140,7 +177,7 @@ public sealed class StarlinkService
                     DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var epoch)
                 || epoch > retrievedAt.AddDays(1)) throw new FormatException("Invalid Starlink epoch or name.");
             foreach (var field in new[] { "MEAN_MOTION", "ECCENTRICITY", "INCLINATION", "RA_OF_ASC_NODE",
-                         "ARG_OF_PERICENTER", "MEAN_ANOMALY", "BSTAR", "MEAN_MOTION_DOT", "MEAN_MOTION_DDOT" })
+                             "ARG_OF_PERICENTER", "MEAN_ANOMALY", "BSTAR", "MEAN_MOTION_DOT", "MEAN_MOTION_DDOT" })
                 if (!entry.TryGetProperty(field, out var value) || value.ValueKind != JsonValueKind.Number || !value.TryGetDouble(out var n) || !double.IsFinite(n))
                     throw new FormatException($"Invalid orbital field {field}.");
             if (entry.GetProperty("MEAN_MOTION").GetDouble() <= 0
@@ -176,9 +213,12 @@ public sealed class StarlinkService
         var catalog = saved.Elements.Select(entry => new
         {
             OBJECT_NAME = Text(entry, "OBJECT_NAME"),
-            NORAD_CAT_ID = entry.GetProperty("NORAD_CAT_ID"), OBJECT_TYPE = "PAY",
+            NORAD_CAT_ID = entry.GetProperty("NORAD_CAT_ID"),
+            OBJECT_TYPE = "PAY",
             OPS_STATUS_CODE = saved.StatusCoverageComplete ? Text(entry, "PETABIT_STATUS") : "+",
-            ORBIT_CENTER = "EA", ORBIT_TYPE = "ORB", DECAY_DATE = ""
+            ORBIT_CENTER = "EA",
+            ORBIT_TYPE = "ORB",
+            DECAY_DATE = ""
         });
         try
         {

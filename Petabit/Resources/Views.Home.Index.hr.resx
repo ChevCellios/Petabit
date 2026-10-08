@@ -337,4 +337,8 @@
   <data name="StarlinkZoomIn" xml:space="preserve"><value>Povećaj</value></data>
   <data name="StarlinkZoomOut" xml:space="preserve"><value>Smanji</value></data>
   <data name="StarlinkReset" xml:space="preserve"><value>Vrati pogled</value></data>
+  <data name="StarlinkLayerEmpty" xml:space="preserve"><value>Za odabrane slojeve nema dostupnih položaja.</value></data>
+  <data name="StarlinkAllHidden" xml:space="preserve"><value>Svi dostupni slojevi su isključeni. Uključi barem jedan sloj.</value></data>
+  <data name="StarlinkNoPositions" xml:space="preserve"><value>Nema dostupnih položaja</value></data>
+  <data name="StarlinkLayerHelp" xml:space="preserve"><value>Broj uz sloj označava satelite s dostupnim položajima, ne ukupan broj u katalogu. Slojevi bez položaja nisu dostupni.</value></data>
 </root>

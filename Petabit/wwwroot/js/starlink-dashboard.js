@@ -16,6 +16,7 @@ let pending = false;
 let rotation = -.28;
 let pointerX;
 let zoom = 1;
+let mappedLayers = [0,0,0,0];
 const zoomInput = document.getElementById("starlink-zoom");
 const layers = Array.from(panel.querySelectorAll("[data-satellite-layer]"));
 const earthKm = 6371;
@@ -78,6 +79,12 @@ function draw() {
         }
     }
     canvas.dataset.visibleCount = String(dots.length);
+    if (frame) {
+        const available = mappedLayers.some((count,index) => count > 0 && layers[index].checked);
+        const empty = document.getElementById('starlink-empty');
+        empty.hidden = available;
+        empty.textContent = available ? '' : mappedLayers.some(count => count > 0) ? strings.allHidden : strings.layerEmpty;
+    }
     const paintDots = front => {
         const colors = light ? ['#006c9c', '#9b6500', '#c63542', '#596b80'] : ['#8bdcff', '#ffd475', '#ff8491', '#b9c4d5'];
         for (let status = 0; status < colors.length; status++) {
@@ -159,6 +166,7 @@ button.addEventListener('click', async () => {
             frame = next;
             if (!next.count) status.textContent = strings.error;
             canvas.dataset.mappedCount = String(next.count);
+            updateLayerCoverage(next, number);
             canvas.dataset.positionTime = String(next.timestamp);
             const nonoperationalMapped = next.statuses?.reduce((count, value) => count + (value === 2 ? 1 : 0), 0) ?? 0;
             const coverage = `${strings.mapped}: ${number.format(next.count)} / ${number.format(data.onOrbitCount)}`;
@@ -219,3 +227,14 @@ canvas.addEventListener('wheel', event => {
     if (next !== zoom) { event.preventDefault(); setZoom(next); }
 }, { passive: false });
 setZoom(1);
+
+function updateLayerCoverage(next, number) {
+    mappedLayers = [0,0,0,0];
+    for (let index=0;index<next.count;index++) mappedLayers[next.statuses?.[index] ?? 0]++;
+    for (let index=0;index<layers.length;index++) {
+        const count=mappedLayers[index];
+        document.querySelector('[data-layer-count="'+index+'"]').textContent = number.format(count);
+        layers[index].disabled = count === 0;
+        layers[index].parentElement.title = count === 0 ? strings.noPositions : '';
+    }
+}
