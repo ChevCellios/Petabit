@@ -332,4 +332,9 @@
   <data name="BooksSummary" xml:space="preserve"><value>Knowledge for better code.</value></data>
   <data name="AppsSummary" xml:space="preserve"><value>Learn through daily practice.</value></data>
   <data name="BlockchainSummary" xml:space="preserve"><value>Explore decentralized systems.</value></data>
+  <data name="StarlinkLayers" xml:space="preserve"><value>Satellite layers</value></data>
+  <data name="StarlinkZoom" xml:space="preserve"><value>Globe zoom</value></data>
+  <data name="StarlinkZoomIn" xml:space="preserve"><value>Zoom in</value></data>
+  <data name="StarlinkZoomOut" xml:space="preserve"><value>Zoom out</value></data>
+  <data name="StarlinkReset" xml:space="preserve"><value>Reset view</value></data>
 </root>

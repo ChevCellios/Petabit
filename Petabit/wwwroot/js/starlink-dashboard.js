@@ -15,6 +15,9 @@ let animation;
 let pending = false;
 let rotation = -.28;
 let pointerX;
+let zoom = 1;
+const zoomInput = document.getElementById("starlink-zoom");
+const layers = Array.from(panel.querySelectorAll("[data-satellite-layer]"));
 const earthKm = 6371;
 const continents = [
             [[72,-168],[70,-140],[60,-128],[55,-122],[49,-125],[43,-124],[34,-117],[23,-110],[17,-96],[25,-82],[30,-81],[43,-70],[51,-58],[59,-64],[66,-80],[73,-105],[72,-135],[72,-168]],
@@ -33,7 +36,7 @@ function resize() {
 }
 function draw() {
     const w = canvas.clientWidth, h = canvas.clientHeight;
-    const cx = w / 2, cy = h / 2, radius = Math.min(w, h) * .385;
+    const cx = w / 2, cy = h / 2, radius = Math.min(w, h) * .385 * zoom;
     const light = document.body.classList.contains('light-mode');
     const cos = Math.cos(rotation), sin = Math.sin(rotation);
     const project = (lat, lon) => {
@@ -65,6 +68,7 @@ function draw() {
     if (frame) {
         const dt = motion.checked && !document.hidden ? Math.min(.5, Math.max(0, (Date.now() - frame.sentAt) / 1000)) * frame.speed : 0;
         for (let i = 0; i < frame.count * 6; i += 6) {
+            if (!layers[frame.statuses?.[i / 6] ?? 0].checked) continue;
             const p = frame.packed;
             const x = p[i] + p[i + 3] * dt, y = p[i + 1] + p[i + 4] * dt, z = p[i + 2] + p[i + 5] * dt;
             const depth = x * cos - y * sin;
@@ -73,6 +77,7 @@ function draw() {
             dots.push({ x: cx + dx, y: cy + dy, front: depth >= 0, status: frame.statuses?.[i / 6] ?? 0 });
         }
     }
+    canvas.dataset.visibleCount = String(dots.length);
     const paintDots = front => {
         const colors = light ? ['#006c9c', '#9b6500', '#c63542', '#596b80'] : ['#8bdcff', '#ffd475', '#ff8491', '#b9c4d5'];
         for (let status = 0; status < colors.length; status++) {
@@ -193,3 +198,24 @@ canvas.addEventListener('pointermove', event => {
 canvas.addEventListener('pointerup', () => { pointerX = undefined; });
 canvas.addEventListener('pointercancel', () => { pointerX = undefined; });
 window.addEventListener('pagehide', () => { worker?.terminate(); cancelAnimationFrame(animation); });
+
+function redrawView() { cancelAnimationFrame(animation); if (!panel.hidden) draw(); }
+function setZoom(value) {
+    zoom = Math.max(1, Math.min(3, Number(value) || 1));
+    zoomInput.value = String(zoom);
+    document.getElementById('starlink-zoom-value').value = zoom.toFixed(1) + '×';
+    document.getElementById('starlink-zoom-out').disabled = zoom <= 1;
+    document.getElementById('starlink-zoom-in').disabled = zoom >= 3;
+    canvas.dataset.zoom = String(zoom);
+    redrawView();
+}
+zoomInput.addEventListener('input', () => setZoom(zoomInput.value));
+document.getElementById('starlink-zoom-in').addEventListener('click', () => setZoom(zoom + .2));
+document.getElementById('starlink-zoom-out').addEventListener('click', () => setZoom(zoom - .2));
+document.getElementById('starlink-view-reset').addEventListener('click', () => { rotation = -.28; setZoom(1); });
+for (const layer of layers) layer.addEventListener('change', redrawView);
+canvas.addEventListener('wheel', event => {
+    const next = Math.max(1, Math.min(3, zoom - Math.sign(event.deltaY) * .1));
+    if (next !== zoom) { event.preventDefault(); setZoom(next); }
+}, { passive: false });
+setZoom(1);
