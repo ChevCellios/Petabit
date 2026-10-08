@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -129,24 +129,196 @@
   <data name="BlockchainLink" xml:space="preserve">
     <value>Blockchain</value>
   </data>
-  <data name="LedLocation" xml:space="preserve"><value>Lokacija ISS-a</value></data>
-  <data name="LedLatitude" xml:space="preserve"><value>Geografska širina</value></data>
-  <data name="LedLongitude" xml:space="preserve"><value>Geografska dužina</value></data>
-  <data name="LedSpeed" xml:space="preserve"><value>Brzina</value></data>
-  <data name="LedAstronauts" xml:space="preserve"><value>Astronauta na ISS-u</value></data>
-  <data name="LedCrew" xml:space="preserve"><value>Posada</value></data>
-  <data name="LedDocked" xml:space="preserve"><value>Spojeno na ISS</value></data>
-  <data name="LedReference" xml:space="preserve"><value>Referentno stanje</value></data>
-  <data name="LedSource" xml:space="preserve"><value>Izvor</value></data>
-  <data name="LedUnavailable" xml:space="preserve"><value>ISS SIGNAL NIJE DOSTUPAN</value></data>
-  <data name="HologramKicker" xml:space="preserve"><value>ORBITALNI PRIKAZ</value></data>
-  <data name="HologramTitle" xml:space="preserve"><value>Hologram Zemlje</value></data>
-  <data name="HologramWaiting" xml:space="preserve"><value>Čeka Ping ISS</value></data>
-  <data name="HologramCanvasLabel" xml:space="preserve"><value>Hologramski prikaz Zemlje i položaja ISS-a</value></data>
-  <data name="HologramNote" xml:space="preserve"><value>Trenutna oznaka koristi podatke primljene nakon pinga. Linija prikazuje projekciju ISS orbite.</value></data>
-  <data name="CountryUsa" xml:space="preserve"><value>SAD</value></data>
-  <data name="CountryFrance" xml:space="preserve"><value>Francuska</value></data>
-  <data name="CountryRussia" xml:space="preserve"><value>Rusija</value></data>
-  <data name="PurposeCrewed" xml:space="preserve"><value>Posadna letjelica</value></data>
-  <data name="PurposeCargo" xml:space="preserve"><value>Teretna letjelica</value></data>
+  <data name="LedLocation" xml:space="preserve">
+    <value>Lokacija ISS-a</value>
+  </data>
+  <data name="LedLatitude" xml:space="preserve">
+    <value>Geografska širina</value>
+  </data>
+  <data name="LedLongitude" xml:space="preserve">
+    <value>Geografska dužina</value>
+  </data>
+  <data name="LedSpeed" xml:space="preserve">
+    <value>Brzina</value>
+  </data>
+  <data name="LedAstronauts" xml:space="preserve">
+    <value>Astronauta na ISS-u</value>
+  </data>
+  <data name="LedCrew" xml:space="preserve">
+    <value>Posada</value>
+  </data>
+  <data name="LedDocked" xml:space="preserve">
+    <value>Spojeno na ISS</value>
+  </data>
+  <data name="LedReference" xml:space="preserve">
+    <value>Referentno stanje</value>
+  </data>
+  <data name="LedSource" xml:space="preserve">
+    <value>Izvor</value>
+  </data>
+  <data name="LedUnavailable" xml:space="preserve">
+    <value>ISS SIGNAL NIJE DOSTUPAN</value>
+  </data>
+  <data name="HologramKicker" xml:space="preserve">
+    <value>ORBITALNI PRIKAZ</value>
+  </data>
+  <data name="HologramTitle" xml:space="preserve">
+    <value>Hologram Zemlje</value>
+  </data>
+  <data name="HologramWaiting" xml:space="preserve">
+    <value>Povezivanje s ISS-om</value>
+  </data>
+  <data name="HologramCanvasLabel" xml:space="preserve">
+    <value>Hologramski prikaz Zemlje i položaja ISS-a</value>
+  </data>
+  <data name="HologramNote" xml:space="preserve">
+    <value>Oznaka koristi posljednji dohvaćeni položaj. Linija orbite je ilustracija, a ne predviđena putanja leta.</value>
+  </data>
+  <data name="CountryUsa" xml:space="preserve">
+    <value>SAD</value>
+  </data>
+  <data name="CountryFrance" xml:space="preserve">
+    <value>Francuska</value>
+  </data>
+  <data name="CountryRussia" xml:space="preserve">
+    <value>Rusija</value>
+  </data>
+  <data name="PurposeCrewed" xml:space="preserve">
+    <value>Posadna letjelica</value>
+  </data>
+  <data name="PurposeCargo" xml:space="preserve">
+    <value>Teretna letjelica</value>
+  </data>
+  <data name="VehiclesTitle">
+    <value>Svemirski brodovi</value>
+  </data>
+  <data name="NoEvents">
+    <value>NASA objave pojavit će se nakon prve uspješne provjere.</value>
+  </data>
+  <data name="DockedStatus">
+    <value>Spojeno s postajom</value>
+  </data>
+  <data name="PositionUpdated">
+    <value>Položaj osvježen</value>
+  </data>
+  <data name="Review">
+    <value>NASA događaj zahtijeva provjeru. Nejasne promjene nisu primijenjene.</value>
+  </data>
+  <data name="Stale">
+    <value>Provjera uživo nije dostupna ili kasni. Prikazano je posljednje potvrđeno stanje postaje.</value>
+  </data>
+  <data name="CountryCanada">
+    <value>Kanada</value>
+  </data>
+  <data name="Refresh">
+    <value>📡 Ping ISS</value>
+  </data>
+  <data name="EventNews">
+    <value>NASA novost</value>
+  </data>
+  <data name="EventsNote">
+    <value>NASA naslovi prikazani su na izvornom jeziku. Vremena označavaju objavu; najave ne mijenjaju stanje postaje.</value>
+  </data>
+  <data name="OnStation">
+    <value>Članova na postaji</value>
+  </data>
+  <data name="PersistenceWarning">
+    <value>Najnovije stanje nije spremljeno za sljedeće pokretanje.</value>
+  </data>
+  <data name="EventsTitle">
+    <value>Novosti s postaje</value>
+  </data>
+  <data name="Confirmed">
+    <value>Stanje potvrđeno</value>
+  </data>
+  <data name="Sound">
+    <value>Zvuk pri osvježavanju</value>
+  </data>
+  <data name="EventCrewArrival">
+    <value>Ulazak posade potvrđen</value>
+  </data>
+  <data name="Checked">
+    <value>NASA posljednji put provjerena</value>
+  </data>
+  <data name="Loading">
+    <value>Učitavanje…</value>
+  </data>
+  <data name="EventDeparture">
+    <value>Odlazak potvrđen</value>
+  </data>
+  <data name="EventArrival">
+    <value>Dolazak potvrđen</value>
+  </data>
+  <data name="VideoTitle">
+    <value>Pogled uživo s ISS-a · 5 sekundi</value>
+  </data>
+  <data name="VideoNote">
+    <value>Pet sekundi NASA-inog aktualnog prijenosa preko YouTubea, bez zvuka. Slika kamere ovisi o vezi s postajom i dnevnom svjetlu.</value>
+  </data>
+  <data name="VideoSource">
+    <value>Otvori NASA izvor kamere</value>
+  </data>
+  <data name="VideoLoading">
+    <value>Povezivanje s NASA kamerom uživo…</value>
+  </data>
+  <data name="VideoPlaying">
+    <value>Prikaz uživo traje · zaustavlja se nakon 5 sekundi</value>
+  </data>
+  <data name="VideoEnded">
+    <value>Prikaz od pet sekundi je završen. Za novi pogled uživo pritisni Ping ISS.</value>
+  </data>
+  <data name="VideoError">
+    <value>Kamera uživo nije dostupna ili se ne može prikazati u panelu. Pokušaj ponovno ili otvori NASA izvor.</value>
+  </data>
+  <data name="VideoBlocked">
+    <value>Pritisni Play u videu za početak prikaza od pet sekundi.</value>
+  </data>
+  <data name="StarlinkTitle" xml:space="preserve">
+    <value>Starlink oko Zemlje</value>
+  </data>
+  <data name="StarlinkLoading" xml:space="preserve">
+    <value>Dohvaćanje Starlink podataka…</value>
+  </data>
+  <data name="StarlinkError" xml:space="preserve">
+    <value>Starlink podaci trenutačno nisu dostupni. Pokušaj ponovno kasnije.</value>
+  </data>
+  <data name="StarlinkStale" xml:space="preserve">
+    <value>Podaci su stariji ili izvor nije dostupan. Prikazuje se posljednji uspješan dohvat; položaji mogu odstupati.</value>
+  </data>
+  <data name="StarlinkMapped" xml:space="preserve">
+    <value>Prikazano orbitalnih putanja</value>
+  </data>
+  <data name="StarlinkMotion" xml:space="preserve">
+    <value>Kretanje prema trenutačnom vremenu · 1×</value>
+  </data>
+  <data name="StarlinkPaused" xml:space="preserve">
+    <value>Kretanje pauzirano</value>
+  </data>
+  <data name="StarlinkUpdated" xml:space="preserve">
+    <value>Dohvaćeno</value>
+  </data>
+  <data name="StarlinkEpoch" xml:space="preserve">
+    <value>Starost orbitalnih podataka · raspon epoha</value>
+  </data>
+  <data name="StarlinkOperational" xml:space="preserve">
+    <value>Operativni u orbiti (+)</value>
+  </data>
+  <data name="StarlinkOnOrbit" xml:space="preserve">
+    <value>Ukupno u orbiti</value>
+  </data>
+  <data name="StarlinkPartial" xml:space="preserve">
+    <value>Djelomično operativni (P)</value>
+  </data>
+  <data name="StarlinkAnimate" xml:space="preserve">
+    <value>Kretanje satelita</value>
+  </data>
+  <data name="StarlinkCanvas" xml:space="preserve">
+    <value>Globus s položajima operativnih Starlink satelita</value>
+  </data>
+  <data name="StarlinkNote" xml:space="preserve">
+    <value>Plave točke su izračunati položaji operativnih satelita, prema CelesTrak orbitalnim podacima. To nije izravna telemetrija. Povuci globus za promjenu pogleda. Operativni broj prati oznaku + u katalogu, a ne jamstvo pružanja internetske usluge.</value>
+  </data>
+  <data name="StarlinkSource" xml:space="preserve">
+    <value>Status i izvor podataka</value>
+  </data>
 </root>

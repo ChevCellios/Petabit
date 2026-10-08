@@ -25,6 +25,7 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
                 builder.ConfigureLogging(logging => logging.ClearProviders());
                 builder.ConfigureServices(services =>
                 {
+                    services.Configure<Petabit.Services.StationSyncOptions>(options => options.Enabled = false);
                     services.AddDataProtection().UseEphemeralDataProtectionProvider();
                     services.RemoveAll<IHttpClientFactory>();
                     services.AddSingleton<IHttpClientFactory>(
@@ -370,6 +371,19 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
     private HttpClient CreateClientWithIssResponse(HttpStatusCode statusCode, string content)
         => CreateClientWithHandler(new StubHttpMessageHandler(statusCode, content));
 
+    [Fact]
+    public async Task StationStatusRemainsAvailableWhenPositionApiFails()
+    {
+        using var client = CreateClientWithIssResponse(HttpStatusCode.ServiceUnavailable, "Unavailable");
+        var response = await client.GetAsync("/Home/StationData");
+        var body = await response.Content.ReadAsStringAsync();
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("\"astronautCount\":11", body);
+        Assert.Contains("Crew-13 Dragon", body);
+        Assert.Contains("\"stationStatusIsStale\":true", body);
+        Assert.Equal("no-store,no-cache", response.Headers.CacheControl?.ToString()?.Replace(" ", ""));
+    }
+
     private HttpClient CreateClientWithHandler(HttpMessageHandler handler)
     {
         return new WebApplicationFactory<Program>()
@@ -378,6 +392,7 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
                 builder.ConfigureLogging(logging => logging.ClearProviders());
                 builder.ConfigureServices(services =>
                 {
+                    services.Configure<Petabit.Services.StationSyncOptions>(options => options.Enabled = false);
                     services.AddDataProtection().UseEphemeralDataProtectionProvider();
                     services.RemoveAll<IHttpClientFactory>();
                     services.AddSingleton<IHttpClientFactory>(

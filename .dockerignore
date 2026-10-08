@@ -11,3 +11,5 @@
 .nuget-packages
 Petabit/docs
 Petabit.Tests
+**/App_Data
+artifacts

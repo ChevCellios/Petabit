@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 # Local NuGet state used by isolated builds.
 .nuget-appdata/
+**/App_Data/

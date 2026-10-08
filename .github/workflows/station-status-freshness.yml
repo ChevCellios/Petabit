@@ -2,7 +2,7 @@ name: Station Status Freshness
 
 on:
   schedule:
-    - cron: "0 7 * * 1"
+    - cron: "0 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -10,21 +10,22 @@ permissions:
 
 jobs:
   verify-station-status:
-    name: Verify curated ISS data age
+    name: Verify live NASA synchronization
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-
+    timeout-minutes: 3
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v6
-        with:
-          dotnet-version: 10.0.x
-
-      - name: Restore dependencies
-        run: dotnet restore Petabit.sln --configfile NuGet.Config
-
-      - name: Check station-status freshness
-        run: dotnet test Petabit.Tests/Petabit.Tests.csproj --configuration Release --no-restore --filter "Category=StationStatusFreshness"
+      - name: Check production station status
+        env:
+          SITE_URL: https://petabit-production.up.railway.app
+        run: |
+          curl --fail --silent --show-error --connect-timeout 5 --max-time 20 \
+            "$SITE_URL/Home/StationData" |
+            jq --exit-status '
+              .stationStatusCheckedAt != null and
+              (.stationStatusIsStale == false) and
+              (.stationStatusRefreshFailed == false) and
+              (.stationStatusNeedsReview == false) and
+              (.stationStatusPersistenceFailed == false) and
+              (.astronautCount == (.astronauts | length)) and
+              ((.dockedVehicles | length) > 0)
+            '

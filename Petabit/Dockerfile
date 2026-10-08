@@ -12,5 +12,7 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
+RUN mkdir -p /app/App_Data && chown "$APP_UID" /app/App_Data
+
 USER $APP_UID
 ENTRYPOINT ["sh", "-c", "exec dotnet Petabit.dll --urls http://0.0.0.0:${PORT:-3000}"]

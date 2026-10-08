@@ -27,7 +27,7 @@ Petabit je responzivna i višejezična ASP.NET Core MVC aplikacija za tehnološk
 - animirani hologramski prikaz Zemlje, orbite i položaja ISS-a
 - LED matrični prikaz lokacije, brzine, posade i spojenih letjelica
 - minimalni ISS prikaz kao odvojeno, lagano sučelje nad istim API endpointom
-- kurirani podaci o posadi i letjelicama s poveznicom na NASA-u
+- automatska provjera NASA objava i konfiguracije postaje svake dvije minute, uz pohranu posljednjeg pouzdanog stanja
 - responzivan navbar i prikaz prilagođen mobilnim uređajima
 - stranice za knjige, aplikacije, blockchain i privatnost
 - Google Analytics koji se učitava tek nakon korisničke privole
@@ -44,6 +44,12 @@ Izvori podataka:
 
 - [Where the ISS at? API](https://wheretheiss.at/) — trenutačna lokacija i brzina ISS-a
 - [NASA](https://www.nasa.gov/international-space-station/) — referentni podaci o postaji, posadi i letjelicama
+
+Podaci o posadi i brodovima dolaze iz zasebnog pozadinskog NASA servisa. `/Home/StationData` prikazuje ih neovisno o dostupnosti API-ja za položaj. Početna stranica automatski osvježava prikaz svakih 30 sekundi i razlikuje položaj uživo od potvrđenog stanja postaje. Nejasne promjene zahtijevaju provjeru; najave ne mijenjaju stanje.
+
+Za pohranu između Railway deploymenta potreban je persistent volume na `/app/App_Data`. Detalji konfiguracije, pravila i oporavka: [NASA sinkronizacija](Petabit/docs/nasa-station-sync.md).
+
+`Ping ISS` otvara klizeći LED izvještaj i kompaktni plutajući panel s pet sekundi prijenosa uživo. `Ping Starlink` otvara zaseban globus s kretanjem operativnih satelita, brojem operativnih i ukupnih satelita u orbiti te starošću podataka. Položaji se računaju iz CelesTrak OMM podataka; zajednička predmemorija traje dva sata. Detalji: [Starlink praćenje](Petabit/docs/starlink-tracking.md).
 
 ## 🛡️ Sigurnost i privatnost
 
@@ -65,7 +71,7 @@ Izvori podataka:
 - `/health/live` provjera procesa i `/health/ready` provjera dostupnosti ISS servisa
 - post-deployment smoke test nakon svakog pusha u `master`
 - uptime provjera produkcije svakih 15 minuta
-- tjedna provjera starosti kuriranih podataka o ISS posadi i letjelicama
+- provjera produkcijske NASA sinkronizacije svakih sat vremena
 - smoke test početne stranice, readiness endpointa i ISS trackera
 - strukturirani JSON logovi u produkciji
 - validirani `X-Correlation-ID` za povezivanje korisničkog zahtjeva s Railway logovima
