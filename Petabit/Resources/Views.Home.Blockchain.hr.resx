@@ -126,4 +126,5 @@
   <data name="BackHome" xml:space="preserve"><value>← Početna</value></data>
   <data name="ExploreResources" xml:space="preserve"><value>ODABRANI RESURSI</value></data>
   <data name="PageIntro" xml:space="preserve"><value>Istraži odabrane resurse za učenje i razvoj digitalnih vještina.</value></data>
+  <data name="BlockchainTechnology" xml:space="preserve"><value>Blockchain tehnologija</value></data>
 </root>

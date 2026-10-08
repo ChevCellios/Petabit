@@ -126,4 +126,5 @@
   <data name="BackHome" xml:space="preserve"><value>← Home</value></data>
   <data name="ExploreResources" xml:space="preserve"><value>SELECTED RESOURCES</value></data>
   <data name="PageIntro" xml:space="preserve"><value>Explore selected resources for learning and developing digital skills.</value></data>
+  <data name="BlockchainTechnology" xml:space="preserve"><value>Blockchain technology</value></data>
 </root>
