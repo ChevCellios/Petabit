@@ -283,8 +283,9 @@
     <value>Starlink podaci trenutačno nisu dostupni. Pokušaj ponovno kasnije.</value>
   </data>
   <data name="StarlinkStale" xml:space="preserve">
-    <value>Podaci su stariji ili izvor nije dostupan. Prikazuje se posljednji uspješan dohvat; položaji mogu odstupati.</value>
+    <value>Orbitalni podaci su zastarjeli. Izračunati položaji mogu odstupati.</value>
   </data>
+  <data name="StarlinkRefreshFailed" xml:space="preserve"><value>Osvježavanje Starlink podataka nije uspjelo. Prikazuje se posljednji uspješan dohvat.</value></data>
   <data name="StarlinkMapped" xml:space="preserve">
     <value>Prikazano orbitalnih putanja</value>
   </data>

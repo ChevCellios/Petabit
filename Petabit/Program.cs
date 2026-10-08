@@ -188,6 +188,8 @@ namespace Petabit
                         }));
             });
 
+            builder.Services.AddSingleton(Petabit.Services.BuildVersion.FromAssembly(typeof(Program).Assembly));
+
             var app = builder.Build();
 
             app.UseForwardedHeaders();
@@ -272,6 +274,13 @@ namespace Petabit
             {
                 Predicate = registration => registration.Tags.Contains("ready")
             }).DisableRateLimiting();
+
+            app.MapGet("/version", (HttpContext context, Petabit.Services.BuildVersion version) =>
+            {
+                context.Response.Headers.CacheControl = "no-store";
+                return Results.Json(new { commitSha = version.CommitSha },
+                    statusCode: version.CommitSha is null ? StatusCodes.Status503ServiceUnavailable : StatusCodes.Status200OK);
+            });
 
             app.MapControllerRoute(
                 name: "default",

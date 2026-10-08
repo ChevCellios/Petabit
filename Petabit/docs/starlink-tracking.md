@@ -33,3 +33,11 @@ The page emits content hashes for the worker, orbital module and clock. The work
 `dotnet test Petabit.sln --configuration Release` covers catalog classification, invalid data, six-digit IDs, deduplication, persisted cache/restart and failure retention. `node --test Petabit.Tests/*.test.cjs Petabit.Tests/*.test.mjs` covers real-time propagation, Earth-fixed velocity interpolation and invalid-orbit omission, plus ISS preview playback.
 
 Vendored npm tarball SHA-256: `B812DA8AF116EA123F9D3763CE2FBCF7A0559C6DD1AF25B0AC9DA567CCF2A1B5`. No browser CDN or WebAssembly dependency is needed.
+
+## Refresh warnings and deployment identity
+
+The panel distinguishes old retrieval/orbital epochs (`isStale`) from an unsuccessful source refresh (`refreshFailed`). Both explanations appear when both conditions apply. A stale warning alone is not evidence of an upstream outage.
+
+`GET /version` returns only `{ "commitSha": "<full build SHA>" }` with `Cache-Control: no-store`. The SHA is assembly metadata captured during publish, not a runtime environment claim. Railway GitHub builds pass `RAILWAY_GIT_COMMIT_SHA` through the Docker build argument into `BuildCommitSha`. For other Docker builds pass `--build-arg RAILWAY_GIT_COMMIT_SHA=<full SHA>`; for direct publish pass `-p:BuildCommitSha=<full SHA>`. Missing/invalid build metadata returns HTTP 503 and `{ "commitSha": null }`; local unversioned builds can still serve normal pages and health checks.
+
+Uptime Monitor waits for HTTP 200 liveness and an exact match between `/version` and the workflow's `github.sha` before smoke checks, and checks again before declaring success. An older healthy deployment, an unknown build, or a newer deployment superseding this run will not count as a successful smoke test of the expected commit. These requests do not initiate deployment. Docker CI also checks the version from the built container with NASA polling disabled.

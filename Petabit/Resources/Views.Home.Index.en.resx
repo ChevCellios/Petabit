@@ -283,8 +283,9 @@
     <value>Starlink data is temporarily unavailable. Please try again later.</value>
   </data>
   <data name="StarlinkStale" xml:space="preserve">
-    <value>Data is older or the source is unavailable. Showing the last successful fetch; positions may differ.</value>
+    <value>Orbital data is stale. Calculated positions may be inaccurate.</value>
   </data>
+  <data name="StarlinkRefreshFailed" xml:space="preserve"><value>Starlink data refresh failed. Showing the last successful retrieval.</value></data>
   <data name="StarlinkMapped" xml:space="preserve">
     <value>Orbital tracks displayed</value>
   </data>

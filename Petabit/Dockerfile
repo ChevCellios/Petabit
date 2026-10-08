@@ -5,7 +5,8 @@ COPY ["Petabit/Petabit.csproj", "Petabit/"]
 RUN dotnet restore "Petabit/Petabit.csproj"
 
 COPY . .
-RUN dotnet publish "Petabit/Petabit.csproj" -c Release -o /app/publish --no-restore
+ARG RAILWAY_GIT_COMMIT_SHA
+RUN dotnet publish "Petabit/Petabit.csproj" -c Release -o /app/publish --no-restore -p:BuildCommitSha="$RAILWAY_GIT_COMMIT_SHA"
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app

@@ -150,7 +150,7 @@ button.addEventListener('click', async () => {
             document.getElementById(`starlink-${id}`).textContent = value === null ? '—' : number.format(value);
         const date = value => new Date(value).toLocaleString(strings.locale);
         document.getElementById('starlink-freshness').textContent = `${strings.updated}: ${date(data.retrievedAt)} · ${strings.epoch}: ${date(data.oldestEpoch)} – ${date(data.newestEpoch)}`;
-        warning.textContent = data.isStale || data.refreshFailed ? strings.stale : '';
+        warning.textContent = [data.isStale ? strings.stale : '', data.refreshFailed ? strings.refreshFailed : ''].filter(Boolean).join(' ');
         if (data.persistenceFailed) warning.textContent += ` ${document.getElementById('iss-led-localization').dataset.persistence}`;
         if (!data.statusCoverageComplete) warning.textContent += ` ${strings.legacy}`;
         warning.hidden = !warning.textContent;
@@ -184,7 +184,7 @@ button.addEventListener('click', async () => {
     } catch {
         if (generation !== currentGeneration) return;
         status.textContent = strings.error;
-        if (frame) { warning.textContent = strings.stale; warning.hidden = false; }
+        if (frame) { warning.textContent = strings.refreshFailed; warning.hidden = false; }
     } finally { if (generation === currentGeneration) { pending = false; button.disabled = false; } }
 });
 document.getElementById('starlink-close').addEventListener('click', () => {
