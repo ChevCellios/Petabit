@@ -58,13 +58,13 @@
         <!-- Gumbi u jednom redu, svaki u svojoj koloni -->
         <div class="row justify-content-center mb-4 home-destinations">
             <div class="col-auto">
-                <a href="/Home/Books" class="btn btn-home"><span>📚 @Localizer["BooksLink"]</span><small>@Localizer["BooksSummary"]</small><span class="destination-arrow" aria-hidden="true">↗</span></a>
+                <a href="/Home/Books" class="btn btn-home destination-teal"><span class="destination-icon" aria-hidden="true">📚</span><span class="destination-title">@Localizer["BooksLink"]</span><small>@Localizer["BooksSummary"]</small><span class="destination-arrow" aria-hidden="true">↗</span></a>
             </div>
             <div class="col-auto">
-                <a href="/Home/Apps" class="btn btn-home"><span>📱 @Localizer["AppsLink"]</span><small>@Localizer["AppsSummary"]</small><span class="destination-arrow" aria-hidden="true">↗</span></a>
+                <a href="/Home/Apps" class="btn btn-home destination-violet"><span class="destination-icon" aria-hidden="true">📱</span><span class="destination-title">@Localizer["AppsLink"]</span><small>@Localizer["AppsSummary"]</small><span class="destination-arrow" aria-hidden="true">↗</span></a>
             </div>
             <div class="col-auto">
-                <a href="/Home/Blockchain" class="btn btn-home"><span>🪙 @Localizer["BlockchainLink"]</span><small>@Localizer["BlockchainSummary"]</small><span class="destination-arrow" aria-hidden="true">↗</span></a>
+                <a href="/Home/Blockchain" class="btn btn-home destination-amber"><span class="destination-icon" aria-hidden="true">🪙</span><span class="destination-title">@Localizer["BlockchainLink"]</span><small>@Localizer["BlockchainSummary"]</small><span class="destination-arrow" aria-hidden="true">↗</span></a>
             </div>
         </div>
 
@@ -107,7 +107,7 @@
             </div>
             <p id="starlink-status" class="panel-reference" role="status" aria-live="polite"></p>
             <p id="starlink-warning" class="station-warning" role="status" hidden></p>
-            <div class="starlink-legend"><span class="status-operational">● @Localizer["StarlinkOperational"]</span><span class="status-partial">● @Localizer["StarlinkPartial"]</span><span class="status-nonoperational">● @Localizer["StarlinkNonOperational"]</span><span class="status-other">● @Localizer["StarlinkOther"]</span></div><div class="starlink-stage"><canvas id="starlink-globe" aria-label="@Localizer["StarlinkCanvas"]"></canvas></div>
+            <fieldset class="starlink-legend"><legend>@Localizer["StarlinkLayers"]</legend><label class="status-operational"><input type="checkbox" data-satellite-layer="0" checked /> ● @Localizer["StarlinkOperational"]</label><label class="status-partial"><input type="checkbox" data-satellite-layer="1" checked /> ● @Localizer["StarlinkPartial"]</label><label class="status-nonoperational"><input type="checkbox" data-satellite-layer="2" checked /> ● @Localizer["StarlinkNonOperational"]</label><label class="status-other"><input type="checkbox" data-satellite-layer="3" checked /> ● @Localizer["StarlinkOther"]</label></fieldset><div class="starlink-zoom"><label for="starlink-zoom">@Localizer["StarlinkZoom"]</label><button type="button" id="starlink-zoom-out" aria-label="@Localizer["StarlinkZoomOut"]">−</button><input id="starlink-zoom" type="range" min="1" max="3" step="0.1" value="1" /><button type="button" id="starlink-zoom-in" aria-label="@Localizer["StarlinkZoomIn"]">+</button><output id="starlink-zoom-value" for="starlink-zoom">1.0×</output><button type="button" id="starlink-view-reset">@Localizer["StarlinkReset"]</button></div><div class="starlink-stage"><canvas id="starlink-globe" aria-label="@Localizer["StarlinkCanvas"]"></canvas></div>
             <p class="starlink-note">@Localizer["StarlinkNote"]</p>
             <p id="starlink-coverage" class="panel-reference"></p><p id="starlink-freshness" class="panel-reference"></p>
             <a href="https://celestrak.org/satcat/status.php" target="_blank" rel="noopener noreferrer">CelesTrak · @Localizer["StarlinkSource"]</a>

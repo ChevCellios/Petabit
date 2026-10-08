@@ -332,4 +332,9 @@
   <data name="BooksSummary" xml:space="preserve"><value>Znanje za kvalitetniji kod.</value></data>
   <data name="AppsSummary" xml:space="preserve"><value>Učenje kroz svakodnevnu praksu.</value></data>
   <data name="BlockchainSummary" xml:space="preserve"><value>Istraži decentralizirane sustave.</value></data>
+  <data name="StarlinkLayers" xml:space="preserve"><value>Slojevi satelita</value></data>
+  <data name="StarlinkZoom" xml:space="preserve"><value>Zoom globusa</value></data>
+  <data name="StarlinkZoomIn" xml:space="preserve"><value>Povećaj</value></data>
+  <data name="StarlinkZoomOut" xml:space="preserve"><value>Smanji</value></data>
+  <data name="StarlinkReset" xml:space="preserve"><value>Vrati pogled</value></data>
 </root>
