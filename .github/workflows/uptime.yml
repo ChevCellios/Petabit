@@ -17,38 +17,25 @@ jobs:
   check-production:
     name: Check production availability
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
 
     env:
+      EXPECTED_SHA: ${{ github.sha }}
       SITE_URL: https://petabit-production.up.railway.app
       MAX_ATTEMPTS: ${{ github.event_name == 'push' && '8' || '3' }}
 
     steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
       - name: Allow Railway deployment to start
         if: github.event_name == 'push'
         run: sleep 90
 
-      - name: Wait for production liveness
-        run: |
-          for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
-            status_code="$(curl               --silent               --output /dev/null               --write-out "%{http_code}"               --connect-timeout 5               --max-time 15               "$SITE_URL/health/live" || true)"
-
-            if [ "$status_code" = "200" ]; then
-              echo "Production is live on attempt $attempt."
-              exit 0
-            fi
-
-            if [ "$status_code" = "429" ]; then
-              echo "Railway returned 429 on attempt $attempt/$MAX_ATTEMPTS; backing off for 60 seconds."
-              sleep 60
-            else
-              echo "Liveness returned HTTP ${status_code:-000} on attempt $attempt/$MAX_ATTEMPTS; retrying in 30 seconds."
-              sleep 30
-            fi
-          done
-
-          echo "Production did not become live within the retry window."
-          exit 1
+      - name: Wait for live production and expected deployed commit
+        run: bash .github/scripts/wait-for-deployed-version.sh
 
       - name: Run production smoke test
         run: |
@@ -71,4 +58,5 @@ jobs:
             exit 1
           fi
 
-          echo "Production smoke test passed."
+          MAX_ATTEMPTS=1 bash .github/scripts/wait-for-deployed-version.sh
+          echo "Production smoke test passed for $EXPECTED_SHA."

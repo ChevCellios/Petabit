@@ -63,4 +63,21 @@ jobs:
           persist-credentials: false
 
       - name: Build image
-        run: docker build --file Petabit/Dockerfile --tag petabit:ci .
+        run: docker build --build-arg RAILWAY_GIT_COMMIT_SHA="${{ github.sha }}" --file Petabit/Dockerfile --tag petabit:ci .
+
+      - name: Verify commit embedded in Docker image
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          container="$(docker run --detach --publish 127.0.0.1:8080:3000 --env StationSync__Enabled=false petabit:ci)"
+          trap 'docker rm --force "$container" > /dev/null' EXIT
+          for attempt in $(seq 1 15); do
+            response="$(curl --fail --silent --connect-timeout 2 --max-time 3 http://127.0.0.1:8080/version || true)"
+            if jq --exit-status --arg sha "$EXPECTED_SHA" '.commitSha == $sha' <<< "$response" > /dev/null 2>&1; then
+              echo "Docker image reports the expected build commit."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Docker image did not report the expected build commit."
+          exit 1

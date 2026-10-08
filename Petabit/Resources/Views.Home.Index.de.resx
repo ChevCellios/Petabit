@@ -283,8 +283,9 @@
     <value>Starlink-Daten sind derzeit nicht verfügbar. Bitte später erneut versuchen.</value>
   </data>
   <data name="StarlinkStale" xml:space="preserve">
-    <value>Die Daten sind älter oder die Quelle ist nicht erreichbar. Der letzte erfolgreiche Abruf wird angezeigt; Positionen können abweichen.</value>
+    <value>Die Bahndaten sind veraltet. Berechnete Positionen können abweichen.</value>
   </data>
+  <data name="StarlinkRefreshFailed" xml:space="preserve"><value>Die Aktualisierung der Starlink-Daten ist fehlgeschlagen. Der letzte erfolgreiche Abruf wird angezeigt.</value></data>
   <data name="StarlinkMapped" xml:space="preserve">
     <value>Angezeigte Orbitalbahnen</value>
   </data>

@@ -2,14 +2,15 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const vm=require('node:vm');
 const fs=require('node:fs');
-function setup(){
+function setup(data){
  const elements=new Map();
- const element=id=>{if(!elements.has(id)) elements.set(id,{dataset:{},checked:true,value:'1',hidden:true,clientWidth:800,clientHeight:500,events:{},addEventListener(type,fn){this.events[type]=fn;},setAttribute(){},focus(){}});return elements.get(id);};
+ const element=id=>{if(!elements.has(id)) elements.set(id,{dataset:{},checked:true,value:'1',hidden:true,clientWidth:800,clientHeight:500,events:{},addEventListener(type,fn){this.events[type]=fn;},setAttribute(){},focus(){},scrollIntoView(){}});return elements.get(id);};
  const layers=Array.from({length:4},(_,i)=>{ const layer=element('layer'+i); layer.parentElement={}; return layer; });
  const context2d=new Proxy({createRadialGradient(){return {addColorStop(){}};}},{get:(obj,key)=>key in obj?obj[key]:()=>{}});
  element('starlink-globe').getContext=()=>context2d;
  element('starlink-panel').querySelectorAll=()=>layers;
- const sandbox=vm.createContext({document:{getElementById:element,querySelector:selector=>element(selector),hidden:false,body:{classList:{contains:()=>false}},addEventListener(){}},window:{matchMedia:()=>({matches:true}),addEventListener(){}},devicePixelRatio:1,cancelAnimationFrame(){},requestAnimationFrame(){return 1;},console,Date,Math,Number,String,Array});
+ if(data)element("starlink-panel").dataset={locale:"en",paused:"PAUSED",error:"ERROR",stale:"STALE",refreshFailed:"REFRESH_FAILED",workerUrl:"/worker.js?v=1",orbitsUrl:"/orbits.mjs?v=1",clockUrl:"/clock.mjs?v=1"};
+ const sandbox=vm.createContext({document:{getElementById:element,querySelector:selector=>element(selector),hidden:false,body:{classList:{contains:()=>false}},addEventListener(){}},window:{matchMedia:()=>({matches:true}),addEventListener(){}},AbortController,AbortSignal,URL,location:{origin:"https://localhost"},fetch:async()=>({ok:true,json:async()=>data}),Worker:class{postMessage(){} terminate(){}},devicePixelRatio:1,cancelAnimationFrame(){},requestAnimationFrame(){return 1;},console,Date,Math,Number,String,Array});
  vm.runInContext(fs.readFileSync('Petabit/wwwroot/js/starlink-dashboard.js','utf8'),sandbox);
  return {sandbox,element,layers};
 }
@@ -38,3 +39,13 @@ test('layer coverage reports propagated positions and disables unavailable group
  vm.runInContext('updateLayerCoverage({count:2},new Intl.NumberFormat("en"))',sandbox);
  assert.equal(element('[data-layer-count="0"]').textContent,'2');assert.equal(layers[1].disabled,true);
 });
+
+for(const [isStale,refreshFailed,expected] of [[false,false,''],[true,false,'STALE'],[false,true,'REFRESH_FAILED'],[true,true,'STALE REFRESH_FAILED']]){
+ test(`refresh status distinguishes stale=${isStale} from failure=${refreshFailed}`,async()=>{
+  const {element}=setup({isStale,refreshFailed,statusCoverageComplete:true,operationalCount:1,onOrbitCount:1,partiallyOperationalCount:0,nonOperationalCount:0,retrievedAt:'2026-10-08T12:00:00Z',oldestEpoch:'2026-10-08T12:00:00Z',newestEpoch:'2026-10-08T12:00:00Z',elements:[]});
+  await element('starlink-ping-button').events.click();
+  assert.equal(element('starlink-warning').textContent,expected);
+  assert.equal(element('starlink-warning').hidden,expected==='');
+  assert.equal(element('starlink-status').textContent,'PAUSED');
+ });
+}
