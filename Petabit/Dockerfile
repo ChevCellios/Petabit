@@ -11,8 +11,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
 COPY --from=build /app/publish .
+COPY Petabit/entrypoint.sh /app/entrypoint.sh
 
-RUN mkdir -p /app/App_Data && chown "$APP_UID" /app/App_Data
+RUN mkdir -p /app/App_Data && chown "$APP_UID" /app/App_Data \
+    && sed -i 's/\r$//' /app/entrypoint.sh && chmod 755 /app/entrypoint.sh
 
 USER $APP_UID
-ENTRYPOINT ["sh", "-c", "exec dotnet Petabit.dll --urls http://0.0.0.0:${PORT:-3000}"]
+ENTRYPOINT ["/app/entrypoint.sh"]

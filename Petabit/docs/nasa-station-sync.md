@@ -8,6 +8,8 @@ The application checks NASA's station blog RSS and the dated configuration capti
 
 The Docker image creates `/app/App_Data` with write access for its non-root runtime user. Configure a **Railway persistent volume mounted at `/app/App_Data`** to preserve snapshots between deployments/container replacements. Without that volume, the local container file can be lost when Railway replaces the container. The environment variable `StationSync__StoragePath` can point to a different writable persistent mount. Run a single application replica with this file store; multiple replicas need a shared database and a single synchronization worker.
 
+Railway mounts volumes as root. Set `RAILWAY_RUN_UID=0` so the entrypoint can assign `/app/App_Data` to the image's app user; the entrypoint then drops privileges using `runuser` before starting .NET. The web process remains unprivileged. Without Railway's UID override, the default image runs directly as the app user.
+
 NASA data is written to a temporary file and then atomically replaces the saved snapshot. A successful network check with failed disk storage remains available in memory and emits a persistence warning. Do not put the snapshot under `wwwroot`. `App_Data` is excluded from source control. The initial offline snapshot was manually confirmed from NASA's October 1 configuration and October 2 crew report; it is clearly marked unverified until a live check succeeds.
 
 ## Rules and limits
