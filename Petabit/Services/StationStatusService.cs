@@ -52,12 +52,13 @@ public class StationStatusService : BackgroundService
         {
             if (File.Exists(path))
             {
+                if (new FileInfo(path).Length > 2_000_000) throw new FormatException("Station cache exceeds the allowed size.");
                 var saved = JsonSerializer.Deserialize<StationSnapshot>(await File.ReadAllTextAsync(path, cancellationToken));
                 if (saved is not null && IsValid(saved)) Volatile.Write(ref snapshot, saved);
                 else logger.LogWarning("Saved station status is invalid; using the verified bootstrap.");
             }
         }
-        catch (Exception error) when (error is IOException or JsonException or UnauthorizedAccessException)
+        catch (Exception error) when (error is IOException or JsonException or UnauthorizedAccessException or FormatException)
         {
             logger.LogWarning(error, "Unable to restore station status; using the verified bootstrap.");
         }

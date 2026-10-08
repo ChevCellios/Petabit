@@ -83,6 +83,8 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
         Assert.Equal("text/html", response.Content.Headers.ContentType?.MediaType);
         Assert.True(response.Headers.Contains("Content-Security-Policy"));
         Assert.True(response.Headers.Contains("X-Content-Type-Options"));
+        Assert.Equal("same-origin", Assert.Single(response.Headers.GetValues("Cross-Origin-Opener-Policy")));
+        Assert.Equal("same-origin", Assert.Single(response.Headers.GetValues("Cross-Origin-Resource-Policy")));
     }
 
     [Fact]
@@ -138,6 +140,8 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
         Assert.Contains("default-src 'self'", policy);
         Assert.Contains("frame-ancestors 'none'", policy);
         Assert.Contains("object-src 'none'", policy);
+        Assert.Contains("worker-src 'self'", policy);
+        Assert.Contains("script-src-attr 'none'", policy);
 
         var inlineScripts = Regex.Matches(
             body,
@@ -372,7 +376,7 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
         using var client = CreateClientWithHandler(handler);
 
         using var firstResponse = await client.GetAsync("/Home/Data?test=output-cache");
-        using var secondResponse = await client.GetAsync("/Home/Data?test=output-cache");
+        using var secondResponse = await client.GetAsync("/Home/Data?test=attacker-cache-buster");
 
         Assert.Equal(HttpStatusCode.OK, firstResponse.StatusCode);
         Assert.Equal(HttpStatusCode.OK, secondResponse.StatusCode);
@@ -403,7 +407,7 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
             HttpStatusCode.OK,
             """{"latitude":45.81,"longitude":15.98,"velocity":27600}""");
 
-        for (var requestNumber = 1; requestNumber <= 120; requestNumber++)
+        for (var requestNumber = 1; requestNumber <= 240; requestNumber++)
         {
             using var response = await client.GetAsync("/Home/Privacy");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -418,6 +422,95 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
 
     private HttpClient CreateClientWithIssResponse(HttpStatusCode statusCode, string content)
         => CreateClientWithHandler(new StubHttpMessageHandler(statusCode, content));
+
+    [Fact]
+    public async Task StaticDownloadsAreRateLimitedWhileHealthRemainsAvailable()
+    {
+        using var client = CreateClientWithIssResponse(HttpStatusCode.OK, "{}");
+        for (var i = 0; i < 240; i++)
+        {
+            using var response = await client.GetAsync("/css/content-pages.css");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+        using var limited = await client.GetAsync("/css/content-pages.css");
+        Assert.Equal(HttpStatusCode.TooManyRequests, limited.StatusCode);
+        using var health = await client.GetAsync("/health/live");
+        Assert.Equal(HttpStatusCode.OK, health.StatusCode);
+    }
+
+    [Fact]
+    public async Task RepeatedReadinessChecksDoNotAmplifyRequestsToUpstream()
+    {
+        var handler = new CountingHttpMessageHandler(HttpStatusCode.OK, "{}");
+        using var client = CreateClientWithHandler(handler);
+        var responses = await Task.WhenAll(Enumerable.Range(0, 20).Select(_ => client.GetAsync("/health/ready")));
+        foreach (var response in responses)
+        {
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            response.Dispose();
+        }
+        Assert.Equal(1, handler.RequestCount);
+    }
+
+    [Fact]
+    public async Task HostHeaderOutsideAllowlistIsRejected()
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/");
+        request.Headers.Host = "attacker.example";
+        using var response = await _client.SendAsync(request);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task StructuredMetadataCannotBreakOutOfJsonScriptElement()
+    {
+        const string payload = "</script><script>alert('injected')</script>";
+        using var factory = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(builder =>
+            {
+                builder.UseSetting("Seo:SiteName", payload);
+                builder.ConfigureServices(services => services.Configure<Petabit.Services.StationSyncOptions>(options => options.Enabled = false));
+            });
+        using var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
+        var html = await client.GetStringAsync("/");
+        var json = Regex.Match(html, "<script[^>]*application/ld[^>]*>(.*?)</script>", RegexOptions.Singleline).Groups[1].Value;
+        Assert.NotEmpty(json);
+        Assert.DoesNotContain("<", json);
+        using var parsed = System.Text.Json.JsonDocument.Parse(json);
+        Assert.Equal(payload, parsed.RootElement.GetProperty("name").GetString());
+    }
+
+    [Fact]
+    public async Task MalformedIssDataFailsGracefully()
+    {
+        using var client = CreateClientWithIssResponse(HttpStatusCode.OK, "{malformed");
+        using var response = await client.GetAsync("/Home/Data");
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SaturatedApplicationRejectsWorkButKeepsLivenessAvailable()
+    {
+        using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            builder.ConfigureServices(services => services.Configure<Petabit.Services.StationSyncOptions>(options => options.Enabled = false)));
+        using var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
+        var limiter = factory.Services.GetRequiredService<IOptions<Microsoft.AspNetCore.RateLimiting.RateLimiterOptions>>().Value.GlobalLimiter!;
+        var leases = new List<System.Threading.RateLimiting.RateLimitLease>();
+        try
+        {
+            for (var i = 0; i < 32; i++)
+            {
+                var lease = await limiter.AcquireAsync(new Microsoft.AspNetCore.Http.DefaultHttpContext());
+                Assert.True(lease.IsAcquired);
+                leases.Add(lease);
+            }
+            using var overloaded = await client.GetAsync("/css/content-pages.css");
+            Assert.Equal(HttpStatusCode.TooManyRequests, overloaded.StatusCode);
+            using var health = await client.GetAsync("/health/live");
+            Assert.Equal(HttpStatusCode.OK, health.StatusCode);
+        }
+        finally { foreach (var lease in leases) lease.Dispose(); }
+    }
 
     [Fact]
     public async Task StationStatusRemainsAvailableWhenPositionApiFails()

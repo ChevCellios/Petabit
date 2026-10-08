@@ -18,6 +18,24 @@ namespace Petabit
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.AddServerHeader = false;
+                options.Limits.MaxRequestBodySize = 16 * 1024;
+                options.Limits.MaxRequestHeadersTotalSize = 16 * 1024;
+                options.Limits.MaxRequestHeaderCount = 64;
+                options.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(15);
+            });
+            builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+            {
+                options.ValueCountLimit = 16;
+                options.KeyLengthLimit = 128;
+                options.ValueLengthLimit = 4096;
+                options.MultipartBodyLengthLimit = 16 * 1024;
+            });
+            // All upstream addresses are fixed HTTPS sources. Do not follow redirects to other origins.
+            builder.Services.ConfigureHttpClientDefaults(client => client.ConfigurePrimaryHttpMessageHandler(
+                () => new HttpClientHandler { AllowAutoRedirect = false, UseCookies = false }));
 
             if (!string.IsNullOrWhiteSpace(builder.Configuration["RAILWAY_ENVIRONMENT_ID"]))
             {
@@ -103,6 +121,7 @@ namespace Petabit
             {
                 client.BaseAddress = new Uri("https://api.wheretheiss.at/v1/");
                 client.Timeout = Timeout.InfiniteTimeSpan;
+                client.MaxResponseContentBufferSize = 64 * 1024;
             })
             .AddStandardResilienceHandler(options =>
             {
@@ -120,6 +139,7 @@ namespace Petabit
                 client.BaseAddress = new Uri("https://api.wheretheiss.at/v1/");
                 client.Timeout = TimeSpan.FromSeconds(3);
             });
+            builder.Services.AddSingleton<IssApiHealthCheck>();
             builder.Services.AddHealthChecks()
                 .AddCheck<IssApiHealthCheck>("iss-api", tags: ["ready"]);
             builder.Services.Configure<Petabit.Services.StationSyncOptions>(builder.Configuration.GetSection("StationSync"));
@@ -143,16 +163,19 @@ namespace Petabit
             builder.Services.AddRateLimiter(options =>
             {
                 options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+                options.GlobalLimiter = PartitionedRateLimiter.CreateChained(
+                    PartitionedRateLimiter.Create<HttpContext, string>(_ => RateLimitPartition.GetConcurrencyLimiter(
+                        "application", _ => new ConcurrencyLimiterOptions { PermitLimit = 32, QueueLimit = 0 })),
+                    PartitionedRateLimiter.Create<HttpContext, string>(context =>
                     RateLimitPartition.GetFixedWindowLimiter(
                         context.Connection.RemoteIpAddress?.MapToIPv6().ToString() ?? "unknown-client",
                         _ => new FixedWindowRateLimiterOptions
                         {
-                            PermitLimit = 120,
+                            PermitLimit = 240,
                             Window = TimeSpan.FromMinutes(1),
                             QueueLimit = 0,
                             AutoReplenishment = true
-                        }));
+                        })));
                 options.AddPolicy("iss", context =>
                     RateLimitPartition.GetFixedWindowLimiter(
                         context.Connection.RemoteIpAddress?.MapToIPv6().ToString() ?? "unknown-client",
@@ -208,12 +231,16 @@ namespace Petabit
                     context.Response.Headers["X-Frame-Options"] = "DENY";
                     context.Response.Headers["Referrer-Policy"] = "no-referrer";
                     context.Response.Headers["Permissions-Policy"] = "camera=(), geolocation=(), microphone=()";
+                    context.Response.Headers["Cross-Origin-Opener-Policy"] = "same-origin";
+                    context.Response.Headers["Cross-Origin-Resource-Policy"] = "same-origin";
                     context.Response.Headers["Content-Security-Policy"] =
                         "default-src 'self'; " +
                         "base-uri 'self'; " +
                         "form-action 'self'; " +
                         "frame-ancestors 'none'; " +
                         "object-src 'none'; " +
+                        "worker-src 'self'; " +
+                        "script-src-attr 'none'; " +
                         $"script-src 'self' 'nonce-{cspNonce}' https://www.googletagmanager.com https://www.youtube.com; " +
                         "frame-src https://www.youtube-nocookie.com; " +
                         $"style-src 'self' 'nonce-{cspNonce}'; " +
@@ -229,11 +256,11 @@ namespace Petabit
             });
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
 
 
             app.UseRouting();
             app.UseRateLimiter();
+            app.UseStaticFiles();
             app.UseOutputCache();
             app.UseAuthorization();
 
