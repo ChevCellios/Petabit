@@ -11,6 +11,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Content Include="Data\starlink-bootstrap.json.gz" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
 		<Content Remove="App_Data\**\*" />
 		<None Remove="App_Data\**\*" />
 		<Content Update="wwwroot\lib\**\*.map" CopyToPublishDirectory="Never" />

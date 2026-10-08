@@ -158,6 +158,64 @@ public class StarlinkTests : IDisposable
         Assert.Equal(2, handler.Requests);
     }
 
+    private async Task WriteRecoveryAsync(StarlinkSnapshot value)
+    {
+        Directory.CreateDirectory(Path.Combine(directory, "Data"));
+        await using var file = File.Create(Path.Combine(directory, "Data", "starlink-bootstrap.json.gz"));
+        await using var gzip = new System.IO.Compression.GZipStream(file, System.IO.Compression.CompressionLevel.SmallestSize);
+        await JsonSerializer.SerializeAsync(gzip, value);
+    }
+
+    [Fact]
+    public async Task NewerRecoveryReplacesLegacyCacheAndPersistsPartialPositionsDuringOutage()
+    {
+        Directory.CreateDirectory(Path.Combine(directory, "App_Data"));
+        var legacy = new StarlinkSnapshot(1, 2, 1, DateTimeOffset.UtcNow.AddHours(-4),
+            DateTimeOffset.Parse("2026-10-04T22:36:12.73824Z"), DateTimeOffset.Parse("2026-10-04T22:36:12.73824Z"),
+            [JsonSerializer.SerializeToElement(Orbit(1))]);
+        var recovered = StarlinkService.Parse(JsonSerializer.Serialize(new[] { Catalog(1, "+"), Catalog(2, "P") }),
+            JsonSerializer.Serialize(new[] { Orbit(1), Orbit(2) }), DateTimeOffset.UtcNow.AddHours(-3));
+        await File.WriteAllTextAsync(Path.Combine(directory, "App_Data", "starlink-status.json"), JsonSerializer.Serialize(legacy));
+        await WriteRecoveryAsync(recovered);
+        var handler = new Handler { Unavailable = true };
+        var service = Create(handler);
+        var state = await service.GetAsync(CancellationToken.None);
+        Assert.True(state.StatusCoverageComplete);
+        Assert.True(service.RefreshFailed);
+        Assert.Equal(recovered.RetrievedAt, state.RetrievedAt);
+        Assert.Equal("P", state.Elements[1].GetProperty("PETABIT_STATUS").GetString());
+        var persisted = JsonSerializer.Deserialize<StarlinkSnapshot>(await File.ReadAllTextAsync(Path.Combine(directory, "App_Data", "starlink-status.json")))!;
+        Assert.True(persisted.StatusCoverageComplete);
+        Assert.Equal(recovered.RetrievedAt, persisted.RetrievedAt);
+        Assert.Equal(2, handler.Requests);
+    }
+
+    [Fact]
+    public async Task RecoveryNeverReplacesNewerPersistedSnapshot()
+    {
+        Directory.CreateDirectory(Path.Combine(directory, "App_Data"));
+        var current = StarlinkService.Parse(JsonSerializer.Serialize(new[] { Catalog(1, "+") }),
+            JsonSerializer.Serialize(new[] { Orbit(1) }), DateTimeOffset.UtcNow);
+        await File.WriteAllTextAsync(Path.Combine(directory, "App_Data", "starlink-status.json"), JsonSerializer.Serialize(current));
+        await WriteRecoveryAsync(current with { RetrievedAt = DateTimeOffset.UtcNow.AddHours(-1) });
+        var handler = new Handler();
+        var state = await Create(handler).GetAsync(CancellationToken.None);
+        Assert.Equal(current.RetrievedAt, state.RetrievedAt);
+        Assert.Equal(0, handler.Requests);
+    }
+
+    [Fact]
+    public async Task ExpiredRecoveryIsIgnoredAndNormalSourceIsUsed()
+    {
+        var old = StarlinkService.Parse(JsonSerializer.Serialize(new[] { Catalog(1, "+") }),
+            JsonSerializer.Serialize(new[] { Orbit(1) }), DateTimeOffset.UtcNow) with { RetrievedAt = DateTimeOffset.UtcNow.AddDays(-8) };
+        await WriteRecoveryAsync(old);
+        var handler = new Handler();
+        var state = await Create(handler).GetAsync(CancellationToken.None);
+        Assert.True(state.RetrievedAt > old.RetrievedAt);
+        Assert.Equal(2, handler.Requests);
+    }
+
     public void Dispose() { if (Directory.Exists(directory)) Directory.Delete(directory, recursive: true); }
     private class Factory(Handler handler) : IHttpClientFactory
     { public HttpClient CreateClient(string name) => new(handler, disposeHandler: false); }
@@ -186,3 +244,4 @@ public class StarlinkTests : IDisposable
         public IFileProvider WebRootFileProvider { get; set; } = new NullFileProvider();
     }
 }
+

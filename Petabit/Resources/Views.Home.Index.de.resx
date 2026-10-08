@@ -337,4 +337,8 @@
   <data name="StarlinkZoomIn" xml:space="preserve"><value>Vergrößern</value></data>
   <data name="StarlinkZoomOut" xml:space="preserve"><value>Verkleinern</value></data>
   <data name="StarlinkReset" xml:space="preserve"><value>Ansicht zurücksetzen</value></data>
+  <data name="StarlinkLayerEmpty" xml:space="preserve"><value>Für die gewählten Ebenen sind keine Positionen verfügbar.</value></data>
+  <data name="StarlinkAllHidden" xml:space="preserve"><value>Alle verfügbaren Ebenen sind ausgeblendet. Aktiviere mindestens eine Ebene.</value></data>
+  <data name="StarlinkNoPositions" xml:space="preserve"><value>Keine Positionen verfügbar</value></data>
+  <data name="StarlinkLayerHelp" xml:space="preserve"><value>Die Zahl je Ebene zeigt Satelliten mit verfügbaren Positionen, nicht die Gesamtzahl im Katalog. Ebenen ohne Positionen sind nicht verfügbar.</value></data>
 </root>

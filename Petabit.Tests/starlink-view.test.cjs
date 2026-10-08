@@ -5,11 +5,11 @@ const fs=require('node:fs');
 function setup(){
  const elements=new Map();
  const element=id=>{if(!elements.has(id)) elements.set(id,{dataset:{},checked:true,value:'1',hidden:true,clientWidth:800,clientHeight:500,events:{},addEventListener(type,fn){this.events[type]=fn;},setAttribute(){},focus(){}});return elements.get(id);};
- const layers=Array.from({length:4},(_,i)=>element('layer'+i));
+ const layers=Array.from({length:4},(_,i)=>{ const layer=element('layer'+i); layer.parentElement={}; return layer; });
  const context2d=new Proxy({createRadialGradient(){return {addColorStop(){}};}},{get:(obj,key)=>key in obj?obj[key]:()=>{}});
  element('starlink-globe').getContext=()=>context2d;
  element('starlink-panel').querySelectorAll=()=>layers;
- const sandbox=vm.createContext({document:{getElementById:element,hidden:false,body:{classList:{contains:()=>false}},addEventListener(){}},window:{matchMedia:()=>({matches:true}),addEventListener(){}},devicePixelRatio:1,cancelAnimationFrame(){},requestAnimationFrame(){return 1;},console,Date,Math,Number,String,Array});
+ const sandbox=vm.createContext({document:{getElementById:element,querySelector:selector=>element(selector),hidden:false,body:{classList:{contains:()=>false}},addEventListener(){}},window:{matchMedia:()=>({matches:true}),addEventListener(){}},devicePixelRatio:1,cancelAnimationFrame(){},requestAnimationFrame(){return 1;},console,Date,Math,Number,String,Array});
  vm.runInContext(fs.readFileSync('Petabit/wwwroot/js/starlink-dashboard.js','utf8'),sandbox);
  return {sandbox,element,layers};
 }
@@ -26,4 +26,15 @@ test('layers filter rendered satellites independently while catalog count remain
  assert.equal(element('starlink-globe').dataset.visibleCount,'4');
  for(const layer of layers)layer.checked=false;layers[1].checked=true;layers[1].events.change();assert.equal(element('starlink-globe').dataset.visibleCount,'1');
  layers[1].checked=false;layers[1].events.change();assert.equal(element('starlink-globe').dataset.visibleCount,'0');assert.equal(vm.runInContext('frame.count',sandbox),4);
+});
+
+test('layer coverage reports propagated positions and disables unavailable groups',()=>{
+ const {sandbox,element,layers}=setup();
+ vm.runInContext('updateLayerCoverage({count:3,statuses:new Uint8Array([0,1,1])},new Intl.NumberFormat("en"))',sandbox);
+ assert.equal(element('[data-layer-count="0"]').textContent,'1');
+ assert.equal(element('[data-layer-count="1"]').textContent,'2');
+ assert.equal(element('[data-layer-count="2"]').textContent,'0');
+ assert.equal(layers[1].disabled,false);assert.equal(layers[2].disabled,true);
+ vm.runInContext('updateLayerCoverage({count:2},new Intl.NumberFormat("en"))',sandbox);
+ assert.equal(element('[data-layer-count="0"]').textContent,'2');assert.equal(layers[1].disabled,true);
 });
