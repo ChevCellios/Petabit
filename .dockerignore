@@ -13,3 +13,5 @@ Petabit/docs
 Petabit.Tests
 **/App_Data
 artifacts
+security
+**/node_modules

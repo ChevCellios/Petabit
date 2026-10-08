@@ -138,7 +138,7 @@ public class HomeController : Controller
 
     [HttpGet]
     [EnableRateLimiting("iss")]
-    [OutputCache(Duration = 10)]
+    [OutputCache(Duration = 10, VaryByQueryKeys = new string[] { })]
     public async Task<IActionResult> Data(CancellationToken cancellationToken)
     {
         var httpClient = _httpClientFactory.CreateClient("iss");
@@ -171,6 +171,11 @@ public class HomeController : Controller
         catch (HttpRequestException exception)
         {
             _logger.LogWarning(exception, "Unable to retrieve ISS data.");
+            return Problem("ISS data is temporarily unavailable.", statusCode: StatusCodes.Status503ServiceUnavailable);
+        }
+        catch (System.Text.Json.JsonException exception)
+        {
+            _logger.LogWarning(exception, "ISS source returned malformed data.");
             return Problem("ISS data is temporarily unavailable.", statusCode: StatusCodes.Status503ServiceUnavailable);
         }
         catch (TaskCanceledException exception)

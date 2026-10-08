@@ -19,6 +19,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  frontend-audit:
+    name: Audit and verify orbital JavaScript dependency
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24.x
+      - name: Install locked audit dependency without lifecycle scripts
+        run: npm ci --ignore-scripts --prefix security/frontend
+      - name: Check published vulnerability advisories
+        run: npm audit --omit=dev --prefix security/frontend
+      - name: Verify browser distribution matches the locked npm package
+        run: node security/frontend/verify-vendor.cjs
+
   dependency-audit:
     name: Audit NuGet dependencies
     runs-on: ubuntu-latest
@@ -26,10 +44,12 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         with:
           dotnet-version: 10.0.x
 
@@ -42,7 +62,7 @@ jobs:
           -warnaserror:NU1901,NU1902,NU1903,NU1904
 
   codeql:
-    name: Analyze C# with CodeQL
+    name: Analyze C# and JavaScript with CodeQL
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -53,16 +73,18 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
+        uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
         with:
-          languages: csharp
+          languages: csharp,javascript-typescript
           build-mode: autobuild
 
       - name: Build application
-        uses: github/codeql-action/autobuild@v4
+        uses: github/codeql-action/autobuild@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
 
       - name: Analyze application
-        uses: github/codeql-action/analyze@v4
+        uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4

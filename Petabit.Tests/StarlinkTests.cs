@@ -50,6 +50,49 @@ public class StarlinkTests : IDisposable
     private StarlinkService Create(Handler handler) => new(new Factory(handler), NullLogger<StarlinkService>.Instance,
         new EnvironmentStub { ContentRootPath = directory });
 
+    [Theory]
+    [InlineData("NORAD_CAT_ID")]
+    [InlineData("MEAN_MOTION")]
+    [InlineData("ECCENTRICITY")]
+    public void WrongNumericTypesAreRejectedAsInvalidSourceData(string field)
+    {
+        var orbit = System.Text.Json.Nodes.JsonNode.Parse(JsonSerializer.Serialize(Orbit(1)))!;
+        orbit[field] = "malicious-string";
+        Assert.Throws<FormatException>(() => StarlinkService.Parse(
+            JsonSerializer.Serialize(new[] { Catalog(1, "+") }), $"[{orbit.ToJsonString()}]", Now));
+    }
+
+    [Fact]
+    public async Task DisconnectedVisitorDoesNotCancelSharedRefreshOrPoisonCooldown()
+    {
+        var handler = new Handler { Hold = new(TaskCreationOptions.RunContinuationsAsynchronously) };
+        var service = Create(handler);
+        using var cancellation = new CancellationTokenSource();
+        var disconnected = service.GetAsync(cancellation.Token);
+        cancellation.Cancel();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => disconnected);
+        var anotherVisitor = service.GetAsync(CancellationToken.None);
+        handler.Hold.SetResult();
+        var result = await anotherVisitor;
+        Assert.Equal(1, result.OperationalCount);
+        Assert.False(service.RefreshFailed);
+        Assert.Equal(2, handler.Requests);
+        Assert.Same(result, await service.GetAsync(CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task CorruptPersistedElementsAreDiscardedAndReplacedFromSource()
+    {
+        Directory.CreateDirectory(Path.Combine(directory, "App_Data"));
+        var snapshot = StarlinkService.Parse(JsonSerializer.Serialize(new[] { Catalog(1, "+") }),
+            JsonSerializer.Serialize(new[] { Orbit(1) }), DateTimeOffset.UtcNow);
+        var corrupt = snapshot with { Elements = [JsonSerializer.SerializeToElement(new { invalid = true })] };
+        await File.WriteAllTextAsync(Path.Combine(directory, "App_Data", "starlink-status.json"), JsonSerializer.Serialize(corrupt));
+        var handler = new Handler();
+        Assert.Equal(1, (await Create(handler).GetAsync(CancellationToken.None)).OperationalCount);
+        Assert.Equal(2, handler.Requests);
+    }
+
     [Fact]
     public async Task RepeatedPingAndRestartReuseThePersistedTwoHourCache()
     {
@@ -87,13 +130,15 @@ public class StarlinkTests : IDisposable
     {
         public int Requests;
         public bool Unavailable;
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        public TaskCompletionSource? Hold;
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             Interlocked.Increment(ref Requests);
+            if (Hold is not null) await Hold.Task.WaitAsync(cancellationToken);
             var json = request.RequestUri!.AbsoluteUri == StarlinkService.CatalogUrl
                 ? JsonSerializer.Serialize(new[] { Catalog(1, "+") }) : JsonSerializer.Serialize(new[] { Orbit(1) });
-            return Task.FromResult(new HttpResponseMessage(Unavailable ? HttpStatusCode.ServiceUnavailable : HttpStatusCode.OK)
-                { Content = new StringContent(json) });
+            return new HttpResponseMessage(Unavailable ? HttpStatusCode.ServiceUnavailable : HttpStatusCode.OK)
+                { Content = new StringContent(json) };
         }
     }
     private class EnvironmentStub : IWebHostEnvironment

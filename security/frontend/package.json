@@ -1,0 +1,9 @@
+{
+  "name": "petabit-frontend-security",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Audit and integrity verification for the vendored orbital runtime; not an application build dependency.",
+  "dependencies": {
+    "satellite.js": "7.1.0"
+  }
+}
