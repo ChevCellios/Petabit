@@ -6,9 +6,12 @@
 @inject IViewLocalizer Localizer
 
 
-<div class="container mt-5">
+<div class="container content-page resource-page">
+    <a class="resource-back" href="/">@Localizer["BackHome"]</a>
+    <p class="resource-kicker">@Localizer["ExploreResources"]</p>
     <h1>📱 @Localizer["LearnWithApps"]</h1>
-    <ul class="list-group mt-3">
+    <p class="resource-intro">@Localizer["PageIntro"]</p>
+    <ul class="list-group mt-3 resource-grid">
         <li class="list-group-item">
             <a href="https://getmimo.com/invite/6meni7" target="_blank" rel="noopener noreferrer">Mimo App</a>
         </li>

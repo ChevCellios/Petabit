@@ -313,12 +313,23 @@
     <value>Kretanje satelita</value>
   </data>
   <data name="StarlinkCanvas" xml:space="preserve">
-    <value>Globus s položajima operativnih Starlink satelita</value>
+    <value>Globus s položajima Starlink satelita prema statusu u katalogu</value>
   </data>
-  <data name="StarlinkNote" xml:space="preserve">
-    <value>Plave točke su izračunati položaji operativnih satelita, prema CelesTrak orbitalnim podacima. To nije izravna telemetrija. Povuci globus za promjenu pogleda. Operativni broj prati oznaku + u katalogu, a ne jamstvo pružanja internetske usluge.</value>
-  </data>
+  <data name="StarlinkNote" xml:space="preserve"><value>Boje prate status u CelesTrak katalogu. Položaji su izračunati iz dostupnih orbitalnih podataka, a nisu izravna telemetrija. Povuci globus za promjenu pogleda. Ubrzani prikaz označen je kao simulacija.</value></data>
   <data name="StarlinkSource" xml:space="preserve">
     <value>Status i izvor podataka</value>
   </data>
+  <data name="TrackerTitle" xml:space="preserve"><value>ISS i Starlink Tracker</value></data>
+  <data name="ClosePanel" xml:space="preserve"><value>Zatvori panel</value></data>
+  <data name="StarlinkNonOperational" xml:space="preserve"><value>Neoperativni (−)</value></data>
+  <data name="StarlinkOther" xml:space="preserve"><value>Rezervni / drugi statusi</value></data>
+  <data name="StarlinkSpeed" xml:space="preserve"><value>Brzina prikaza</value></data>
+  <data name="StarlinkRealtime" xml:space="preserve"><value>Stvarno vrijeme · 1×</value></data>
+  <data name="StarlinkSimulation" xml:space="preserve"><value>Simulacija · 30×</value></data>
+  <data name="StarlinkCoverage" xml:space="preserve"><value>Sateliti s orbitalnim podacima</value></data>
+  <data name="StarlinkLegacy" xml:space="preserve"><value>Prikaz drugih statusa bit će dostupan nakon sljedećeg osvježavanja kataloga.</value></data>
+  <data name="TrackerIntro" xml:space="preserve"><value>Odaberi tracker i otvori njegov orbitalni pregled.</value></data>
+  <data name="BooksSummary" xml:space="preserve"><value>Znanje za kvalitetniji kod.</value></data>
+  <data name="AppsSummary" xml:space="preserve"><value>Učenje kroz svakodnevnu praksu.</value></data>
+  <data name="BlockchainSummary" xml:space="preserve"><value>Istraži decentralizirane sustave.</value></data>
 </root>

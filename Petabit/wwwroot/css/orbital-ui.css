@@ -1,0 +1,75 @@
+body {
+    --ui-bg: #08151c; --ui-surface: #10232d; --ui-raised: #16303c;
+    --ui-text: #edf7fb; --ui-muted: #b2c8d2; --ui-line: #35515e; --ui-accent: #85ebd4;
+    --station-bg: var(--ui-surface); --station-border: var(--ui-line); --station-accent: var(--ui-accent); --station-muted: var(--ui-muted);
+    background-color: var(--ui-bg); color: var(--ui-text); isolation: isolate;
+}
+body.light-mode {
+    --ui-bg: #edf4f6; --ui-surface: #ffffff; --ui-raised: #e2eff3;
+    --ui-text: #15313e; --ui-muted: #45616e; --ui-line: #b8ced8; --ui-accent: #006f61;
+    background-color: var(--ui-bg); color: var(--ui-text);
+}
+#page-hologram { position: fixed; inset: 0; width: 100%; height: 100dvh; pointer-events: none; z-index: -1; }
+body main, body header, body .site-footer { position: relative; z-index: 1; }
+body .home-hero { --station-bg: var(--ui-surface); --station-border: var(--ui-line); --station-accent: var(--ui-accent); --station-muted: var(--ui-muted); }
+body :is(.home-hero, .resource-page) { color: var(--ui-text); }
+body :is(.home-hero, .resource-page) :is(h1,h2,h3,h4) { color: var(--ui-text) !important; text-shadow: none !important; }
+.home-destinations { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-top: 1.5rem; }
+.home-destinations > .col-auto { width: auto; padding: 0; }
+body main[role="main"] .home-hero a.btn-home { display: grid; position: relative; gap: .65rem; text-align: left; width: 100%; max-width: none; min-width: 0; white-space: normal; padding: 1.3rem 2.8rem 1.3rem 1.2rem; border: 1px solid var(--ui-line); border-radius: 16px; background: var(--ui-surface); color: var(--ui-text) !important; min-height: 112px; font-size: .95rem; }
+.home-destinations small { color: var(--ui-muted); font-weight: 400; font-size: .85rem; }
+body main[role="main"] .home-hero a.btn-home { max-width: none !important; padding: 1.3rem 2.8rem 1.3rem 1.2rem !important; font-size: .95rem !important; }
+.destination-arrow { position: absolute; top: 1.2rem; right: 1rem; color: var(--ui-accent); }
+.home-destinations a:hover { background: var(--ui-raised) !important; transform: translateY(-2px); }
+.tracker-intro { color: var(--ui-muted); margin-bottom: 1rem; }
+.tracker-actions { display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; }
+body main[role="main"] .home-hero :is(#iss-ping-button,#starlink-ping-button) { font-size: .95rem; line-height: 1.25; min-height: 50px; padding: .8rem 1.3rem; }
+body .home-hero :is(#iss-ping-button,#starlink-ping-button) { display: inline-flex; align-items: center; justify-content: center; padding: .8rem 1.3rem; margin: 0; min-height: 48px; border: 1px solid var(--ui-line); border-radius: 12px; background: var(--ui-surface); color: var(--ui-text) !important; box-shadow: none; text-shadow: none !important; }
+body .home-hero #iss-ping-button { border-color: var(--ui-accent); }
+body .home-hero :is(#iss-ping-button,#starlink-ping-button):hover { background: var(--ui-raised); color: var(--ui-text) !important; }
+body .home-hero :is(#iss-ping-button,#starlink-ping-button)[aria-expanded="true"] { background: var(--ui-raised); border-color: var(--ui-accent); }
+.iss-sound-option { margin-left: 0; order: 3; }
+.tracker-panel { margin-top: 1.5rem; padding: 1.2rem; border: 1px solid var(--ui-line); border-radius: 20px; background: var(--ui-surface); scroll-margin-top: 1rem; }
+.tracker-panel[hidden], .station-panel[hidden] { display: none !important; }
+body .home-hero .station-panel > a { color: var(--ui-accent); }
+.tracker-panel-heading, .starlink-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.tracker-panel-heading h3 { margin: 0; font-size: 1.1rem; }
+.tracker-close { flex: 0 0 auto; display: grid; place-items: center; min-width: 44px; min-height: 44px; border: 1px solid var(--ui-line); border-radius: 50%; font-size: 1.5rem; line-height: 1; color: var(--ui-text); background: var(--ui-raised); }
+.tracker-close:hover { border-color: var(--ui-accent); }
+:is(.tracker-close,.tracker-ping,.starlink-speed select,.resource-back):focus-visible { outline: 3px solid var(--ui-accent); outline-offset: 3px; }
+.starlink-controls { display: flex; flex-wrap: wrap; gap: 1.2rem; align-items: center; padding-top: .6rem; }
+.starlink-speed { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; color: var(--ui-muted); font-size: .85rem; }
+.starlink-speed select { color: var(--ui-text); background: var(--ui-raised); border: 1px solid var(--ui-line); border-radius: 8px; padding: .55rem .8rem; min-height: 44px; }
+.starlink-metrics { grid-template-columns: repeat(4,minmax(0,1fr)); }
+.starlink-legend { display: flex; flex-wrap: wrap; gap: .5rem 1rem; font-size: .8rem; padding: .5rem 0; }
+.status-operational { color: #9addff; } .status-partial { color: #ffd475; } .status-nonoperational { color: #ff8491; } .status-other { color: #c3cddb; }
+body.light-mode .status-operational { color: #005e87; } body.light-mode .status-partial { color: #825500; } body.light-mode .status-nonoperational { color: #ad2435; } body.light-mode .status-other { color: #465569; }
+.station-panel.iss-video-panel { width: 272px; padding: .65rem; border-radius: 14px; }
+.iss-video-panel .tracker-close { min-width: 32px; min-height: 32px; font-size: 1.25rem; }
+.iss-video-panel .panel-reference { display: none; }
+.iss-video-panel .tracker-panel-heading { margin-bottom: .5rem; }
+.iss-video-panel h3 { font-size: .8rem; }
+.resource-page { padding: 2.5rem 1.2rem 4rem; margin-top: 0 !important; }
+.resource-back { display: inline-block; color: var(--ui-accent) !important; padding: .5rem 0; text-decoration: none; margin-bottom: 1.5rem; }
+.resource-kicker { font: 700 .75rem/1.5 monospace; letter-spacing: .16em; color: var(--ui-accent); }
+.resource-page h1 { font-size: clamp(1.9rem,4vw,3rem); font-weight: 700; letter-spacing: -.035em; }
+.resource-intro, .resource-page .lead { color: var(--ui-muted); max-width: 45rem; line-height: 1.75; }
+.resource-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; margin-top: 2rem !important; }
+body .resource-page .list-group-item { padding: 0; background: var(--ui-surface); border: 1px solid var(--ui-line); border-radius: 16px !important; }
+.resource-grid a { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 112px; padding: 1.5rem; color: var(--ui-text) !important; text-decoration: none; font-weight: 650; }
+.resource-grid a::after { content: '↗'; color: var(--ui-accent); font-size: 1.3rem; }
+.resource-grid a:hover { background: var(--ui-raised); border-radius: 16px; }
+body .resource-page a.btn { background: var(--ui-surface); border: 1px solid var(--ui-line); border-radius: 12px; color: var(--ui-text) !important; box-shadow: none; text-shadow: none !important; padding: .8rem 1.2rem; }
+@media(max-width:650px) {
+    .home-destinations { grid-template-columns: 1fr; gap: .6rem; }
+    body main[role="main"] .home-hero a.btn-home { min-height: 88px; padding: 1rem 2.5rem 1rem 1rem !important; }
+    .tracker-actions > button { flex: 1 1 140px; }
+    .iss-sound-option { flex: 1 0 100%; }
+    .tracker-panel { padding: .8rem; }
+    .starlink-heading { flex-direction: row; align-items: center; }
+    .starlink-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .starlink-speed { width: 100%; justify-content: space-between; }
+    .resource-grid { grid-template-columns: 1fr; }
+    .station-panel.iss-video-panel { width: min(236px,calc(100vw - 2rem)); }
+}
+@media(prefers-reduced-motion:reduce) { .home-destinations a:hover { transform: none; } }

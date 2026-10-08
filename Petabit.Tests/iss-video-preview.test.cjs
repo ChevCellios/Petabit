@@ -64,6 +64,19 @@ function harness() {
     };
 }
 
+test('closing ISS destroys playback and keeps late player callbacks from reopening it', async () => {
+    const h = harness();
+    await h.start();
+    h.players[0].state(1);
+    h.events.get('iss-panel-close')();
+    assert.equal(h.elements.get('iss-video-panel').hidden,true);
+    assert.equal(h.players[0].destroyed,true);
+    h.players[0].state(1);
+    h.tick(10000);
+    assert.equal(h.elements.get('iss-video-panel').hidden,true);
+    assert.equal(h.elements.get('iss-video-panel').dataset.playback,'closed');
+});
+
 test('does not contact YouTube/NASA or show the panel before manual Ping', () => {
     const app = harness();
     assert.equal(app.requests(), 0);

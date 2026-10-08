@@ -123,4 +123,8 @@
   <data name="VisitPiNetwork" xml:space="preserve">
     <value>Besuche Pi Network</value>
   </data>
+  <data name="BackHome" xml:space="preserve"><value>← Startseite</value></data>
+  <data name="ExploreResources" xml:space="preserve"><value>AUSGEWÄHLTE RESSOURCEN</value></data>
+  <data name="PageIntro" xml:space="preserve"><value>Entdecke ausgewählte Ressourcen zum Lernen und Entwickeln digitaler Fähigkeiten.</value></data>
+  <data name="BlockchainTechnology" xml:space="preserve"><value>Blockchain-Technologie</value></data>
 </root>

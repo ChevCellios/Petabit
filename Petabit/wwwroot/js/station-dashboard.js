@@ -7,6 +7,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const purposes = { 'Posadna letjelica': strings.purposeCrewed, 'Teretna letjelica': strings.purposeCargo };
     const date = value => new Date(value).toLocaleString(strings.locale, { dateStyle: 'medium', timeStyle: 'short' });
     const write = (id, text) => { document.getElementById(id).textContent = text; };
+    const panel = document.getElementById('iss-panel');
+    let requestController;
+    let generation = 0;
+    document.getElementById('iss-close').addEventListener('click', () => {
+        generation++; requestController?.abort(); busy = false;
+        button.disabled = false; button.textContent = strings.refresh;
+        panel.hidden = true; led.hidden = true; button.setAttribute('aria-expanded', 'false');
+        window.dispatchEvent(new Event('iss-panel-close')); button.focus();
+    });
     let busy = false;
     let positionTime;
     let lastStationVersion;
@@ -94,14 +103,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (!data.events.length) write('station-events', strings.noEvents);
     }
-    async function get(url) {
-        const response = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
+    async function get(url, signal) {
+        const response = await fetch(url, { cache: 'no-store', signal: AbortSignal.any([signal, AbortSignal.timeout(15000)]) });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         return response.json();
     }
     async function refresh(manual = false) {
-        if (busy || (!manual && document.hidden)) return;
+        if (busy || (!manual && (document.hidden || panel.hidden))) return;
         if (manual) {
+            panel.hidden = false; button.setAttribute('aria-expanded', 'true');
+            window.dispatchEvent(new Event('iss-panel-open'));
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
             document.querySelector('main[role="main"]').prepend(led);
             led.hidden = false;
             ledMessage.textContent = strings.loading;
@@ -111,7 +123,10 @@ document.addEventListener('DOMContentLoaded', () => {
         busy = true;
         button.disabled = true;
         button.textContent = strings.loading;
-        const results = await Promise.allSettled([get('/Home/Data'), get('/Home/StationData')]);
+        const requestGeneration = ++generation;
+        requestController = new AbortController();
+        const results = await Promise.allSettled([get('/Home/Data', requestController.signal), get('/Home/StationData', requestController.signal)]);
+        if (requestGeneration !== generation || panel.hidden) return;
         const position = results[0];
         const state = results[1];
         if (position.status === 'fulfilled') {
@@ -150,6 +165,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     button.addEventListener('click', () => refresh(true));
     document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
-    refresh();
     window.setInterval(refresh, 30000);
 });

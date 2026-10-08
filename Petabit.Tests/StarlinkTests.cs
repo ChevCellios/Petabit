@@ -29,11 +29,15 @@ public class StarlinkTests : IDisposable
     {
         var catalog = JsonSerializer.Serialize(new[] { Catalog(100800, "+"), Catalog(2, "P"), Catalog(3, "S"),
             Catalog(4, "-"), Catalog(5, "D", "2026-10-01"), Catalog(6, "+", type: "IMP"), Catalog(7, "+") });
-        var state = StarlinkService.Parse(catalog, JsonSerializer.Serialize(new[] { Orbit(100800), Orbit(2), Orbit(100800) }), Now);
+        var state = StarlinkService.Parse(catalog, JsonSerializer.Serialize(new[] { Orbit(100800), Orbit(2), Orbit(3), Orbit(4), Orbit(100800) }), Now);
         Assert.Equal(2, state.OperationalCount);
         Assert.Equal(5, state.OnOrbitCount);
         Assert.Equal(1, state.PartiallyOperationalCount);
-        Assert.Single(state.Elements);
+        Assert.Equal(4, state.Elements.Length);
+        Assert.Equal(1, state.NonOperationalCount);
+        Assert.Equal(1, state.OtherCount);
+        Assert.True(state.StatusCoverageComplete);
+        Assert.Equal(new[] { "+", "P", "S", "-" }, state.Elements.Select(e => e.GetProperty("PETABIT_STATUS").GetString()));
         Assert.Equal(100800, state.Elements[0].GetProperty("NORAD_CAT_ID").GetInt32());
         Assert.Equal(DateTimeOffset.Parse("2026-10-04T22:36:12.73824Z"), state.OldestEpoch);
     }
@@ -91,6 +95,37 @@ public class StarlinkTests : IDisposable
         var handler = new Handler();
         Assert.Equal(1, (await Create(handler).GetAsync(CancellationToken.None)).OperationalCount);
         Assert.Equal(2, handler.Requests);
+    }
+
+    [Fact]
+    public async Task MixedStatusSnapshotSurvivesRestartWithoutDownloadingAgain()
+    {
+        Directory.CreateDirectory(Path.Combine(directory, "App_Data"));
+        var snapshot = StarlinkService.Parse(JsonSerializer.Serialize(new[] { Catalog(1, "+"), Catalog(2, "-"), Catalog(3, "P"), Catalog(4, "S") }),
+            JsonSerializer.Serialize(new[] { Orbit(1), Orbit(2), Orbit(3), Orbit(4) }), DateTimeOffset.UtcNow);
+        await File.WriteAllTextAsync(Path.Combine(directory, "App_Data", "starlink-status.json"), JsonSerializer.Serialize(snapshot));
+        var handler = new Handler();
+        var restored = await Create(handler).GetAsync(CancellationToken.None);
+        Assert.True(restored.StatusCoverageComplete);
+        Assert.Equal(1, restored.NonOperationalCount);
+        Assert.Equal(1, restored.OtherCount);
+        Assert.Equal(new[] { "+", "-", "P", "S" }, restored.Elements.Select(e => e.GetProperty("PETABIT_STATUS").GetString()));
+        Assert.Equal(0, handler.Requests);
+    }
+
+    [Fact]
+    public async Task LegacyOperationalOnlyCachePreservesUnknownStatusCoverageUntilRefreshDue()
+    {
+        Directory.CreateDirectory(Path.Combine(directory, "App_Data"));
+        var snapshot = new { OperationalCount = 2, OnOrbitCount = 3, PartiallyOperationalCount = 1,
+            RetrievedAt = DateTimeOffset.UtcNow, OldestEpoch = DateTimeOffset.Parse("2026-10-04T22:36:12.73824Z"),
+            NewestEpoch = DateTimeOffset.Parse("2026-10-04T22:36:12.73824Z"), Elements = new[] { Orbit(1) } };
+        await File.WriteAllTextAsync(Path.Combine(directory, "App_Data", "starlink-status.json"), JsonSerializer.Serialize(snapshot));
+        var handler = new Handler();
+        var restored = await Create(handler).GetAsync(CancellationToken.None);
+        Assert.False(restored.StatusCoverageComplete);
+        Assert.Equal(2, restored.OperationalCount);
+        Assert.Equal(0, handler.Requests);
     }
 
     [Fact]
