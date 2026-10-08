@@ -152,7 +152,11 @@ button.addEventListener('click', async () => {
             if (!next.count) status.textContent = strings.error;
             canvas.dataset.mappedCount = String(next.count);
             canvas.dataset.positionTime = String(next.timestamp);
-            document.getElementById('starlink-coverage').textContent = `${strings.mapped}: ${number.format(next.count)} / ${number.format(data.onOrbitCount)}`;
+            const nonoperationalMapped = next.statuses.reduce((count, value) => count + (value === 2 ? 1 : 0), 0);
+            const coverage = `${strings.mapped}: ${number.format(next.count)} / ${number.format(data.onOrbitCount)}`;
+            document.getElementById('starlink-coverage').textContent = data.statusCoverageComplete
+                ? `${coverage} · ${strings.nonoperational}: ${number.format(nonoperationalMapped)} / ${number.format(data.nonOperationalCount)}`
+                : coverage;
             cancelAnimationFrame(animation);
             draw();
 
