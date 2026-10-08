@@ -53,6 +53,18 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
+    public async Task TrackerWorkerAndItsChangingModulesHaveContentVersionedUrls()
+    {
+        var html = await _client.GetStringAsync("/");
+        foreach (var name in new[] { "worker", "orbits", "clock" })
+        {
+            var match = Regex.Match(html, $"data-{name}-url=\"([^\"]+)\"");
+            Assert.True(match.Success);
+            Assert.Contains("?v=", WebUtility.HtmlDecode(match.Groups[1].Value));
+        }
+    }
+
+    [Fact]
     public async Task ReadinessReturnsServiceUnavailableWhenIssApiFails()
     {
         using var client = CreateClientWithIssResponse(HttpStatusCode.ServiceUnavailable, "Unavailable");

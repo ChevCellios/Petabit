@@ -1,5 +1,6 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
+@inject Microsoft.AspNetCore.Mvc.ViewFeatures.IFileVersionProvider AssetVersions
 @using System.Globalization
 
 @{
@@ -89,6 +90,9 @@
 
         <!-- Ovdje će se prikazati rezultati dohvaćenih podataka o ISS-u -->
         <section id="starlink-panel" class="station-panel starlink-panel" aria-labelledby="starlink-title" hidden
+                 data-worker-url="@AssetVersions.AddFileVersionToPath(Context.Request.PathBase, "/js/starlink-worker.js")"
+                 data-orbits-url="@AssetVersions.AddFileVersionToPath(Context.Request.PathBase, "/js/starlink-orbits.mjs")"
+                 data-clock-url="@AssetVersions.AddFileVersionToPath(Context.Request.PathBase, "/js/orbital-clock.mjs")"
                  data-locale="@CultureInfo.CurrentUICulture.Name"
                  data-loading="@Localizer["StarlinkLoading"]" data-error="@Localizer["StarlinkError"]"
                  data-stale="@Localizer["StarlinkStale"]" data-mapped="@Localizer["StarlinkCoverage"]" data-nonoperational="@Localizer["StarlinkNonOperational"]"
