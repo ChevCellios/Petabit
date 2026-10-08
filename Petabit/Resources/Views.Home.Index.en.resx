@@ -313,12 +313,23 @@
     <value>Satellite motion</value>
   </data>
   <data name="StarlinkCanvas" xml:space="preserve">
-    <value>Globe showing operational Starlink satellite positions</value>
+    <value>Globe showing Starlink satellite positions by catalog status</value>
   </data>
-  <data name="StarlinkNote" xml:space="preserve">
-    <value>Blue dots show calculated positions of operational satellites from CelesTrak orbital data. This is not direct telemetry. Drag the globe to change the view. The operational count follows the catalog + flag and does not guarantee internet service.</value>
-  </data>
+  <data name="StarlinkNote" xml:space="preserve"><value>Colors follow the CelesTrak catalog status. Positions are calculated from available orbital data, not direct telemetry. Drag the globe to change your viewpoint. Accelerated playback is labeled as a simulation.</value></data>
   <data name="StarlinkSource" xml:space="preserve">
     <value>Status and data source</value>
   </data>
+  <data name="TrackerTitle" xml:space="preserve"><value>ISS and Starlink Tracker</value></data>
+  <data name="ClosePanel" xml:space="preserve"><value>Close panel</value></data>
+  <data name="StarlinkNonOperational" xml:space="preserve"><value>Nonoperational (−)</value></data>
+  <data name="StarlinkOther" xml:space="preserve"><value>Standby / other statuses</value></data>
+  <data name="StarlinkSpeed" xml:space="preserve"><value>Display speed</value></data>
+  <data name="StarlinkRealtime" xml:space="preserve"><value>Real time · 1×</value></data>
+  <data name="StarlinkSimulation" xml:space="preserve"><value>Simulation · 30×</value></data>
+  <data name="StarlinkCoverage" xml:space="preserve"><value>Satellites with orbital data</value></data>
+  <data name="StarlinkLegacy" xml:space="preserve"><value>Other statuses will be available after the next catalog refresh.</value></data>
+  <data name="TrackerIntro" xml:space="preserve"><value>Choose a tracker to open its orbital overview.</value></data>
+  <data name="BooksSummary" xml:space="preserve"><value>Knowledge for better code.</value></data>
+  <data name="AppsSummary" xml:space="preserve"><value>Learn through daily practice.</value></data>
+  <data name="BlockchainSummary" xml:space="preserve"><value>Explore decentralized systems.</value></data>
 </root>

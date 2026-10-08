@@ -1,4 +1,4 @@
-﻿@*<!-- Omogućuje lokalizaciju i dohvat kulture iz zahtjeva-->*@
+@*<!-- Omogućuje lokalizaciju i dohvat kulture iz zahtjeva-->*@
 @using Microsoft.AspNetCore.Localization 
 @using System.Text.Encodings.Web
 @using System.Text.Json
@@ -81,6 +81,7 @@
     <link rel="stylesheet" href="~/css/content-pages.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Petabit.styles.css" asp-append-version="true" />
 
+
     <style nonce="@cspNonce">
         html {
             min-height: 100%;
@@ -148,8 +149,10 @@
     </style>
 
     @RenderSection("Styles", required: false)
+    <link rel="stylesheet" href="~/css/orbital-ui.css" asp-append-version="true" />
 </head>
 <body class="dark-mode" data-analytics-id="@Configuration["Analytics:MeasurementId"]">
+    <canvas id="page-hologram" aria-hidden="true"></canvas>
     <!-- Header & Navigation -->
     <header class="site-header">
         <nav class="navbar navbar-expand-lg navbar-dark matrix">
@@ -214,6 +217,7 @@
 
     <!-- JS biblioteke -->
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/page-hologram.js" asp-append-version="true"></script>
 
     <!-- Matrix animacija -->
     <script nonce="@cspNonce">

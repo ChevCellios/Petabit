@@ -4,7 +4,8 @@ using System.Text.Json;
 namespace Petabit.Services;
 
 public sealed record StarlinkSnapshot(int OperationalCount, int OnOrbitCount, int PartiallyOperationalCount,
-    DateTimeOffset RetrievedAt, DateTimeOffset OldestEpoch, DateTimeOffset NewestEpoch, JsonElement[] Elements);
+    DateTimeOffset RetrievedAt, DateTimeOffset OldestEpoch, DateTimeOffset NewestEpoch, JsonElement[] Elements,
+    int NonOperationalCount = 0, int OtherCount = 0, bool StatusCoverageComplete = false);
 
 public sealed class StarlinkService
 {
@@ -133,7 +134,7 @@ public sealed class StarlinkService
             if (entry.ValueKind != JsonValueKind.Object) throw new FormatException("Invalid orbital entry.");
             if (!entry.TryGetProperty("NORAD_CAT_ID", out var id) || id.ValueKind != JsonValueKind.Number || !id.TryGetInt32(out var number))
                 throw new FormatException("Invalid orbital ID.");
-            if (!operational.Contains(number) || !seen.Add(number)) continue;
+            if (!onOrbit.ContainsKey(number) || !seen.Add(number)) continue;
             if (!Text(entry, "OBJECT_NAME").StartsWith("STARLINK-", StringComparison.Ordinal)
                 || !DateTimeOffset.TryParse(Text(entry, "EPOCH"), CultureInfo.InvariantCulture,
                     DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var epoch)
@@ -146,12 +147,16 @@ public sealed class StarlinkService
                 || entry.GetProperty("ECCENTRICITY").GetDouble() is < 0 or >= 1
                 || entry.GetProperty("INCLINATION").GetDouble() is < 0 or > 180)
                 throw new FormatException("Invalid orbital range.");
-            orbits.Add(entry.Clone());
+            var tagged = new Dictionary<string, JsonElement>();
+            foreach (var property in entry.EnumerateObject()) tagged[property.Name] = property.Value;
+            tagged["PETABIT_STATUS"] = JsonSerializer.SerializeToElement(onOrbit[number]);
+            orbits.Add(JsonSerializer.SerializeToElement(tagged));
             epochs.Add(epoch);
         }
-        if (orbits.Count == 0) throw new FormatException("No operational Starlink orbital elements.");
+        if (orbits.Count == 0) throw new FormatException("No valid Starlink orbital elements.");
         return new(operational.Count, onOrbit.Count, onOrbit.Count(pair => pair.Value == "P"), retrievedAt,
-            epochs.Min(), epochs.Max(), orbits.ToArray());
+            epochs.Min(), epochs.Max(), orbits.ToArray(), onOrbit.Count(pair => pair.Value == "-"),
+            onOrbit.Count(pair => pair.Value is not ("+" or "P" or "-")), true);
     }
 
     private static string Text(JsonElement entry, string name)
@@ -160,21 +165,28 @@ public sealed class StarlinkService
     private static bool ValidCache(StarlinkSnapshot saved)
     {
         if (saved.Elements is not { Length: > 0 and <= 50_000 }
-            || saved.OnOrbitCount is <= 0 or > 50_000 || saved.OperationalCount < saved.Elements.Length
+            || saved.OnOrbitCount is <= 0 or > 50_000 || saved.OnOrbitCount < saved.Elements.Length || saved.OperationalCount < 0
             || saved.OperationalCount > saved.OnOrbitCount || saved.PartiallyOperationalCount < 0
             || saved.PartiallyOperationalCount > saved.OnOrbitCount - saved.OperationalCount
+            || saved.NonOperationalCount < 0 || saved.OtherCount < 0
+            || saved.NonOperationalCount > saved.OnOrbitCount || saved.OtherCount > saved.OnOrbitCount
+            || (saved.StatusCoverageComplete && saved.OperationalCount + saved.PartiallyOperationalCount + saved.NonOperationalCount + saved.OtherCount != saved.OnOrbitCount)
             || saved.RetrievedAt > DateTimeOffset.UtcNow) return false;
         // Apply the same schema validation to cached elements as to an upstream response.
         var catalog = saved.Elements.Select(entry => new
         {
             OBJECT_NAME = Text(entry, "OBJECT_NAME"),
             NORAD_CAT_ID = entry.GetProperty("NORAD_CAT_ID"), OBJECT_TYPE = "PAY",
-            OPS_STATUS_CODE = "+", ORBIT_CENTER = "EA", ORBIT_TYPE = "ORB", DECAY_DATE = ""
+            OPS_STATUS_CODE = saved.StatusCoverageComplete ? Text(entry, "PETABIT_STATUS") : "+",
+            ORBIT_CENTER = "EA", ORBIT_TYPE = "ORB", DECAY_DATE = ""
         });
         try
         {
             var validated = Parse(JsonSerializer.Serialize(catalog), JsonSerializer.Serialize(saved.Elements), saved.RetrievedAt);
-            return validated.Elements.Length == saved.Elements.Length && validated.OldestEpoch == saved.OldestEpoch
+            return validated.Elements.Length == saved.Elements.Length && validated.OperationalCount <= saved.OperationalCount
+                && (!saved.StatusCoverageComplete || (validated.NonOperationalCount <= saved.NonOperationalCount
+                    && validated.PartiallyOperationalCount <= saved.PartiallyOperationalCount && validated.OtherCount <= saved.OtherCount))
+                && validated.OldestEpoch == saved.OldestEpoch
                 && validated.NewestEpoch == saved.NewestEpoch;
         }
         catch (Exception error) when (error is FormatException or JsonException or InvalidOperationException or KeyNotFoundException)

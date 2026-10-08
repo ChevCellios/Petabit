@@ -118,7 +118,8 @@ public class HomeController : Controller
             var data = await starlink.GetAsync(cancellationToken);
             return Json(new
             {
-                data.OperationalCount, data.OnOrbitCount, data.PartiallyOperationalCount, data.RetrievedAt,
+                data.OperationalCount, data.OnOrbitCount, data.PartiallyOperationalCount, data.NonOperationalCount,
+                data.OtherCount, data.StatusCoverageComplete, data.RetrievedAt,
                 data.OldestEpoch, data.NewestEpoch, data.Elements,
                 isStale = DateTimeOffset.UtcNow - data.RetrievedAt > TimeSpan.FromHours(4)
                     || DateTimeOffset.UtcNow - data.OldestEpoch > TimeSpan.FromDays(3.5),

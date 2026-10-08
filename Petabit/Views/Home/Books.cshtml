@@ -6,9 +6,12 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 
-<div class="container mt-5">
+<div class="container content-page resource-page">
+    <a class="resource-back" href="/">@Localizer["BackHome"]</a>
+    <p class="resource-kicker">@Localizer["ExploreResources"]</p>
     <h1>📚 @Localizer["LearnWithBooks"]</h1>
-    <ul class="list-group mt-3">
+    <p class="resource-intro">@Localizer["PageIntro"]</p>
+    <ul class="list-group mt-3 resource-grid">
         <li class="list-group-item">
             <a href="https://www.informit.com/store/clean-code-a-handbook-of-agile-software-craftsmanship-9780132350884" target="_blank" rel="noopener noreferrer">@Localizer["Clean Code – Robert C. Martin"]</a>
         </li>

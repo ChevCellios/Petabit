@@ -29,3 +29,13 @@ test('unpropagatable elements are omitted rather than displaying invented locati
     const records = createRecords([{ ...omm, ECCENTRICITY: 2 }]);
     assert.equal(positionsAt(records, Date.parse(omm.EPOCH + 'Z')).count, 0);
 });
+test('status colors stay aligned when invalid orbits are omitted', () => {
+    const records = createRecords([
+        { ...omm, PETABIT_STATUS: '+', ECCENTRICITY: 2 },
+        { ...omm, PETABIT_STATUS: '-' }, { ...omm, PETABIT_STATUS: 'P' },
+        { ...omm, PETABIT_STATUS: '?' }
+    ]);
+    const frame = positionsAt(records, Date.parse(omm.EPOCH + 'Z'));
+    assert.equal(frame.count,3);
+    assert.deepEqual([...frame.statuses],[2,1,3]);
+});

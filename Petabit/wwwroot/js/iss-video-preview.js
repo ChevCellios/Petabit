@@ -141,6 +141,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentGeneration === generation) fail();
         }
     }
+    function close() {
+        ++generation; finished = true; clearPlaybackTimer(); window.clearTimeout(loadingTimer);
+        player?.destroy(); player = undefined; stage.replaceChildren(); panel.hidden = true;
+        panel.dataset.playback = 'closed';
+    }
+    document.getElementById('iss-video-close')?.addEventListener('click', () => { close(); document.getElementById('iss-ping-button')?.focus(); });
+    window.addEventListener('iss-panel-close', close);
     window.addEventListener('iss-ping', start);
     document.addEventListener('visibilitychange', () => {
         if (document.hidden && player && !finished) {

@@ -313,12 +313,23 @@
     <value>Satellitenbewegung</value>
   </data>
   <data name="StarlinkCanvas" xml:space="preserve">
-    <value>Globus mit Positionen betriebsbereiter Starlink-Satelliten</value>
+    <value>Globus mit Starlink-Satellitenpositionen nach Katalogstatus</value>
   </data>
-  <data name="StarlinkNote" xml:space="preserve">
-    <value>Blaue Punkte zeigen berechnete Positionen betriebsbereiter Satelliten anhand von CelesTrak-Orbitaldaten. Dies ist keine direkte Telemetrie. Ziehe den Globus, um die Ansicht zu ändern. Die Anzahl folgt der Katalogkennzeichnung + und garantiert keinen Internetdienst.</value>
-  </data>
+  <data name="StarlinkNote" xml:space="preserve"><value>Farben entsprechen dem Status im CelesTrak-Katalog. Positionen werden aus verfügbaren Bahndaten berechnet und sind keine direkte Telemetrie. Ziehe den Globus, um die Ansicht zu ändern. Beschleunigte Wiedergabe ist als Simulation gekennzeichnet.</value></data>
   <data name="StarlinkSource" xml:space="preserve">
     <value>Status und Datenquelle</value>
   </data>
+  <data name="TrackerTitle" xml:space="preserve"><value>ISS- und Starlink-Tracker</value></data>
+  <data name="ClosePanel" xml:space="preserve"><value>Panel schließen</value></data>
+  <data name="StarlinkNonOperational" xml:space="preserve"><value>Nicht betriebsbereit (−)</value></data>
+  <data name="StarlinkOther" xml:space="preserve"><value>Reserve / andere Status</value></data>
+  <data name="StarlinkSpeed" xml:space="preserve"><value>Anzeigegeschwindigkeit</value></data>
+  <data name="StarlinkRealtime" xml:space="preserve"><value>Echtzeit · 1×</value></data>
+  <data name="StarlinkSimulation" xml:space="preserve"><value>Simulation · 30×</value></data>
+  <data name="StarlinkCoverage" xml:space="preserve"><value>Satelliten mit Bahndaten</value></data>
+  <data name="StarlinkLegacy" xml:space="preserve"><value>Weitere Status werden nach der nächsten Katalogaktualisierung angezeigt.</value></data>
+  <data name="TrackerIntro" xml:space="preserve"><value>Wähle einen Tracker, um die Bahnübersicht zu öffnen.</value></data>
+  <data name="BooksSummary" xml:space="preserve"><value>Wissen für besseren Code.</value></data>
+  <data name="AppsSummary" xml:space="preserve"><value>Lernen durch tägliche Praxis.</value></data>
+  <data name="BlockchainSummary" xml:space="preserve"><value>Dezentrale Systeme entdecken.</value></data>
 </root>
