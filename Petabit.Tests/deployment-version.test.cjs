@@ -33,7 +33,7 @@ test('deployment gate waits through old build and unavailable endpoint before ac
  assert.equal(r.status,0,r.stderr);assert.match(r.stdout,/on attempt 3/);
 });
 test('deployment gate rejects old build, missing metadata and malformed response',()=>{
- for(const body of [JSON.stringify({commitSha:old}),JSON.stringify({commitSha:null}),JSON.stringify({}),'<html>old deployment</html>']) {
+ for(const body of [JSON.stringify({commitSha:old}),JSON.stringify({commitSha:null}),JSON.stringify({}),'','<html>old deployment</html>',JSON.stringify({})+'\n'+JSON.stringify({commitSha:expected})]) {
   const r=run([body]);assert.equal(r.status,1,r.stdout+r.stderr);
  }
 });

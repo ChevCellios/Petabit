@@ -16,14 +16,16 @@ for attempt in $(seq 1 "${MAX_ATTEMPTS:-8}"); do
     version_response="$(curl --fail --silent --show-error --connect-timeout 5 --max-time 15 \
     "$SITE_URL/version" || true)"
   fi
-  if jq --exit-status --arg sha "$EXPECTED_SHA" \
-    'type == "object" and .commitSha == $sha' <<< "$version_response" > /dev/null 2>&1; then
+  if jq --slurp --exit-status --arg sha "$EXPECTED_SHA" \
+    'length == 1 and (.[0] | type == "object" and .commitSha == $sha)' <<< "$version_response" > /dev/null 2>&1; then
     echo "Production serves expected commit $EXPECTED_SHA on attempt $attempt."
     exit 0
   fi
   echo "Production has not reported the expected commit on attempt $attempt."
   if [ "$attempt" -lt "${MAX_ATTEMPTS:-8}" ]; then
-    sleep "${RETRY_SECONDS:-30}"
+    retry_seconds="${RETRY_SECONDS:-30}"
+    if [ "$status_code" = "429" ]; then retry_seconds="${RETRY_SECONDS:-60}"; fi
+    sleep "$retry_seconds"
   fi
 done
 

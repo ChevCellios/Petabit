@@ -17,7 +17,7 @@ jobs:
   check-production:
     name: Check production availability
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
 
     env:
       EXPECTED_SHA: ${{ github.sha }}
