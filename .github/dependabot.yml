@@ -35,3 +35,9 @@ updates:
           - "*"
         update-types:
           - "patch"
+
+  - package-ecosystem: "docker"
+    directory: "/Petabit"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5

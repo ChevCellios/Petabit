@@ -364,3 +364,11 @@ FodyWeavers.xsd
 # Local NuGet state used by isolated builds.
 .nuget-appdata/
 **/App_Data/
+
+# Recovery archives, key material and restore workspaces must stay off Git.
+backups/
+recovery/
+*.pbit
+*.recovery-key
+!security/backup/
+!security/backup/*.mjs

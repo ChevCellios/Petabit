@@ -432,6 +432,18 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
         Assert.Equal(HttpStatusCode.OK, healthResponse.StatusCode);
     }
 
+    [Theory]
+    [InlineData("/.git/config")]
+    [InlineData("/appsettings.json")]
+    [InlineData("/App_Data/starlink-status.json")]
+    [InlineData("/Data/starlink-bootstrap.json.gz")]
+    [InlineData("/security/backup/archive.mjs")]
+    public async Task PrivateRecoveryAndConfigurationFilesAreNotPublished(string route)
+    {
+        using var response = await _client.GetAsync(route);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
     private HttpClient CreateClientWithIssResponse(HttpStatusCode statusCode, string content)
         => CreateClientWithHandler(new StubHttpMessageHandler(statusCode, content));
 
