@@ -42,7 +42,7 @@ Provjeri sadržaj rezultirajućeg direktorija: alat za preuzimanje može smjesti
 
 1. Dešifriraj u novi direktorij. Provjera autentikacije i svih hash vrijednosti mora proći prije pisanja.
 2. `git clone <restore>/repository.bundle <restore>/source` i `git -C <restore>/source fsck --full`. Provjeri da postoji očekivani commit iz manifesta; Git clone može odabrati drugu zadanu granu pa eksplicitno checkoutaj manifestov commit.
-3. Iz vraćenog izvornog koda izgradi Docker sliku. Pokreni je na privatnoj testnoj mreži s vraćenim `App_Data`, ugašenim `StationSync:Enabled` i bez javne domene. Nikad prvo ne vraćaj preko produkcijskog volumena.
+3. Iz vraćenog izvornog koda izgradi Docker sliku. Pokreni je na privatnoj testnoj mreži s vraćenim `App_Data`, bez javne domene i bez izlaza na internet. Za probu učitavanja ISS snapshota ostavi `StationSync:Enabled=true`; vrijednost `false` isključuje i učitavanje spremljenog ISS stanja. Nikad prvo ne vraćaj preko produkcijskog volumena.
 4. Provjeri `/health/live`, prikaz stranica, ISS/Starlink snapshotove i njihova stvarna vremena dohvaćanja. Pri provjeri bez interneta sačuvani podaci moraju ostati dostupni i biti označeni starima kada je potrebno.
 5. Zabilježi vrijeme, commit, porijeklo podataka i rezultat. Ciljevi su gubitak najviše 24 sata spremljenih podataka i oporavak unutar dva sata; nisu jamstvo dok cijeli produkcijski postupak nije proban.
 
