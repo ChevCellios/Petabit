@@ -15,3 +15,8 @@ Petabit.Tests
 artifacts
 security
 **/node_modules
+security/backup
+backups
+recovery
+*.pbit
+*.recovery-key

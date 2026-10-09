@@ -8,7 +8,7 @@ on:
     branches:
       - master
   schedule:
-    - cron: "30 5 * * 1"
+    - cron: "30 5 * * *"
   workflow_dispatch:
 
 permissions:
@@ -87,3 +87,99 @@ jobs:
 
       - name: Analyze application
         uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
+
+  history-secrets:
+    name: Scan committed history for secrets
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Scan all committed refs with redacted output
+        run: >-
+          docker run --rm -v "$PWD:/repo:ro"
+          zricethezav/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
+          git /repo --log-opts=--all --redact --no-banner
+
+  container-audit:
+    name: Audit container image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24.x
+          package-manager-cache: false
+      - name: Build latest supported runtime and export image
+        run: |
+          docker build --pull --file Petabit/Dockerfile --tag petabit:security .
+          mkdir -p scan-output
+          docker save --output scan-output/image.tar petabit:security
+      - name: Scan OS and application packages without Docker socket access
+        run: >-
+          docker run --rm -v "$PWD/scan-output:/reports"
+          aquasec/trivy@sha256:af6acf9a6b85dfe389a1941505c0ce9efef52a4719635e1a962f022a3d855daa
+          image --input /reports/image.tar --scanners vuln
+          --format json --output /reports/container.json
+      - name: Reject all high and critical findings
+        run: node security/audit-container.mjs scan-output/container.json
+      - name: Retain complete vulnerability report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: container-security-report
+          path: scan-output/container.json
+          if-no-files-found: error
+          retention-days: 14
+
+  isolated-probes:
+    name: Probe isolated application
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Start application with private network and disposable data
+        run: docker compose -p petabit-security -f security/qa/compose.yml up -d --build
+      - name: Wait for private application
+        run: docker compose -p petabit-security -f security/qa/compose.yml exec -T petabit-qa node /lab/wait-ready.mjs
+      - name: Verify browser boundaries, private files, forms and request limits
+        run: docker compose -p petabit-security -f security/qa/compose.yml exec -T petabit-qa node /lab/probe.mjs
+      - name: Prepare passive scanner and report directory
+        run: |
+          docker pull ghcr.io/zaproxy/zaproxy@sha256:7aaa659b0d43078febd82e29bad112285c370727e86ab8340444220e17d9f0d2
+          mkdir -p scan-output
+          chmod 777 scan-output
+      - name: Passive ZAP baseline inside the private network
+        run: >-
+          docker run --rm --network petabit-security-lab
+          --cap-drop ALL --security-opt no-new-privileges:true
+          -v "$PWD/scan-output:/zap/wrk:rw"
+          ghcr.io/zaproxy/zaproxy@sha256:7aaa659b0d43078febd82e29bad112285c370727e86ab8340444220e17d9f0d2
+          zap-baseline.py -t http://petabit-qa:3000/ -m 1 -T 5
+          -r baseline.html -J baseline.json -I
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24.x
+          package-manager-cache: false
+      - name: Reject medium and high passive findings
+        run: node security/audit-zap.mjs scan-output/baseline.json
+      - name: Retain passive security reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: passive-security-report
+          path: |
+            scan-output/baseline.json
+            scan-output/baseline.html
+          if-no-files-found: error
+          retention-days: 14
+      - name: Remove disposable lab containers and network
+        if: always()
+        run: docker compose -p petabit-security -f security/qa/compose.yml down
