@@ -1,0 +1,109 @@
+name: Production Backup
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/production-backup.yml
+      - security/backup/**
+      - Petabit.Tests/*backup*.mjs
+  schedule:
+    - cron: "20 3 * * *"
+  workflow_dispatch:
+    inputs:
+      restore_drill:
+        description: Also build and probe the restored application offline
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-backup
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Test encryption, remote-copy verification and token checkpoints without secrets
+        run: node --test Petabit.Tests/backup.test.mjs Petabit.Tests/cloud-backup.test.mjs
+      - name: Verify Linux operator tool installation without credentials
+        run: bash security/backup/install-tools.sh
+
+  backup:
+    # Daily runs stay off until a successful manual trial with protected secrets.
+    if: github.ref == 'refs/heads/master' && (github.event_name == 'workflow_dispatch' || vars.PETABIT_BACKUPS_ENABLED == 'true')
+    environment: production-backup
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install verified operator tools
+        run: bash security/backup/install-tools.sh
+      - name: Export, encrypt, upload and restore production backup
+        run: node security/backup/cloud.mjs
+        env:
+          RAILWAY_API_TOKEN: ${{ secrets.PETABIT_RAILWAY_API_TOKEN }}
+          PETABIT_BACKUP_KEY_BASE64: ${{ secrets.PETABIT_BACKUP_KEY_BASE64 }}
+          PETABIT_ONEDRIVE_CONFIG: ${{ secrets.PETABIT_ONEDRIVE_CONFIG }}
+          PETABIT_RESTORE_DRILL: ${{ inputs.restore_drill }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Retain encrypted OAuth refresh checkpoint
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: onedrive-refresh-state
+          path: ${{ runner.temp }}/onedrive-state.pbit
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Retain receipt without credentials
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: production-backup-receipt
+          path: ${{ runner.temp }}/backup-receipt.json
+          if-no-files-found: ignore
+          retention-days: 90
+
+  notify-failure:
+    needs: backup
+    if: failure() && needs.backup.result == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      issues: write
+    steps:
+      - name: Open one actionable failure notice
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          title='Petabit production backup needs attention'
+          existing="$(gh issue list --state open --search "$title in:title" --json title --jq '[.[] | select(.title == "Petabit production backup needs attention")] | length')"
+          if [ "$existing" = '0' ]; then
+            printf '@ChevCellios Automatski backup nije uspio. Provjeri izvršavanje: %s\n\nPrethodne kopije nisu brisane. Provjeri i opoziv privremenog SSH ključa ako je izvršavanje prekinuto. Zatvori ovu obavijest nakon uspješne provjere oporavka.\n' "$RUN_URL" > "$RUNNER_TEMP/backup-failure.md"
+            gh issue create --title "$title" --body-file "$RUNNER_TEMP/backup-failure.md"
+          fi
