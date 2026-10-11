@@ -27,7 +27,7 @@ export function restoreCheckpoint(bytes,key) {
     return Buffer.from(payload.files[0].data,'base64');
 }
 
-async function main() {
+export async function runCloudBackup({now=new Date()}={}) {
     const env=process.env;
     for(const name of ['RAILWAY_API_TOKEN','PETABIT_BACKUP_KEY_BASE64','PETABIT_ONEDRIVE_CONFIG','GITHUB_REPOSITORY','GITHUB_RUN_ID','RUNNER_TEMP','GH_TOKEN'])
         if(!env[name])throw new Error(`Missing required configuration: ${name}.`);
@@ -83,7 +83,7 @@ async function main() {
             if(fs.statSync(file).size>12*1024*1024)throw new Error('Snapshot exceeds expected size.');
             JSON.parse(fs.readFileSync(file,'utf8'));
         }
-        const date=new Date().toISOString().slice(0,10);
+        const date=now.toISOString().slice(0,10);
         const filename=`petabit-${date}-${env.GITHUB_RUN_ID}-production.pbit`;
         const archive=path.join(root,filename);
         run(process.execPath,[fileURLToPath(new URL('./backup.mjs',import.meta.url)),'create','--repository',repo,'--data',exportDir,'--data-source','railway-volume-export','--key',keyFile,'--output',archive]);
@@ -99,7 +99,7 @@ async function main() {
         run('git',['clone',path.join(restored,'repository.bundle'),source]);
         run('git',['-C',source,'checkout','--detach',payload.revision]);
         run('git',['-C',source,'fsck','--full']);
-        const monthDay=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Zagreb',day:'2-digit'}).format(new Date());
+        const monthDay=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Zagreb',day:'2-digit'}).format(now);
         if(monthDay==='01'||env.PETABIT_RESTORE_DRILL==='true')run(process.execPath,[fileURLToPath(new URL('./drill.mjs',import.meta.url)),restored],{timeout:900000});
         const receipt={date,revision:payload.revision,source:payload.dataSource,remote,sha256:sha256(fs.readFileSync(archive)),remoteReadbackVerified:true,gitRestoreVerified:true,fullApplicationDrill:monthDay==='01'||env.PETABIT_RESTORE_DRILL==='true',temporarySshKeyRevoked:true};
         fs.writeFileSync(path.join(env.RUNNER_TEMP,'backup-receipt.json'),JSON.stringify(receipt,null,2),{flag:'wx',mode:0o600});
@@ -114,4 +114,4 @@ async function main() {
         // The GitHub-hosted runner is disposable; no plaintext exports are uploaded as artifacts.
     }
 }
-if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))main().catch(error=>{console.error(error.message);process.exitCode=1;});
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))runCloudBackup().catch(error=>{console.error(error.message);process.exitCode=1;});

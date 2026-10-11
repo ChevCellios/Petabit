@@ -39,6 +39,8 @@ jobs:
         run: node --test Petabit.Tests/backup.test.mjs Petabit.Tests/cloud-backup.test.mjs
       - name: Verify Linux operator tool installation without credentials
         run: bash security/backup/install-tools.sh
+      - name: Exercise upload and restore with local storage and simulated Railway access
+        run: node --test Petabit.Tests/cloud-pipeline.test.mjs
 
   backup:
     # Daily runs stay off until a successful manual trial with protected secrets.
