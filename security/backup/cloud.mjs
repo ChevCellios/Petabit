@@ -27,7 +27,7 @@ export function restoreCheckpoint(bytes,key) {
     return Buffer.from(payload.files[0].data,'base64');
 }
 
-export async function runCloudBackup({now=new Date()}={}) {
+export async function runCloudBackup({now=new Date(),remoteType='onedrive'}={}) {
     const env=process.env;
     for(const name of ['RAILWAY_API_TOKEN','PETABIT_BACKUP_KEY_BASE64','PETABIT_ONEDRIVE_CONFIG','GITHUB_REPOSITORY','GITHUB_RUN_ID','RUNNER_TEMP','GH_TOKEN'])
         if(!env[name])throw new Error(`Missing required configuration: ${name}.`);
@@ -65,7 +65,8 @@ export async function runCloudBackup({now=new Date()}={}) {
             recovered=true;break;
         }
         if(!recovered)fs.writeFileSync(config,env.PETABIT_ONEDRIVE_CONFIG,{flag:'wx',mode:0o600});
-        if(!/^\[petabit\]\s*$/m.test(fs.readFileSync(config,'utf8')))throw new Error('OneDrive config must define [petabit].');
+        const section=fs.readFileSync(config,'utf8').split(/^\[petabit\][ \t]*\r?$/m)[1]?.split(/^\[/m)[0];
+        if(!section||/^type\s*=\s*([\w-]+)[ \t]*\r?$/m.exec(section)?.[1]!==remoteType)throw new Error('The [petabit] remote must use the expected OneDrive backend.');
         configReady=true;
         run('railway',['link','--project','20c1e1d1-4daf-4012-b3ab-29cdf8abdca9','--environment','f5334489-9c09-4614-b3aa-1d33c6543f02','--service','9957dae9-1a2b-47e3-9316-b180923b05f1']);
         run('ssh-keygen',['-t','ed25519','-N','','-C',`petabit-backup-${env.GITHUB_RUN_ID}`,'-f',identity]);

@@ -21,7 +21,7 @@ function fixture(failDownload) {
  const key=randomBytes(32), events=path.join(root,'events.jsonl');
  const env={...process.env,PATH:bin+path.delimiter+process.env.PATH,RAILWAY_API_TOKEN:'test-only',PETABIT_BACKUP_KEY_BASE64:key.toString('base64'),PETABIT_ONEDRIVE_CONFIG:`[petabit]\ntype = alias\nremote = ${remote}\n`,GITHUB_REPOSITORY:'fixture/repo',GITHUB_RUN_ID:'12345',GITHUB_REF:'refs/heads/master',GITHUB_EVENT_NAME:'workflow_dispatch',RUNNER_TEMP:temp,GH_TOKEN:'test-only',FIXTURE_EVENTS:events,FIXTURE_FAIL:String(failDownload),PETABIT_RESTORE_DRILL:'false'};
  const moduleUrl=new URL('../security/backup/cloud.mjs',import.meta.url).href;
- const run=()=>execFileSync(process.execPath,['--input-type=module','-e',`import {runCloudBackup} from ${JSON.stringify(moduleUrl)};await runCloudBackup({now:new Date('2026-10-02T10:00:00Z')});`],{cwd:repo,env,stdio:'pipe',timeout:120000});
+ const run=()=>execFileSync(process.execPath,['--input-type=module','-e',`import {runCloudBackup} from ${JSON.stringify(moduleUrl)};await runCloudBackup({now:new Date('2026-10-02T10:00:00Z'),remoteType:'alias'});`],{cwd:repo,env,stdio:'pipe',timeout:120000});
  return {root,remote,temp,key,events,run};
 }
 test('cloud pipeline uploads, downloads and restores through real rclone without production credentials',{skip:!available},()=>{
