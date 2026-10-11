@@ -46,7 +46,12 @@ export async function runCloudBackup({now=new Date(),remoteType='onedrive'}={}) 
     // Tokens are passed only through environment/private files. Do not echo subprocess output.
     const run=(tool,args,options={})=>{
         const toolEnv={...childEnv};
-        if(tool==='railway')toolEnv.RAILWAY_API_TOKEN=env.RAILWAY_API_TOKEN;
+        if(tool==='railway')Object.assign(toolEnv,{
+            RAILWAY_API_TOKEN:env.RAILWAY_API_TOKEN,
+            RAILWAY_PROJECT_ID:'20c1e1d1-4daf-4012-b3ab-29cdf8abdca9',
+            RAILWAY_ENVIRONMENT_ID:'f5334489-9c09-4614-b3aa-1d33c6543f02',
+            RAILWAY_SERVICE_ID:'9957dae9-1a2b-47e3-9316-b180923b05f1'
+        });
         if(tool==='gh')toolEnv.GH_TOKEN=env.GH_TOKEN;
         try{return execFileSync(tool,args,{cwd:repo,env:toolEnv,stdio:['ignore','pipe','pipe'],timeout:300000,maxBuffer:16*1024*1024,...options});}
         catch {throw new Error(`${path.basename(tool)} operation failed; credentials and raw output are withheld.`);}
@@ -68,17 +73,21 @@ export async function runCloudBackup({now=new Date(),remoteType='onedrive'}={}) 
         const section=fs.readFileSync(config,'utf8').split(/^\[petabit\][ \t]*\r?$/m)[1]?.split(/^\[/m)[0];
         if(!section||/^type\s*=\s*([\w-]+)[ \t]*\r?$/m.exec(section)?.[1]!==remoteType)throw new Error('The [petabit] remote must use the expected OneDrive backend.');
         configReady=true;
-        run('railway',['link','--project','20c1e1d1-4daf-4012-b3ab-29cdf8abdca9','--environment','f5334489-9c09-4614-b3aa-1d33c6543f02','--service','9957dae9-1a2b-47e3-9316-b180923b05f1']);
+        // Explicit environment targeting avoids `link`'s personal-account discovery query,
+        // which workspace-scoped API tokens cannot authorize.
+        console.log('Registering temporary Railway SSH access.');
         run('ssh-keygen',['-t','ed25519','-N','','-C',`petabit-backup-${env.GITHUB_RUN_ID}`,'-f',identity]);
         fingerprint=run('ssh-keygen',['-lf',identity+'.pub']).toString().split(/\s+/)[1];
         if(!/^SHA256:[A-Za-z0-9+/]+$/.test(fingerprint))throw new Error('Unexpected SSH fingerprint.');
         registrationAttempted=true;
         run('railway',['ssh','keys','add','--key',`petabit-backup-${env.GITHUB_RUN_ID}`,'--name',`petabit-backup-${env.GITHUB_RUN_ID}`]);
         try {
+            console.log('Exporting the production volume.');
             run('railway',['volume','files','--volume','d11b1d77-4679-4df3-b0f5-d00411a76ddb','download','/',exportDir,'--json']);
         } finally {
             run('railway',['ssh','keys','remove',fingerprint]);registrationAttempted=false;
         }
+        console.log('Temporary Railway SSH access revoked; encrypting the backup.');
         for(const name of ['station-status.json','starlink-status.json']) {
             const file=path.join(exportDir,name);
             if(fs.statSync(file).size>12*1024*1024)throw new Error('Snapshot exceeds expected size.');
@@ -90,6 +99,7 @@ export async function runCloudBackup({now=new Date(),remoteType='onedrive'}={}) 
         run(process.execPath,[fileURLToPath(new URL('./backup.mjs',import.meta.url)),'create','--repository',repo,'--data',exportDir,'--data-source','railway-volume-export','--key',keyFile,'--output',archive]);
         const remote=`petabit:Petabit Backups/Automated/${filename}`;
         const rclone=(...args)=>run('rclone',['--config',config,'--contimeout','20s','--timeout','2m','--retries','3',...args]);
+        console.log('Uploading the encrypted archive to OneDrive.');
         rclone('copyto',archive,remote,'--immutable');
         const readback=path.join(root,'readback.pbit');
         rclone('copyto',remote,readback,'--max-transfer',`${limit}B`,'--cutoff-mode','HARD');
@@ -101,7 +111,10 @@ export async function runCloudBackup({now=new Date(),remoteType='onedrive'}={}) 
         run('git',['-C',source,'checkout','--detach',payload.revision]);
         run('git',['-C',source,'fsck','--full']);
         const monthDay=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Zagreb',day:'2-digit'}).format(now);
-        if(monthDay==='01'||env.PETABIT_RESTORE_DRILL==='true')run(process.execPath,[fileURLToPath(new URL('./drill.mjs',import.meta.url)),restored],{timeout:900000});
+        if(monthDay==='01'||env.PETABIT_RESTORE_DRILL==='true') {
+            console.log('Verifying the restored application in an isolated environment.');
+            run(process.execPath,[fileURLToPath(new URL('./drill.mjs',import.meta.url)),restored],{timeout:900000});
+        }
         const receipt={date,revision:payload.revision,source:payload.dataSource,remote,sha256:sha256(fs.readFileSync(archive)),remoteReadbackVerified:true,gitRestoreVerified:true,fullApplicationDrill:monthDay==='01'||env.PETABIT_RESTORE_DRILL==='true',temporarySshKeyRevoked:true};
         fs.writeFileSync(path.join(env.RUNNER_TEMP,'backup-receipt.json'),JSON.stringify(receipt,null,2),{flag:'wx',mode:0o600});
         console.log('Encrypted production backup uploaded, downloaded and restored successfully.');
