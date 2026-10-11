@@ -47,3 +47,22 @@ test('cloud pipeline revokes temporary SSH access when production export fails',
   assert.equal(fs.existsSync(path.join(f.remote,'Petabit Backups')),false);
  } finally {fs.rmSync(f.root,{recursive:true,force:true});}
 });
+
+test('application drill reads private snapshots as their non-root owner without relaxing file permissions',{skip:process.platform!=='linux'||process.getuid?.()===0||process.getgid?.()===0},()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'petabit-drill-test-'));
+ try {
+  const bin=path.join(root,'bin'),restored=path.join(root,'restored'),events=path.join(root,'events.jsonl');
+  fs.mkdirSync(bin);fs.mkdirSync(restored,{mode:0o700});fs.mkdirSync(path.join(restored,'App_Data'),{mode:0o700});
+  fs.writeFileSync(path.join(restored,'backup-manifest.json'),'{}',{mode:0o600});
+  const snapshot=path.join(restored,'App_Data','station-status.json');fs.writeFileSync(snapshot,'{}',{mode:0o600});
+  fs.writeFileSync(path.join(bin,'docker'),`#!/usr/bin/env node\nrequire('node:fs').appendFileSync(process.env.FIXTURE_EVENTS,JSON.stringify(process.argv.slice(2))+'\\n');`,{mode:0o755});
+  execFileSync(process.execPath,[new URL('../security/backup/drill.mjs',import.meta.url).pathname,restored],{env:{...process.env,PATH:bin+path.delimiter+process.env.PATH,FIXTURE_EVENTS:events},stdio:'pipe'});
+  const commands=fs.readFileSync(events,'utf8').trim().split('\n').map(line=>JSON.parse(line));
+  const app=commands.find(a=>a[0]==='run');
+  assert.equal(app[app.indexOf('--user')+1],`${process.getuid()}:${process.getgid()}`);
+  assert.ok(app.includes('--read-only'));assert.ok(app.includes('no-new-privileges:true'));
+  assert.ok(app[app.indexOf('--mount')+1].endsWith(',readonly'));
+  assert.equal(fs.statSync(snapshot).mode&0o777,0o600);
+  assert.ok(commands.some(a=>a[0]==='rm'&&a.includes('petabit-recovery-drill')));
+ } finally {fs.rmSync(root,{recursive:true,force:true});}
+});
