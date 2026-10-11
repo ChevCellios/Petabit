@@ -91,7 +91,7 @@ export async function runCloudBackup({now=new Date()}={}) {
         const rclone=(...args)=>run('rclone',['--config',config,'--contimeout','20s','--timeout','2m','--retries','3',...args]);
         rclone('copyto',archive,remote,'--immutable');
         const readback=path.join(root,'readback.pbit');
-        rclone('copyto',remote,readback,'--max-size',String(limit));
+        rclone('copyto',remote,readback,'--max-transfer',`${limit}B`,'--cutoff-mode','HARD');
         if(fs.statSync(readback).size>limit)throw new Error('Remote archive exceeds backup limit.');
         const payload=verifyRemoteCopy(fs.readFileSync(archive),fs.readFileSync(readback),key);
         const restored=path.join(root,'restored');restore(payload,restored);
