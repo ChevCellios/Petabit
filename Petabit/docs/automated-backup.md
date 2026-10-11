@@ -2,7 +2,7 @@
 
 ## Stanje 11. listopada 2026.
 
-Postupak je pripremljen u `.github/workflows/production-backup.yml`. Dnevno izvršavanje **nije uključeno**: nedostaju odobrena Microsoft OAuth veza i namjenski Railway API pristup u zaštićenim GitHub environment secrets. Postojeća OneDrive kopija od 10. listopada ostaje sačuvana. Nisu registrirani novi trajni SSH ključevi, kopirani lokalni pristupni tokeni niti mijenjane MFA postavke.
+Postupak je pripremljen u `.github/workflows/production-backup.yml`. Microsoft OAuth veza, recovery ključ i novi namjenski Railway workspace token spremljeni su u zaštićeni GitHub environment `production-backup`. Vlasnik je izričito odobrio da namjenski Railway token obuhvaća svih pet projekata u prostoru; token nije ograničen samo na Petabit. OneDrive veza traži `Files.ReadWrite offline_access` i nije ograničena samo na backup mapu. Dnevno izvršavanje **nije uključeno** dok stvarna proba oporavka ne uspije. Prva proba otkrila je da `railway link` pokušava dohvatiti osobni profil; automatizacija sada koristi izričite project/environment/service varijable. Postojeća OneDrive kopija od 10. listopada ostaje sačuvana. Nisu kopirani postojeći osobni CLI tokeni niti mijenjane MFA postavke.
 
 GitHub-hosted runner može raditi kada vlasnikovo računalo nije uključeno. Raspored je 03:20 UTC (05:20 u Zagrebu tijekom ljetnog računanja, 04:20 zimi). GitHub rasporedi nisu jamstvo točnog vremena izvršavanja.
 
