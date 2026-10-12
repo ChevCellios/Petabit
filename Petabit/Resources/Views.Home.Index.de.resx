@@ -341,4 +341,12 @@
   <data name="StarlinkAllHidden" xml:space="preserve"><value>Alle verfügbaren Ebenen sind ausgeblendet. Aktiviere mindestens eine Ebene.</value></data>
   <data name="StarlinkNoPositions" xml:space="preserve"><value>Keine Positionen verfügbar</value></data>
   <data name="StarlinkLayerHelp" xml:space="preserve"><value>Die Zahl je Ebene zeigt Satelliten mit verfügbaren Positionen, nicht die Gesamtzahl im Katalog. Ebenen ohne Positionen sind nicht verfügbar.</value></data>
+  <data name="StarlinkSound" xml:space="preserve"><value>Modemton · 15 s</value></data>
+  <data name="StarlinkCalculating" xml:space="preserve"><value>Daten empfangen · Orbitalpositionen werden berechnet…</value></data>
+  <data name="StarlinkReady" xml:space="preserve"><value>Satellitenansicht bereit</value></data>
+  <data name="StarlinkFresh" xml:space="preserve"><value>Daten innerhalb der Aktualitätsgrenzen</value></data>
+  <data name="StarlinkAging" xml:space="preserve"><value>Ältere Daten · letzter erfolgreicher Abruf</value></data>
+  <data name="StarlinkAge" xml:space="preserve"><value>Alter des Abrufs</value></data>
+  <data name="StarlinkAgeUnknown" xml:space="preserve"><value>Datenalter nicht verfügbar</value></data>
+  <data name="StarlinkViewHelp" xml:space="preserve"><value>Der Zoom vergrößert den ganzen Globus. Horizontal und vertikal scrollen, um die Pole zu erreichen; mit der Maus ziehen, um zu drehen. Strg + Mausrad zoomt. Ansicht zurücksetzen zentriert den Globus.</value></data>
 </root>
