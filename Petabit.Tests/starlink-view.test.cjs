@@ -34,6 +34,7 @@ test('zoom enlarges the complete drawing surface, bounds memory and leaves ordin
  assert.equal(canvas.clientWidth,2280);assert.ok(canvas.width<=2560);assert.ok(canvas.height<=2560);
  assert.equal(stage.scrollTop,(2280-760)/2);assert.equal(stage.scrollLeft,(2280-800)/2);
  let prevented=false;canvas.events.wheel({deltaY:1,preventDefault(){prevented=true;}});assert.equal(prevented,false);
+ canvas.events.wheel({deltaY:-1,ctrlKey:true,preventDefault(){prevented=true;}});assert.equal(prevented,true);assert.equal(canvas.dataset.zoom,'3');
  assert.equal(element('starlink-motion').checked,true);
 });
 

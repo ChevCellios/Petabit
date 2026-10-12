@@ -279,8 +279,9 @@ document.getElementById('starlink-view-reset').addEventListener('click', () => {
 for (const layer of layers) layer.addEventListener('change', redrawView);
 canvas.addEventListener('wheel', event => {
     if (!event.ctrlKey && !event.metaKey) return;
+    event.preventDefault();
     const next = Math.max(1, Math.min(3, zoom - Math.sign(event.deltaY) * .1));
-    if (next !== zoom) { event.preventDefault(); setZoom(next); }
+    if (next !== zoom) setZoom(next);
 }, { passive: false });
 setZoom(1);
 
