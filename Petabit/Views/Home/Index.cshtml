@@ -162,13 +162,15 @@
     <script src="~/js/station-dashboard.js" asp-append-version="true"></script>
     <script src="~/js/iss-video-preview.js" asp-append-version="true"></script>
     <script type="module" src="~/js/starlink-dashboard.js" asp-append-version="true"></script>
-    <script nonce="@cspNonce">
+    <script type="module" nonce="@cspNonce">
+        import { createIllustrativeOrbit } from '@AssetVersions.AddFileVersionToPath(Context.Request.PathBase, "/js/iss-orbit.mjs")';
         const globeCanvas = document.getElementById('iss-globe-canvas');
         const globeContext = globeCanvas.getContext('2d');
         const globeHologram = document.querySelector('.iss-hologram');
         const globeStatus = document.getElementById('iss-hologram-status');
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
         let issPosition = null;
+        let orbitalCoordinate = null;
         let globeAnimationFrame;
 
         const continentOutlines = [
@@ -276,26 +278,17 @@
                 drawProjectedLine(points, grid, 0.7);
             }
 
-            if (issPosition) {
-                const inclination = 51.6;
-                const phase = Math.asin(Math.max(-1, Math.min(1, issPosition.latitude / inclination)));
-                const groundTrackDegreesPerOrbit = 336;
+            if (orbitalCoordinate) {
                 const orbit = [];
-                const orbitalCoordinate = angle => ({
-                    latitude: inclination * Math.sin(angle),
-                    longitude: issPosition.longitude
-                        + (angle - phase) * groundTrackDegreesPerOrbit / (Math.PI * 2)
-                });
 
                 for (let offsetDegrees = -180; offsetDegrees <= 180; offsetDegrees += 2) {
-                    const angle = phase + offsetDegrees * Math.PI / 180;
-                    const coordinate = orbitalCoordinate(angle);
+                    const coordinate = orbitalCoordinate(offsetDegrees * Math.PI / 180);
                     orbit.push(projectGlobePoint(coordinate.latitude, coordinate.longitude, rotation, radius * 1.08, centerX, centerY));
                 }
                 drawProjectedLine(orbit, bright, 1.5, 7);
 
-                const arrowStartCoordinate = orbitalCoordinate(phase + 0.10);
-                const arrowTipCoordinate = orbitalCoordinate(phase + 0.18);
+                const arrowStartCoordinate = orbitalCoordinate(0.10);
+                const arrowTipCoordinate = orbitalCoordinate(0.18);
                 const arrowStart = projectGlobePoint(arrowStartCoordinate.latitude, arrowStartCoordinate.longitude, rotation, radius * 1.08, centerX, centerY);
                 const arrowTip = projectGlobePoint(arrowTipCoordinate.latitude, arrowTipCoordinate.longitude, rotation, radius * 1.08, centerX, centerY);
 
@@ -313,7 +306,9 @@
                     globeContext.fill();
                     globeContext.shadowBlur = 0;
                 }
+            }
 
+            if (issPosition) {
                 const marker = projectGlobePoint(issPosition.latitude, issPosition.longitude, rotation, radius * 1.08, centerX, centerY);
                 if (marker.visible) {
                     const pulse = reduceMotion.matches ? 10 : 10 + Math.sin(time * 0.006) * 3;
@@ -352,6 +347,7 @@
 
         window.addEventListener('iss-position', event => {
             issPosition = event.detail;
+            orbitalCoordinate = createIllustrativeOrbit(issPosition);
             globeStatus.textContent = `${issPosition.latitude.toFixed(2)}° / ${issPosition.longitude.toFixed(2)}°`;
             globeStatus.classList.add('is-live');
             globeHologram.classList.add('is-tracking');

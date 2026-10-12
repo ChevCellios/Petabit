@@ -146,13 +146,21 @@ public class HomeController : Controller
 
         try
         {
-            var iss = await httpClient.GetFromJsonAsync<IssLocationResponse>(
-                "satellites/25544",
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var previousTimestamp = timestamp - 30;
+            var positions = await httpClient.GetFromJsonAsync<IssLocationResponse?[]>(
+                $"satellites/25544/positions?timestamps={previousTimestamp},{timestamp}&units=kilometers",
                 cancellationToken);
-            if (iss is null)
+            var currentPositions = positions?.Where(position => position?.Timestamp == timestamp).ToArray();
+            var iss = currentPositions is { Length: 1 } ? currentPositions[0] : null;
+            if (iss is null || !HasValidCoordinates(iss) || !double.IsFinite(iss.Velocity) || iss.Velocity < 0)
             {
-                return Problem("ISS service returned no data.", statusCode: StatusCodes.Status503ServiceUnavailable);
+                return Problem("ISS service returned no valid current position.", statusCode: StatusCodes.Status503ServiceUnavailable);
             }
+
+            var previousPositions = positions?.Where(position => position?.Timestamp == previousTimestamp).ToArray();
+            var previous = previousPositions is { Length: 1 } ? previousPositions[0] : null;
+            if (previous is not null && !HasValidCoordinates(previous)) previous = null;
 
             var state = _station.Current;
             return Json(new
@@ -160,7 +168,13 @@ public class HomeController : Controller
                 latitude = iss.Latitude,
                 longitude = iss.Longitude,
                 speed = iss.Velocity,
-                positionUpdatedAt = DateTimeOffset.UtcNow,
+                positionUpdatedAt = DateTimeOffset.FromUnixTimeSeconds(iss.Timestamp),
+                previousPosition = previous is null ? null : new
+                {
+                    latitude = previous.Latitude,
+                    longitude = previous.Longitude,
+                    positionUpdatedAt = DateTimeOffset.FromUnixTimeSeconds(previous.Timestamp)
+                },
                 astronautCount = state.Crew.Length,
                 astronauts = state.Crew,
                 dockedVehicles = state.DockedVehicles,
@@ -195,4 +209,8 @@ public class HomeController : Controller
             return Problem("ISS data is temporarily unavailable.", statusCode: StatusCodes.Status503ServiceUnavailable);
         }
     }
+
+    private static bool HasValidCoordinates(IssLocationResponse position) =>
+        double.IsFinite(position.Latitude) && position.Latitude is >= -90 and <= 90
+        && double.IsFinite(position.Longitude) && position.Longitude is >= -180 and <= 180;
 }

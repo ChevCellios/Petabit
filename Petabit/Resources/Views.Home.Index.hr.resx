@@ -172,7 +172,7 @@
     <value>Hologramski prikaz Zemlje i položaja ISS-a</value>
   </data>
   <data name="HologramNote" xml:space="preserve">
-    <value>Oznaka koristi posljednji dohvaćeni položaj. Linija orbite je ilustracija, a ne predviđena putanja leta.</value>
+    <value>Oznaka koristi posljednji dohvaćeni položaj. Smjer krivulje procjenjuje se iz dvaju uzastopnih položaja. Linija je približna ilustracija, a ne predviđena putanja leta.</value>
   </data>
   <data name="CountryUsa" xml:space="preserve">
     <value>SAD</value>

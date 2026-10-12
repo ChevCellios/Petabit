@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Builder;
@@ -29,9 +30,7 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
                     services.AddDataProtection().UseEphemeralDataProtectionProvider();
                     services.RemoveAll<IHttpClientFactory>();
                     services.AddSingleton<IHttpClientFactory>(
-                        new StubHttpClientFactory(new StubHttpMessageHandler(
-                            HttpStatusCode.OK,
-                            """{"latitude":45.81,"longitude":15.98,"velocity":27600}""")));
+                        new StubHttpClientFactory(new IssPositionsHttpMessageHandler()));
                 });
             })
             .CreateClient(new WebApplicationFactoryClientOptions
@@ -335,9 +334,8 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
     [Fact]
     public async Task IssDataReturnsJsonWhenUpstreamSucceeds()
     {
-        using var client = CreateClientWithIssResponse(
-            HttpStatusCode.OK,
-            """{"latitude":45.81,"longitude":15.98,"velocity":27600}""");
+        var handler = new IssPositionsHttpMessageHandler();
+        using var client = CreateClientWithHandler(handler);
 
         var response = await client.GetAsync("/Home/Data?test=success");
         var body = await response.Content.ReadAsStringAsync();
@@ -345,6 +343,92 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("\"latitude\":45.81", body);
         Assert.Contains("\"longitude\":15.98", body);
+        using var document = JsonDocument.Parse(body);
+        var position = document.RootElement;
+        Assert.Equal(27600, position.GetProperty("speed").GetDouble());
+        Assert.Equal(DateTimeOffset.FromUnixTimeSeconds(handler.RequestedTimestamps![1]),
+            position.GetProperty("positionUpdatedAt").GetDateTimeOffset());
+        var previous = position.GetProperty("previousPosition");
+        Assert.Equal(45.3, previous.GetProperty("latitude").GetDouble());
+        Assert.Equal(15.2, previous.GetProperty("longitude").GetDouble());
+        Assert.Equal(DateTimeOffset.FromUnixTimeSeconds(handler.RequestedTimestamps[0]),
+            previous.GetProperty("positionUpdatedAt").GetDateTimeOffset());
+        Assert.Equal(30, handler.RequestedTimestamps[1] - handler.RequestedTimestamps[0]);
+        var upstream = Assert.Single(handler.Requests);
+        Assert.EndsWith("/satellites/25544/positions", upstream.AbsolutePath);
+        Assert.Equal("kilometers", Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(upstream.Query)["units"]);
+    }
+
+    [Theory]
+    [InlineData("91", "15.98", "27600", 0)]
+    [InlineData("-91", "15.98", "27600", 0)]
+    [InlineData("45.81", "181", "27600", 0)]
+    [InlineData("45.81", "-181", "27600", 0)]
+    [InlineData("1e400", "15.98", "27600", 0)]
+    [InlineData("45.81", "15.98", "-1", 0)]
+    [InlineData("45.81", "15.98", "1e400", 0)]
+    [InlineData("45.81", "15.98", "27600", -30)]
+    [InlineData("45.81", "15.98", "27600", 86400)]
+    public async Task IssDataRejectsInvalidCurrentPosition(string latitude, string longitude, string velocity, long timestampOffset)
+    {
+        var handler = new IssPositionsHttpMessageHandler((_, current) =>
+            $$"""[{"latitude":{{latitude}},"longitude":{{longitude}},"velocity":{{velocity}},"timestamp":{{current + timestampOffset}}}]""");
+        using var client = CreateClientWithHandler(handler);
+
+        using var response = await client.GetAsync("/Home/Data");
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+    }
+
+    [Theory]
+    [InlineData("latitude")]
+    [InlineData("longitude")]
+    [InlineData("velocity")]
+    [InlineData("timestamp")]
+    public async Task IssDataRejectsMissingCurrentPositionFields(string missingField)
+    {
+        var handler = new IssPositionsHttpMessageHandler((_, current) =>
+        {
+            var point = new Dictionary<string, object>
+            {
+                ["latitude"] = 45.81, ["longitude"] = 15.98, ["velocity"] = 27600, ["timestamp"] = current
+            };
+            point.Remove(missingField);
+            return JsonSerializer.Serialize(new[] { point });
+        });
+        using var client = CreateClientWithHandler(handler);
+
+        using var response = await client.GetAsync("/Home/Data");
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+    }
+
+    [Theory]
+    [InlineData("missing")]
+    [InlineData("invalid-coordinate")]
+    [InlineData("wrong-time")]
+    [InlineData("null")]
+    public async Task IssDataRemainsAvailableWithoutValidPreviousPosition(string previousState)
+    {
+        var handler = new IssPositionsHttpMessageHandler((previous, current) =>
+        {
+            var previousJson = previousState switch
+            {
+                "missing" => "",
+                "invalid-coordinate" => $$"""{"latitude":91,"longitude":15.2,"timestamp":{{previous}}},""",
+                "wrong-time" => $$"""{"latitude":45.3,"longitude":15.2,"timestamp":{{previous - 30}}},""",
+                _ => "null,"
+            };
+            return $$"""[{{previousJson}}{"latitude":45.81,"longitude":15.98,"velocity":27600,"timestamp":{{current}}}]""";
+        });
+        using var client = CreateClientWithHandler(handler);
+
+        using var response = await client.GetAsync("/Home/Data");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal(JsonValueKind.Null, document.RootElement.GetProperty("previousPosition").ValueKind);
+        Assert.Equal(45.81, document.RootElement.GetProperty("latitude").GetDouble());
     }
 
     [Fact]
@@ -382,9 +466,7 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
     [Fact]
     public async Task IssOutputCacheAvoidsDuplicateUpstreamRequests()
     {
-        var handler = new CountingHttpMessageHandler(
-            HttpStatusCode.OK,
-            """{"latitude":45.81,"longitude":15.98,"velocity":27600}""");
+        var handler = new IssPositionsHttpMessageHandler();
         using var client = CreateClientWithHandler(handler);
 
         using var firstResponse = await client.GetAsync("/Home/Data?test=output-cache");
@@ -392,15 +474,13 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
 
         Assert.Equal(HttpStatusCode.OK, firstResponse.StatusCode);
         Assert.Equal(HttpStatusCode.OK, secondResponse.StatusCode);
-        Assert.Equal(1, handler.RequestCount);
+        Assert.Single(handler.Requests);
     }
 
     [Fact]
     public async Task IssRateLimitRejectsEleventhRequestFromSameClient()
     {
-        using var client = CreateClientWithIssResponse(
-            HttpStatusCode.OK,
-            """{"latitude":45.81,"longitude":15.98,"velocity":27600}""");
+        using var client = CreateClientWithHandler(new IssPositionsHttpMessageHandler());
 
         for (var requestNumber = 1; requestNumber <= 10; requestNumber++)
         {
@@ -618,6 +698,30 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken) => Task.FromException<HttpResponseMessage>(exception);
+    }
+
+    private sealed class IssPositionsHttpMessageHandler(Func<long, long, string>? contentFactory = null) : HttpMessageHandler
+    {
+        public List<Uri> Requests { get; } = [];
+        public long[]? RequestedTimestamps { get; private set; }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            var uri = request.RequestUri!;
+            Requests.Add(uri);
+            var content = """{"latitude":45.81,"longitude":15.98,"velocity":27600}""";
+            if (uri.AbsolutePath.EndsWith("/positions", StringComparison.Ordinal))
+            {
+                RequestedTimestamps = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query)["timestamps"]
+                    .ToString().Split(',').Select(long.Parse).ToArray();
+                var previous = RequestedTimestamps[0];
+                var current = RequestedTimestamps[1];
+                // Return current first to ensure the controller uses source times rather than array order.
+                content = contentFactory?.Invoke(previous, current)
+                    ?? $$"""[{"latitude":45.81,"longitude":15.98,"velocity":27600,"timestamp":{{current}}},{"latitude":45.3,"longitude":15.2,"velocity":27600,"timestamp":{{previous}}}]""";
+            }
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(content) });
+        }
     }
 
     private sealed class CountingHttpMessageHandler(HttpStatusCode statusCode, string content)

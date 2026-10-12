@@ -166,3 +166,18 @@ body .home-destinations .destination-arrow { color: var(--destination-accent); }
 .starlink-data-quality[data-state="stale"] { color: #ffd475; }
 body.light-mode .starlink-fetch[data-state="error"], body.light-mode .starlink-data-quality[data-state="error"] { color: #ad2435; }
 body.light-mode .starlink-data-quality[data-state="stale"] { color: #825500; }
+/* Both trackers reveal the existing page hologram without another animation. */
+.home-hero :is(#iss-panel, #starlink-panel) {
+    background: rgba(16, 35, 45, .58);
+    background: color-mix(in srgb, var(--ui-surface) 58%, transparent);
+}
+body.light-mode .home-hero :is(#iss-panel, #starlink-panel) {
+    background: rgba(255, 255, 255, .58);
+    background: color-mix(in srgb, var(--ui-surface) 58%, transparent);
+}
+.starlink-panel .starlink-stage {
+    background: radial-gradient(ellipse at center, rgba(21, 59, 64, .6), rgba(11, 24, 34, .2) 75%);
+}
+body.light-mode .starlink-panel .starlink-stage {
+    background: radial-gradient(ellipse at center, rgba(216, 243, 238, .7), rgba(239, 247, 250, .25) 75%);
+}

@@ -172,7 +172,7 @@
     <value>Holografische Ansicht der Erde und der ISS-Position</value>
   </data>
   <data name="HologramNote" xml:space="preserve">
-    <value>Die Markierung verwendet die letzte gemeldete Position. Die Orbitlinie ist eine Illustration, keine vorhergesagte Flugbahn.</value>
+    <value>Die Markierung verwendet die letzte gemeldete Position. Die Richtung der Kurve wird aus zwei aufeinanderfolgenden Positionen geschätzt. Die Linie ist eine ungefähre Illustration, keine vorhergesagte Flugbahn.</value>
   </data>
   <data name="CountryUsa" xml:space="preserve">
     <value>USA</value>
