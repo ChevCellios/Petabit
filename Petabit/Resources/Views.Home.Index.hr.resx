@@ -341,4 +341,12 @@
   <data name="StarlinkAllHidden" xml:space="preserve"><value>Svi dostupni slojevi su isključeni. Uključi barem jedan sloj.</value></data>
   <data name="StarlinkNoPositions" xml:space="preserve"><value>Nema dostupnih položaja</value></data>
   <data name="StarlinkLayerHelp" xml:space="preserve"><value>Broj uz sloj označava satelite s dostupnim položajima, ne ukupan broj u katalogu. Slojevi bez položaja nisu dostupni.</value></data>
+  <data name="StarlinkSound" xml:space="preserve"><value>Zvuk modema · 15 s</value></data>
+  <data name="StarlinkCalculating" xml:space="preserve"><value>Podaci zaprimljeni · izračun orbitalnih položaja…</value></data>
+  <data name="StarlinkReady" xml:space="preserve"><value>Satelitski prikaz spreman</value></data>
+  <data name="StarlinkFresh" xml:space="preserve"><value>Podaci u važećem rasponu</value></data>
+  <data name="StarlinkAging" xml:space="preserve"><value>Stariji podaci · zadnji uspješan dohvat</value></data>
+  <data name="StarlinkAge" xml:space="preserve"><value>Starost dohvata</value></data>
+  <data name="StarlinkAgeUnknown" xml:space="preserve"><value>Starost podataka nije dostupna</value></data>
+  <data name="StarlinkViewHelp" xml:space="preserve"><value>Zumiranje povećava cijeli globus. Pomiči prikaz vodoravno i okomito za pristup polovima; povuci mišem za zakretanje. Ctrl + kotačić zumira. Vrati pogled ponovno centrira globus.</value></data>
 </root>

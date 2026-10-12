@@ -341,4 +341,12 @@
   <data name="StarlinkAllHidden" xml:space="preserve"><value>All available layers are hidden. Enable at least one layer.</value></data>
   <data name="StarlinkNoPositions" xml:space="preserve"><value>No positions available</value></data>
   <data name="StarlinkLayerHelp" xml:space="preserve"><value>Layer counts show satellites with available positions, not catalog totals. Layers without positions are unavailable.</value></data>
+  <data name="StarlinkSound" xml:space="preserve"><value>Modem sound · 15 s</value></data>
+  <data name="StarlinkCalculating" xml:space="preserve"><value>Data received · calculating orbital positions…</value></data>
+  <data name="StarlinkReady" xml:space="preserve"><value>Satellite view ready</value></data>
+  <data name="StarlinkFresh" xml:space="preserve"><value>Data within freshness limits</value></data>
+  <data name="StarlinkAging" xml:space="preserve"><value>Older data · last successful retrieval</value></data>
+  <data name="StarlinkAge" xml:space="preserve"><value>Retrieval age</value></data>
+  <data name="StarlinkAgeUnknown" xml:space="preserve"><value>Data age unavailable</value></data>
+  <data name="StarlinkViewHelp" xml:space="preserve"><value>Zoom enlarges the whole globe. Scroll horizontally and vertically to reach the poles; drag with a mouse to rotate. Ctrl + wheel zooms. Reset view centers the globe again.</value></data>
 </root>
