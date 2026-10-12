@@ -172,7 +172,7 @@
     <value>Holographic view of Earth and the ISS position</value>
   </data>
   <data name="HologramNote" xml:space="preserve">
-    <value>The marker uses the latest position feed. The orbit line is an illustration, not a predicted flight path.</value>
+    <value>The marker uses the latest position feed. The curve's direction is estimated from two consecutive positions. The line is an approximate illustration, not a predicted flight path.</value>
   </data>
   <data name="CountryUsa" xml:space="preserve">
     <value>United States</value>

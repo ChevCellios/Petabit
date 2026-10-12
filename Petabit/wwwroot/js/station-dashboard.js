@@ -138,7 +138,10 @@ document.addEventListener('DOMContentLoaded', () => {
             write('metric-speed', new Intl.NumberFormat(strings.locale, { maximumFractionDigits: 0 }).format(data.speed));
             write('position-freshness', `${strings.positionUpdated}: ${date(positionTime)}`);
             write('iss-result', '');
-            window.dispatchEvent(new CustomEvent('iss-position', { detail: { latitude: data.latitude, longitude: data.longitude } }));
+            window.dispatchEvent(new CustomEvent('iss-position', { detail: {
+                latitude: data.latitude, longitude: data.longitude,
+                positionUpdatedAt: data.positionUpdatedAt, previousPosition: data.previousPosition
+            } }));
             if (manual && document.getElementById('iss-sound-enabled').checked)
                 document.getElementById('ping-sound').play().catch(() => {});
         } else {
