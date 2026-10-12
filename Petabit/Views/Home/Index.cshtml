@@ -72,11 +72,11 @@
         <h2 class="text-center mt-4">🌐 @Localizer["TrackerTitle"]</h2><p class="tracker-intro">@Localizer["TrackerIntro"]</p>
 
         <!-- Gumb za dohvat trenutnih podataka o ISS-u -->
-        <div class="tracker-actions"><button id="iss-ping-button" aria-controls="iss-panel" aria-expanded="false" class="btn tracker-ping">@Localizer["Refresh"]</button> <label class="iss-sound-option"><input id="iss-sound-enabled" type="checkbox" /> @Localizer["Sound"]</label>
-        <button id="starlink-ping-button" aria-controls="starlink-panel" aria-expanded="false" class="btn tracker-ping starlink-ping-button">🛰 Ping Starlink</button> <label class="iss-sound-option"><input id="starlink-sound-enabled" type="checkbox" checked /> @Localizer["StarlinkSound"]</label></div>
+        <div class="tracker-actions"><button id="iss-ping-button" aria-controls="iss-panel" aria-expanded="false" class="btn tracker-ping">@Localizer["Refresh"]</button>
+        <button id="starlink-ping-button" aria-controls="starlink-panel" aria-expanded="false" class="btn tracker-ping starlink-ping-button">🛰 Ping Starlink</button></div>
         <!-- Zvuk koji se reproducira prilikom pritiska na gumb -->
         <audio id="ping-sound" src="/sounds/zvuk.mp3" preload="auto"></audio>
-        <audio id="starlink-ping-sound" src="~/sounds/starlink-modem-15s.mp3" asp-append-version="true" preload="none"></audio>
+        <audio id="starlink-ping-sound" src="~/sounds/starlink-modem.mp3" asp-append-version="true" preload="none"></audio>
 
         <div id="iss-led-display" class="iss-led-display" aria-hidden="true" hidden>
             <span id="iss-led-message" class="iss-led-message"></span>

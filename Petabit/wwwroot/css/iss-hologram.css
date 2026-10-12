@@ -11,7 +11,6 @@ body.light-mode:has(.home-hero) { background: #edf4f6; color: #1d3038; }
 .home-hero .btn-home { box-shadow: none; font-size: .9rem; padding: .5rem 1rem; }
 .home-hero h2 { text-align: left !important; margin: 2rem 0 1rem; font-weight: 700; }
 .home-hero #iss-ping-button { background: #72e5ce; color: #092029; border: 0; box-shadow: none; text-shadow: none; min-height: 44px; padding: .65rem 1.2rem; }
-.iss-sound-option { display: inline-flex; align-items: center; gap: .5rem; margin-left: 1rem; color: var(--station-muted); font-size: .9rem; min-height: 44px; }
 .iss-hologram { position: relative; margin: 1.5rem 0 0; padding: 1.25rem; border: 1px solid var(--station-border); border-radius: 20px; background: radial-gradient(ellipse at center, #153b40, #0b1822 75%); overflow: hidden; }
 .iss-hologram-heading { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
 .iss-hologram-heading h3 { font-size: 1.1rem; margin: 0; }
@@ -123,5 +122,4 @@ body.light-mode #iss-result { color: #6c4615; }
     .station-columns { grid-template-columns: 1fr; }
     .iss-hologram-heading { align-items: flex-start; flex-direction: column; }
     .iss-hologram { padding: 1rem; }
-    .iss-sound-option { margin-left: .5rem; font-size: .8rem; }
 }

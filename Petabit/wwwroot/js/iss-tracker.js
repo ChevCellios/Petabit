@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const dockedVehiclesDiv = document.getElementById("docked-vehicles");
     const sourceDiv = document.getElementById("iss-source");
     const pingSound = document.getElementById("ping-sound");
+    function stopSound() { pingSound.pause(); pingSound.currentTime = 0; }
     const strings = document.getElementById("iss-localization").dataset;
 
     const format = (template, ...values) => values.reduce(
@@ -30,6 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function pingISS(manual = false) {
         if (pingButton.disabled || (!manual && document.hidden)) return;
+        if (manual) { stopSound(); pingSound.play().catch(() => {}); }
         pingButton.disabled = true;
         resultDiv.textContent = `⏳ ${strings.loading}`;
 
@@ -65,8 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             sourceDiv.classList.toggle("text-warning", data.stationStatusIsStale);
             sourceDiv.replaceChildren(...sourceNodes);
-
-            if (manual) pingSound.play().catch(() => {});
         } catch (error) {
             resultDiv.textContent = `❌ ${strings.error}`;
             console.error("Greška:", error);
@@ -76,6 +76,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     pingButton.addEventListener("click", () => pingISS(true));
+    document.addEventListener('visibilitychange', () => { if (document.hidden) stopSound(); });
+    window.addEventListener('pagehide', stopSound);
     pingISS();
     setInterval(pingISS, 30000);
 });

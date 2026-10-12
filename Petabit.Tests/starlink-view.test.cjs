@@ -38,12 +38,11 @@ test('zoom enlarges the complete drawing surface, bounds memory and leaves ordin
  assert.equal(element('starlink-motion').checked,true);
 });
 
-test('manual ping plays the modem once; muting, closing and hiding stop it without blocking data',async()=>{
+test('each manual ping plays the modem without an opt-in; closing and hiding stop it',async()=>{
  const {sandbox,element,documentEvents}=setup();const audio=element('starlink-ping-sound');
  await element('starlink-ping-button').events.click();assert.equal(audio.plays,1);assert.equal(audio.volume,.35);
  assert.equal(element('starlink-fetch').dataset.state,'error');
- element('starlink-sound-enabled').checked=false;element('starlink-sound-enabled').events.change();assert.equal(audio.currentTime,0);
- await element('starlink-ping-button').events.click();assert.equal(audio.plays,1);
+ await element('starlink-ping-button').events.click();assert.equal(audio.plays,2);
  const pauses=audio.pauses;element('starlink-close').events.click();assert.ok(audio.pauses>pauses);
  sandbox.document.hidden=true;documentEvents.visibilitychange();assert.ok(audio.pauses>pauses+1);
 });

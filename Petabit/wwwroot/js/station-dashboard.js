@@ -3,6 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!root) return;
     const strings = document.getElementById('iss-led-localization').dataset;
     const button = document.getElementById('iss-ping-button');
+    const sound = document.getElementById('ping-sound');
+    function stopSound() { sound.pause(); sound.currentTime = 0; }
+    function playSound() { stopSound(); sound.play().catch(() => {}); }
     const countries = { SAD: strings.countryUsa, Francuska: strings.countryFrance, Rusija: strings.countryRussia, Kanada: strings.countryCanada };
     const purposes = { 'Posadna letjelica': strings.purposeCrewed, 'Teretna letjelica': strings.purposeCargo };
     const date = value => new Date(value).toLocaleString(strings.locale, { dateStyle: 'medium', timeStyle: 'short' });
@@ -11,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let requestController;
     let generation = 0;
     document.getElementById('iss-close').addEventListener('click', () => {
+        stopSound();
         generation++; requestController?.abort(); busy = false;
         button.disabled = false; button.textContent = strings.refresh;
         panel.hidden = true; led.hidden = true; button.setAttribute('aria-expanded', 'false');
@@ -111,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function refresh(manual = false) {
         if (busy || (!manual && (document.hidden || panel.hidden))) return;
         if (manual) {
+            playSound();
             panel.hidden = false; button.setAttribute('aria-expanded', 'true');
             window.dispatchEvent(new Event('iss-panel-open'));
             panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -142,8 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 latitude: data.latitude, longitude: data.longitude,
                 positionUpdatedAt: data.positionUpdatedAt, previousPosition: data.previousPosition
             } }));
-            if (manual && document.getElementById('iss-sound-enabled').checked)
-                document.getElementById('ping-sound').play().catch(() => {});
         } else {
             positionAvailable = false;
             write('iss-result', strings.unavailable);
@@ -167,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         busy = false;
     }
     button.addEventListener('click', () => refresh(true));
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) stopSound(); else refresh(); });
+    window.addEventListener('pagehide', stopSound);
     window.setInterval(refresh, 30000);
 });

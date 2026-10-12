@@ -28,7 +28,6 @@ body .home-hero :is(#iss-ping-button,#starlink-ping-button) { display: inline-fl
 body .home-hero #iss-ping-button { border-color: var(--ui-accent); }
 body .home-hero :is(#iss-ping-button,#starlink-ping-button):hover { background: var(--ui-raised); color: var(--ui-text) !important; }
 body .home-hero :is(#iss-ping-button,#starlink-ping-button)[aria-expanded="true"] { background: var(--ui-raised); border-color: var(--ui-accent); }
-.iss-sound-option { margin-left: 0; order: 3; }
 .tracker-panel { margin-top: 1.5rem; padding: 1.2rem; border: 1px solid var(--ui-line); border-radius: 20px; background: var(--ui-surface); scroll-margin-top: 1rem; }
 .tracker-panel[hidden], .station-panel[hidden] { display: none !important; }
 body .home-hero .station-panel > a { color: var(--ui-accent); }
@@ -64,7 +63,6 @@ body .resource-page a.btn { background: var(--ui-surface); border: 1px solid var
     .home-destinations { grid-template-columns: 1fr; gap: .6rem; }
     body main[role="main"] .home-hero a.btn-home { min-height: 88px; padding: 1rem 2.5rem 1rem 1rem !important; }
     .tracker-actions > button { flex: 1 1 140px; }
-    .iss-sound-option { flex: 1 0 100%; }
     .tracker-panel { padding: .8rem; }
     .starlink-heading { flex-direction: row; align-items: center; }
     .starlink-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }

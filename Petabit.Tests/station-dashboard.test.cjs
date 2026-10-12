@@ -5,19 +5,22 @@ const vm = require('node:vm');
 function harness() {
     const events = new Map(), listeners = new Map(), requests = [];
     const elements = new Map();
-    for (const id of ['station-dashboard','iss-led-localization','iss-ping-button','iss-panel','iss-close','iss-led-display','iss-led-message','iss-sound-enabled']) {
+    for (const id of ['station-dashboard','iss-led-localization','iss-ping-button','iss-panel','iss-close','iss-led-display','iss-led-message','ping-sound']) {
         elements.set(id, { hidden: true, disabled: false, checked: false, dataset: { loading: 'loading', refresh: 'Ping ISS' },
             textContent: '', addEventListener: (name, fn) => listeners.set(`${id}:${name}`, fn),
             setAttribute() {}, scrollIntoView() {}, focus() { this.focused = true; }, classList: { add() {} } });
     }
+    Object.assign(elements.get('ping-sound'), { currentTime: 0, plays: 0, pauses: 0,
+        play() { this.plays++; return Promise.resolve(); }, pause() { this.pauses++; } });
     const document = { hidden: false, getElementById: id => elements.get(id),
         addEventListener: (name, fn) => events.set(name, fn), querySelector: () => ({ prepend() {} }) };
-    const window = { dispatchEvent() {}, setInterval: fn => { events.set('interval', fn); } };
+    const window = { dispatchEvent() {}, setInterval: fn => { events.set('interval', fn); },
+        addEventListener: (name, fn) => events.set(name, fn) };
     vm.runInNewContext(fs.readFileSync(require('node:path').join(__dirname,'../Petabit/wwwroot/js/station-dashboard.js'),'utf8'), {
         document, window, Event, AbortController, AbortSignal, fetch: (url, options) => new Promise(resolve => requests.push({ url, signal: options.signal, resolve }))
     });
     events.get('DOMContentLoaded')();
-    return { elements, events, requests, click: id => listeners.get(`${id}:click`)() };
+    return { elements, events, requests, document, click: id => listeners.get(`${id}:click`)() };
 }
 test('hidden ISS panel performs no initial, interval or visibility data requests', () => {
     const h = harness();
@@ -26,6 +29,27 @@ test('hidden ISS panel performs no initial, interval or visibility data requests
     h.click('iss-ping-button');
     assert.equal(h.requests.length, 2);
     assert.equal(h.elements.get('iss-panel').hidden, false);
+});
+
+test('ISS sound starts immediately on a manual click, never on automatic refresh, and stops when closed or hidden', () => {
+    const h = harness(), sound = h.elements.get('ping-sound');
+    h.events.get('interval')(); h.events.get('visibilitychange')();
+    assert.equal(sound.plays, 0);
+    h.click('iss-ping-button');
+    assert.equal(sound.plays, 1); // Fetch promises remain pending.
+    h.click('iss-ping-button');
+    assert.equal(sound.plays, 1); // Busy clicks cannot overlap playback.
+    sound.currentTime = 2;
+    h.click('iss-close');
+    assert.equal(sound.currentTime, 0);
+    h.click('iss-ping-button');
+    assert.equal(sound.plays, 2);
+    h.document.hidden = true;
+    h.events.get('visibilitychange')();
+    assert.equal(sound.currentTime, 0);
+    h.events.get('pagehide')();
+    assert.equal(sound.currentTime, 0);
+    assert.ok(sound.pauses >= 5);
 });
 test('closing pending ISS cancels visitor requests and allows immediate reopening; late responses are ignored', async () => {
     const h = harness();

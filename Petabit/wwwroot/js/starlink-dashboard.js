@@ -6,7 +6,6 @@ const motion = document.getElementById('starlink-motion');
 const speed = document.getElementById('starlink-speed');
 const stage = document.getElementById('starlink-stage');
 const sound = document.getElementById('starlink-ping-sound');
-const soundEnabled = document.getElementById('starlink-sound-enabled');
 motion.checked = true;
 let controller;
 let generation = 0;
@@ -48,11 +47,9 @@ function resize() {
 function stopSound() { sound.pause(); sound.currentTime = 0; }
 function playSound() {
     stopSound();
-    if (!soundEnabled.checked) return;
     sound.volume = .35;
     sound.play().catch(() => {});
 }
-soundEnabled.addEventListener('change', () => { if (!soundEnabled.checked) stopSound(); });
 function setFetchState(state) {
     const feedback = document.getElementById('starlink-fetch');
     feedback.hidden = false;
