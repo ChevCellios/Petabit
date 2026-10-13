@@ -372,3 +372,17 @@ recovery/
 *.recovery-key
 !security/backup/
 !security/backup/*.mjs
+
+# Local credentials and private key material must never enter source control.
+.env
+.env.*
+**/.env
+**/.env.*
+**/rclone.conf
+**/secrets.json
+**/credentials*.json
+**/.ssh/
+**/.aws/
+*.pem
+*.key
+*.p12

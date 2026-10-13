@@ -39,3 +39,18 @@ test('status colors stay aligned when invalid orbits are omitted', () => {
     assert.equal(frame.count,3);
     assert.deepEqual([...frame.statuses],[2,1,3]);
 });
+test('unknown status names cannot inherit an operational status from Object.prototype', () => {
+    const records = createRecords(['__proto__', 'constructor', 'toString', 'hasOwnProperty'].map(PETABIT_STATUS => ({ ...omm, PETABIT_STATUS })));
+    const frame = positionsAt(records, Date.parse(omm.EPOCH + 'Z'));
+    assert.equal(frame.count, 4);
+    assert.deepEqual([...frame.statuses], [3, 3, 3, 3]);
+});
+test('deep-space elements with a very old epoch are skipped before costly resonance propagation', () => {
+    const records = createRecords([{ ...omm, EPOCH: '1900-01-01T00:00:00', MEAN_MOTION: 1, BSTAR: 0 }, omm]);
+    assert.equal(records[0].method, 'd');
+    // A read proves that propagation was never entered; timing assertions would be unreliable.
+    Object.defineProperty(records[0], 'jdsatepoch', { get() { throw new Error('Deep-space propagation must not be called'); } });
+    const frame = positionsAt(records, Date.parse(omm.EPOCH + 'Z'));
+    assert.equal(frame.count, 1);
+    assert.ok([...frame.packed].every(Number.isFinite));
+});

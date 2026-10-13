@@ -6,7 +6,12 @@ export function createRecords(elements) {
     return elements.map(element => {
         try {
             const record = json2satrec(element);
-            record.petabitStatus = { '+': 0, P: 1, '-': 2 }[element.PETABIT_STATUS ?? '+'] ?? 3;
+            switch (element.PETABIT_STATUS ?? '+') {
+                case '+': record.petabitStatus = 0; break;
+                case 'P': record.petabitStatus = 1; break;
+                case '-': record.petabitStatus = 2; break;
+                default: record.petabitStatus = 3;
+            }
             return record;
         } catch { return null; }
     }).filter(Boolean);
@@ -21,6 +26,9 @@ export function positionsAt(records, timestamp) {
     const statuses = new Uint8Array(records.length);
     let count = 0;
     for (const record of records) {
+        // This Starlink viewer supports near-Earth orbits. Deep-space resonance
+        // propagation can iterate for every 720 minutes since an untrusted epoch.
+        if (record.method !== 'n') continue;
         const state = propagate(record, time);
         if (!state?.position || !state.velocity) continue;
         const p = eciToEcf(state.position, sidereal);

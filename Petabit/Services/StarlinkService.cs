@@ -93,7 +93,7 @@ public sealed class StarlinkService
                             logger.LogInformation("Recovered complete Starlink status coverage from validated snapshot dated {RetrievedAt}.", recovered.RetrievedAt);
                         }
                     }
-                    catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException or FormatException)
+                    catch (Exception error) when (error is IOException or InvalidDataException or UnauthorizedAccessException or JsonException or FormatException)
                     { logger.LogWarning(error, "Unable to load Starlink recovery snapshot."); }
                 }
             }

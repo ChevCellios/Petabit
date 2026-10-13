@@ -5,22 +5,26 @@ The application is a public, read-only dashboard with a protected language prefe
 ## Request and browser boundaries
 
 - Kestrel accepts at most 16 KiB of request body and headers, 64 headers and a 15-second header reception window. Forms have explicit field, key and value limits. The application does not provide uploads.
-- A shared 32-request concurrency limit bounds simultaneous application work. Per-client limits cover dynamic pages and static files (240 requests/minute), with an additional 10/minute limit on ISS-related data routes. Health endpoints remain available when these limits are reached; readiness probes share a 15-second upstream result.
+- A shared 32-request concurrency limit bounds simultaneous application work. Per-client limits cover dynamic pages and static files (240 requests/minute), with an additional 10/minute limit on ISS-related data routes. Liveness remains available when these limits are reached. Readiness participates in the global limits and admits at most four simultaneous checks without queuing; probes share a 15-second upstream result.
 - Allowed hosts, HTTPS, HSTS, secure cookies and antiforgery protection remain enforced. CSP allows only the existing required origins, explicitly restricts workers to this site and prohibits inline event handlers. COOP and CORP use `same-origin`; no cross-origin isolation/COEP is enabled because the YouTube preview requires embedding.
 - Structured JSON metadata uses HTML-safe escaping, including when configuration contains script closing tags. ISS output caching ignores irrelevant query parameters to prevent arbitrary cache-busting requests from multiplying source downloads.
 
 ## Upstream data and saved state
 
-- Fixed HTTPS upstream clients do not automatically follow redirects or accept cookies. Source URL changes therefore require explicit review. NASA responses are bounded to 2 MB, CelesTrak responses to 12 MB, and ISS buffered responses to 64 KiB, with existing finite timeouts/resilience limits.
+- Fixed HTTPS upstream clients do not automatically follow redirects or accept cookies. Source URL changes therefore require explicit review. NASA responses are bounded to 2 MB, CelesTrak responses to 12 MB, and ISS JSON responses to 64 KiB. ISS has an explicit eight-second deadline covering headers and JSON body reads, in addition to its resilience pipeline.
+- NASA video visitors share one refresh with a 15-second full-response deadline. A disconnected visitor cancels only their wait. Failed requests and unsupported embeds have a 30-second retry cooldown instead of triggering another upstream call for every visitor.
 - A visitor disconnect cancels only their wait for Starlink data; the shared, time-bounded refresh continues. Failed refreshes retain the last validated data and keep the two-hour source cooldown.
 - Starlink numeric JSON types, finite values, record counts, cache sizes and cached orbital schema/count/epoch consistency are checked. Oversized station caches are rejected. Bad source data must not replace the last validated snapshot.
+- Unknown Starlink status values remain unknown/other; inherited JavaScript property names cannot become operational. The renderer propagates only supported near-Earth records, skipping deep-space calculations. Invalid bootstrap gzip data is rejected while valid saved/source data remains usable.
 - Railway persists station and orbital snapshots in `/app/App_Data`; the web process runs as the unprivileged `app` user after volume ownership initialization.
 
 ## Continuous checks
 
 `dotnet test Petabit.sln -c Release` verifies request rejection, CSP/nonce protection, hostile metadata escaping, cache-busting resistance, source failures, client disconnects, corrupt caches and saturated-service liveness alongside existing functional tests. Node tests cover orbital calculations and five seconds of actual video playback.
 
-The Security workflow audits all NuGet dependencies, analyzes C# and JavaScript with CodeQL, and audits the exact `satellite.js` runtime package. CI and security actions are pinned to reviewed commit IDs and checkouts do not retain GitHub credentials. `security/frontend` is an audit-only npm manifest; it is excluded from the Docker build context. CI installs its locked package with lifecycle scripts disabled and compares the vendored distribution byte-for-byte with the integrity-verified npm package. Dependabot watches this manifest. When upgrading satellite.js, update both its vendored distribution and the audit manifest/lockfile.
+The Security workflow audits all NuGet dependencies, analyzes C# and JavaScript with CodeQL, and audits the exact `satellite.js` runtime package. NuGet audit rejects missing or unreachable advisory feeds as well as known vulnerabilities; Docker restore uses the same explicit `NuGet.Config` and strict audit. CI and security actions are pinned to reviewed commit IDs; repository settings enforce full SHA pinning. Checkouts do not retain GitHub credentials. Dependabot patch auto-merge also checks the event's exact head SHA. `security/frontend` is an audit-only npm manifest; it is excluded from the Docker build context. CI installs its locked package with lifecycle scripts disabled and compares the vendored distribution byte-for-byte with the integrity-verified npm package. Dependabot watches this manifest. When upgrading satellite.js, update both its vendored distribution and the audit manifest/lockfile.
+
+Git ignores local environment/credential files and private key material. Docker context also excludes these files and local agent configurations, so local builds do not send them into the build stage. These exclusions do not remove previously tracked files or erase existing Git history.
 
 Sources: [Kestrel limits](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/options?view=aspnetcore-10.0), [HTTP redirect behavior](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclienthandler.allowautoredirect), [CodeQL workflow configuration](https://docs.github.com/en/code-security/reference/code-scanning/workflow-configuration-options).
 
@@ -34,8 +38,12 @@ Data Protection keys currently live in the container's temporary directory, so l
 
 See [disaster recovery](disaster-recovery.md) for encrypted backup, key separation, Railway plan limitations, restore drills and incident response. `security/backup` is an operator tool excluded from the published image; it is not a web download or admin endpoint.
 
+Archive validation rejects Windows reserved device names, the restore manifest's reserved directory, and file/directory collisions before creating any destination. Portable archive paths are limited to 4096 characters and 64 segments; the standard payload contains the Git bundle and application data files.
+
 Security CI now scans complete committed history with Gitleaks, scans the built container's OS/runtime packages with Trivy, and probes a disposable application on an internal Docker network. Scanner images and GitHub actions are pinned to digests/commit IDs. Container scanning reads an exported image instead of receiving the Docker socket. All HIGH/CRITICAL findings block the container job, including unfixed findings; complete lower-severity results are retained for review. Security runs daily as well as on changes; Docker base-image updates are covered by Dependabot.
 
 The private lab runs as an unprivileged user with a read-only root filesystem, writable disposable tmpfs only, dropped Linux capabilities and no new privileges. It has no production data, credentials, public ingress or Internet egress. Its single proxy address is trusted explicitly and sets forwarded headers for HTTPS behavior without weakening production cookie/CSP controls. The probes check actual form rejection, oversized requests, script reflection, private-file exposure and liveness. These checks and a passive ZAP baseline are useful coverage, not a full independent penetration-test certification.
 
 GitHub's existing secret scanning and push protection were verified enabled, with zero open secret/dependency/CodeQL alerts at inspection. MFA status was not established by the available API; the account owner must verify it. Railway Under Attack Mode is available but left disabled during ordinary operation because its browser challenge can affect API consumers and monitoring.
+
+The [13 October 2026 review](security-review-2026-10-13.md) records the new controls, validation and remaining operational limits.

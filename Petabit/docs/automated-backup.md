@@ -1,6 +1,8 @@
 # Automatski produkcijski backup
 
-## Stanje 11. listopada 2026.
+## Stanje 13. listopada 2026.
+
+Posljednja provjerena izvršavanja [38385599840](https://github.com/ChevCellios/Petabit/actions/runs/38385599840) (13. listopada), [38257508696](https://github.com/ChevCellios/Petabit/actions/runs/38257508696) i [38240161240](https://github.com/ChevCellios/Petabit/actions/runs/38240161240) (12. listopada) imaju status `success`. To potvrđuje uspjeh tih izvršavanja, ne jamči buduće rasporede ni dostavu obavijesti.
 
 Postupak u `.github/workflows/production-backup.yml` produkcijski je potvrđen i **dnevno izvršavanje je uključeno** (`PETABIT_BACKUPS_ENABLED=true`). Microsoft OAuth veza, recovery ključ i novi namjenski Railway workspace token spremljeni su u zaštićeni GitHub environment `production-backup`. Vlasnik je izričito odobrio da namjenski Railway token obuhvaća svih pet projekata u prostoru; token nije ograničen samo na Petabit. OneDrive veza traži `Files.ReadWrite offline_access` i nije ograničena samo na backup mapu. Prva proba otkrila je da `railway link` pokušava dohvatiti osobni profil; ispravak #79 koristi izričite project/environment/service varijable. Nisu kopirani postojeći osobni CLI tokeni niti mijenjane MFA postavke.
 
@@ -38,6 +40,6 @@ U slučaju prekida provjeriti Railway SSH keys: procesni `finally` nije jamstvo 
 
 Kopije se zasad čuvaju sve; automatizacija nema naredbu za brisanje. Nakon mjesec dana izmjeriti potrošnju i dogovoriti rotaciju (npr. 7 dnevnih, 4 tjedne, 3 mjesečne). OneDrive sinkronizacija nije nepromjenjivo spremište zaštićeno od brisanja. Povremeno napraviti i kopiju na odspojenom disku.
 
-Vlasnik još treba potvrditi MFA za Microsoft, GitHub i Railway i fizički spremiti offline recovery ključ. To nije moguće dokazati postojanjem datoteke na istom računalu. Ručna proba s pravim odobrenim vezama prošla je; prvo buduće raspoređeno izvršavanje i dostava GitHub obavijesti tek trebaju biti potvrđeni.
+Vlasnik još treba potvrditi MFA za Microsoft, GitHub i Railway i fizički spremiti offline recovery ključ. To nije moguće dokazati postojanjem datoteke na istom računalu. Ručna proba s pravim odobrenim vezama prošla je; kasnija uspješna izvršavanja navedena su iznad. Dostava GitHub obavijesti vlasniku nije neovisno potvrđena.
 
 Službeni izvori: [Railway volume](https://docs.railway.com/cli/volume), [Railway SSH](https://docs.railway.com/cli/ssh), [Rclone OneDrive](https://rclone.org/onedrive/), [Rclone remote setup](https://rclone.org/remote_setup/).

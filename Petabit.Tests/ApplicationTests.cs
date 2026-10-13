@@ -547,13 +547,43 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
     {
         var handler = new CountingHttpMessageHandler(HttpStatusCode.OK, "{}");
         using var client = CreateClientWithHandler(handler);
-        var responses = await Task.WhenAll(Enumerable.Range(0, 20).Select(_ => client.GetAsync("/health/ready")));
-        foreach (var response in responses)
+        for (var index = 0; index < 20; index++)
         {
+            using var response = await client.GetAsync("/health/ready");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response.Dispose();
         }
         Assert.Equal(1, handler.RequestCount);
+    }
+
+    [Fact]
+    public async Task ReadinessCannotBypassConcurrencyLimitsWhileLivenessRemainsAvailable()
+    {
+        var handler = new GatedHttpMessageHandler();
+        using var client = CreateClientWithHandler(handler);
+        var requests = Enumerable.Range(0, 5).Select(_ => client.GetAsync("/health/ready")).ToArray();
+        try
+        {
+            var first = await Task.WhenAny(requests).WaitAsync(TimeSpan.FromSeconds(5));
+            Assert.Equal(HttpStatusCode.TooManyRequests, (await first).StatusCode);
+            using var live = await client.GetAsync("/health/live");
+            Assert.Equal(HttpStatusCode.OK, live.StatusCode);
+            handler.Release.TrySetResult();
+            var responses = await Task.WhenAll(requests);
+            Assert.Equal(4, responses.Count(response => response.StatusCode == HttpStatusCode.OK));
+            Assert.Single(responses, response => response.StatusCode == HttpStatusCode.TooManyRequests);
+            foreach (var response in responses) response.Dispose();
+        }
+        finally { handler.Release.TrySetResult(); }
+    }
+
+    [Fact]
+    public async Task IssJsonBodyHasADeadlineEvenWhenHeadersArriveImmediately()
+    {
+        using var client = CreateClientWithHandler(new StalledBodyHttpMessageHandler());
+        using var response = await client.GetAsync("/Home/Data").WaitAsync(TimeSpan.FromSeconds(15));
+        Assert.Equal(HttpStatusCode.GatewayTimeout, response.StatusCode);
+        using var live = await client.GetAsync("/health/live");
+        Assert.Equal(HttpStatusCode.OK, live.StatusCode);
     }
 
     [Fact]
@@ -698,6 +728,43 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken) => Task.FromException<HttpResponseMessage>(exception);
+    }
+
+    private sealed class GatedHttpMessageHandler : HttpMessageHandler
+    {
+        public TaskCompletionSource Release { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            await Release.Task;
+            return new(HttpStatusCode.OK) { Content = new StringContent("{}") };
+        }
+    }
+
+    private sealed class StalledBodyHttpMessageHandler : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StreamContent(new StalledBodyStream()) });
+    }
+
+    private sealed class StalledBodyStream : Stream
+    {
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            await Task.Delay(Timeout.Infinite, cancellationToken);
+            return 0;
+        }
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+            => ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+        public override void Flush() => throw new NotSupportedException();
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
     }
 
     private sealed class IssPositionsHttpMessageHandler(Func<long, long, string>? contentFactory = null) : HttpMessageHandler

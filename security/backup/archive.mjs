@@ -10,15 +10,20 @@ export function validate(payload) {
         throw new Error('Invalid backup manifest.');
     const seen = new Set(); let total = 0;
     for (const file of payload.files) {
-        if (typeof file.name !== 'string' || file.name.includes('\\') || file.name.includes(':') || file.name.includes('\0') || /[<>"|?*\x00-\x1f]/.test(file.name) || file.name.toLowerCase() === 'backup-manifest.json'
+        if (typeof file.name !== 'string' || file.name.length > 4096 || file.name.split('/').length > 64
+            || file.name.includes('\\') || file.name.includes(':') || file.name.includes('\0') || /[<>"|?*\x00-\x1f]/.test(file.name) || file.name.split('/')[0].toLowerCase() === 'backup-manifest.json'
             || file.name.startsWith('/') || file.name.split('/').some(part => !part || part === '.' || part === '..'
-                || /[. ]$/.test(part) || /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(\.|$)/i.test(part))
+                || /[. ]$/.test(part) || /^(con|prn|aux|nul|com[1-9¹²³]|lpt[1-9¹²³])(\.|$)/i.test(part))
             || seen.has(file.name.toLowerCase()) || typeof file.data !== 'string' || !/^[A-Za-z0-9+/]*={0,2}$/.test(file.data))
             throw new Error('Unsafe or duplicate backup path.');
         seen.add(file.name.toLowerCase());
         const bytes = Buffer.from(file.data, 'base64'); total += bytes.length;
         if (total > limit || hash(bytes) !== file.sha256 || bytes.length !== file.size) throw new Error('Backup integrity check failed.');
     }
+    // A file cannot also be an ancestor directory, regardless of entry order.
+    for (const name of seen)
+        for (let slash = name.indexOf('/'); slash >= 0; slash = name.indexOf('/', slash + 1))
+            if (seen.has(name.slice(0, slash))) throw new Error('Conflicting backup paths.');
     return payload;
 }
 export function entry(name, bytes) { return { name, size: bytes.length, sha256: hash(bytes), data: bytes.toString('base64') }; }

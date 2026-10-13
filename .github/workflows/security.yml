@@ -59,7 +59,7 @@ jobs:
           --configfile NuGet.Config
           -p:NuGetAudit=true
           -p:NuGetAuditMode=all
-          -warnaserror:NU1901,NU1902,NU1903,NU1904
+          -warnaserror:NU1900,NU1901,NU1902,NU1903,NU1904,NU1905
 
   codeql:
     name: Analyze C# and JavaScript with CodeQL

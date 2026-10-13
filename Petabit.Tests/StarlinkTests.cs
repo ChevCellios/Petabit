@@ -166,6 +166,27 @@ public class StarlinkTests : IDisposable
         await JsonSerializer.SerializeAsync(gzip, value);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task CorruptRecoveryGzipDoesNotPreventUsingValidCacheOrLiveSource(bool persisted)
+    {
+        Directory.CreateDirectory(Path.Combine(directory, "Data"));
+        await File.WriteAllTextAsync(Path.Combine(directory, "Data", "starlink-bootstrap.json.gz"), "not-a-gzip");
+        if (persisted)
+        {
+            Directory.CreateDirectory(Path.Combine(directory, "App_Data"));
+            var snapshot = StarlinkService.Parse(JsonSerializer.Serialize(new[] { Catalog(1, "+") }),
+                JsonSerializer.Serialize(new[] { Orbit(1) }), DateTimeOffset.UtcNow);
+            await File.WriteAllTextAsync(Path.Combine(directory, "App_Data", "starlink-status.json"), JsonSerializer.Serialize(snapshot));
+        }
+
+        var handler = new Handler { Unavailable = persisted };
+        var state = await Create(handler).GetAsync(CancellationToken.None);
+        Assert.Equal(1, state.OperationalCount);
+        Assert.Equal(persisted ? 0 : 2, handler.Requests);
+    }
+
     [Fact]
     public async Task NewerRecoveryReplacesLegacyCacheAndPersistsPartialPositionsDuringOutage()
     {

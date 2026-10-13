@@ -186,6 +186,11 @@ namespace Petabit
                             QueueLimit = 0,
                             AutoReplenishment = true
                         }));
+                options.AddConcurrencyLimiter("readiness", limiter =>
+                {
+                    limiter.PermitLimit = 4;
+                    limiter.QueueLimit = 0;
+                });
             });
 
             var app = builder.Build();
@@ -271,7 +276,7 @@ namespace Petabit
             app.MapHealthChecks("/health/ready", new HealthCheckOptions
             {
                 Predicate = registration => registration.Tags.Contains("ready")
-            }).DisableRateLimiting();
+            }).RequireRateLimiting("readiness");
 
             app.MapControllerRoute(
                 name: "default",
