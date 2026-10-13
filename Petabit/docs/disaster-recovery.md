@@ -50,7 +50,9 @@ Provjeri sadržaj rezultirajućeg direktorija: alat za preuzimanje može smjesti
 
 Predloženi raspored: dnevne kopije podataka, kopija pri svakom izdanju, mjesečna proba vraćanja. Zadrži 7 dnevnih, 4 tjedne i 3 mjesečne neovisne kopije, prema kapacitetu odabranog spremišta. Spremi barem jednu kopiju izvan računala i izvan GitHub/Railway računa. Lokalna arhiva i ključ na istom računalu ne štite od krađe računala ni ransomwarea.
 
-Vanjsko spremište treba imati verzioniranje i vremensku zaštitu od brisanja. Identitet koji piše backup ne bi smio imati ovlast brisanja zaključanih kopija. Novi račun, naplatni plan i vanjsko odredište odabire vlasnik. Automatski vanjski backup nije uključen dok to odredište i pristup nisu definirani.
+Automatski šifrirani OneDrive backup uključen je od 11. listopada 2026.; aktualni postupak i uspješne probe opisani su u [automatskom produkcijskom backupu](automated-backup.md). Retencija 7/4/3 iznad ostaje preporuka; postupak trenutačno ne briše prethodne kopije automatski.
+
+Vanjsko spremište treba imati verzioniranje i vremensku zaštitu od brisanja. Identitet koji piše backup ne bi smio imati ovlast brisanja zaključanih kopija. Postojeća OneDrive veza ima šire ovlasti za datoteke, a Railway token obuhvaća vlasnikovih pet projekata, što je vlasnik prethodno odobrio. Ne tvrditi da su te kopije nepromjenjive ili zaštićene od brisanja kompromitiranim računom. Za novu izoliranu ili zaključanu kopiju vlasnik odabire odredište i eventualni naplatni plan.
 
 ## Postupak kod incidenta
 

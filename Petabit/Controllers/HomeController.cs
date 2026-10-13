@@ -146,11 +146,15 @@ public class HomeController : Controller
 
         try
         {
+            // The resilience handler finishes at response headers. Bound JSON body
+            // reads as well, even if the source sends headers and then stalls.
+            using var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            deadline.CancelAfter(TimeSpan.FromSeconds(8));
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var previousTimestamp = timestamp - 30;
             var positions = await httpClient.GetFromJsonAsync<IssLocationResponse?[]>(
                 $"satellites/25544/positions?timestamps={previousTimestamp},{timestamp}&units=kilometers",
-                cancellationToken);
+                deadline.Token);
             var currentPositions = positions?.Where(position => position?.Timestamp == timestamp).ToArray();
             var iss = currentPositions is { Length: 1 } ? currentPositions[0] : null;
             if (iss is null || !HasValidCoordinates(iss) || !double.IsFinite(iss.Velocity) || iss.Velocity < 0)
@@ -193,7 +197,7 @@ public class HomeController : Controller
             _logger.LogWarning(exception, "ISS source returned malformed data.");
             return Problem("ISS data is temporarily unavailable.", statusCode: StatusCodes.Status503ServiceUnavailable);
         }
-        catch (TaskCanceledException exception)
+        catch (OperationCanceledException exception)
         {
             _logger.LogWarning(exception, "ISS data request timed out.");
             return Problem("ISS data request timed out.", statusCode: StatusCodes.Status504GatewayTimeout);

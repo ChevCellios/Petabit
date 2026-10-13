@@ -13,7 +13,9 @@ test('encrypted archive round trip preserves exact data and detects wrong key or
  const tampered=Buffer.from(encrypted);tampered[tampered.length-1]^=1;assert.throws(()=>open(tampered,key));
 });
 test('unsafe Windows/Unix paths, duplicate paths and corrupt hashes are rejected before restore',()=>{
- for(const name of ['../escape','/absolute','App_Data/../../escape','App_Data\\escape','C:/escape','App_Data/NUL','App_Data/name.']) {
+ for(const name of ['../escape','/absolute','App_Data/../../escape','App_Data\\escape','C:/escape','App_Data/NUL','App_Data/name.',
+  'App_Data/COM¹', 'App_Data/lpt².txt', 'COM³.json', 'backup-manifest.json/nested', 'BACKUP-MANIFEST.JSON/nested',
+  'a'.repeat(4097), 'a/'.repeat(64)+'file']) {
   assert.throws(()=>validate({version:1,files:[entry(name,Buffer.from('x'))]}));
  }
  assert.throws(()=>validate({version:1,files:[entry('a',Buffer.from('x')),entry('A',Buffer.from('y'))]}));
@@ -23,6 +25,29 @@ test('restore creates a new isolated directory and refuses existing destinations
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'petabit-restore-test-'));
  try { const destination=path.join(root,'restored');restore(payload(),destination);assert.equal(fs.readFileSync(path.join(destination,'App_Data/state.json'),'utf8'),'{"ok":true}');assert.throws(()=>restore(payload(),destination)); }
  finally {fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('reserved device names and manifest directories are rejected before creating a restore target',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'petabit-invalid-restore-'));
+ try {
+  const destination=path.join(root,'restored');
+  for(const name of ['App_Data/COM¹', 'App_Data/LPT³.txt', 'backup-manifest.json/nested']) {
+   assert.throws(()=>restore({version:1,files:[entry('App_Data/valid.json',Buffer.from('{}')),entry(name,Buffer.from('x'))]},destination));
+   assert.equal(fs.existsSync(destination),false);
+  }
+ } finally {fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('file and directory collisions are rejected before restore regardless of ordering or case',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'petabit-path-conflict-'));
+ try {
+  const destination=path.join(root,'restored');
+  const files=[entry('App_Data/State',Buffer.from('x')),entry('app_data/state/nested.json',Buffer.from('{}'))];
+  for(const entries of [files,[...files].reverse()]) {
+   assert.throws(()=>restore({version:1,files:entries},destination));
+   assert.equal(fs.existsSync(destination),false);
+  }
+ } finally {fs.rmSync(root,{recursive:true,force:true});}
 });
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
