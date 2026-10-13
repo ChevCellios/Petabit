@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine3.24 AS build
 WORKDIR /src
 
 COPY ["NuGet.Config", "."]
@@ -10,13 +10,17 @@ RUN dotnet restore "Petabit/Petabit.csproj" --configfile NuGet.Config \
 COPY . .
 RUN dotnet publish "Petabit/Petabit.csproj" -c Release -o /app/publish --no-restore
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+# The official extra variant retains ICU, time zones and CA certificates.
+# Keep the distro release explicit while accepting supported .NET patch updates.
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine3.24-extra AS final
 WORKDIR /app
 
 COPY --from=build /app/publish .
 COPY Petabit/entrypoint.sh /app/entrypoint.sh
 
-RUN mkdir -p /app/App_Data && chown "$APP_UID" /app/App_Data \
+RUN apk upgrade --no-cache \
+    && apk add --no-cache su-exec \
+    && mkdir -p /app/App_Data && chown "$APP_UID:$APP_UID" /app/App_Data \
     && sed -i 's/\r$//' /app/entrypoint.sh && chmod 755 /app/entrypoint.sh
 
 USER $APP_UID

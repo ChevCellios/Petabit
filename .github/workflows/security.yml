@@ -145,10 +145,16 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24.x
+          package-manager-cache: false
       - name: Start application with private network and disposable data
         run: docker compose -p petabit-security -f security/qa/compose.yml up -d --build
       - name: Wait for private application
         run: docker compose -p petabit-security -f security/qa/compose.yml exec -T petabit-qa node /lab/wait-ready.mjs
+      - name: Verify runtime privileges, root-mounted volume, localization and native compression
+        run: node security/qa/verify-runtime.mjs
       - name: Verify browser boundaries, private files, forms and request limits
         run: docker compose -p petabit-security -f security/qa/compose.yml exec -T petabit-qa node /lab/probe.mjs
       - name: Prepare passive scanner and report directory
@@ -164,10 +170,6 @@ jobs:
           ghcr.io/zaproxy/zaproxy@sha256:7aaa659b0d43078febd82e29bad112285c370727e86ab8340444220e17d9f0d2
           zap-baseline.py -t http://petabit-qa:3000/ -m 1 -T 5
           -r baseline.html -J baseline.json -I
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
-        with:
-          node-version: 24.x
-          package-manager-cache: false
       - name: Reject medium and high passive findings
         run: node security/audit-zap.mjs scan-output/baseline.json
       - name: Retain passive security reports

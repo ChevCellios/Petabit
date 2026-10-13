@@ -49,3 +49,8 @@ The private lab runs as an unprivileged user with a read-only root filesystem, w
 GitHub's existing secret scanning and push protection were verified enabled, with zero open secret/dependency/CodeQL alerts at inspection. MFA status was not established by the available API; the account owner must verify it. Railway Under Attack Mode is available but left disabled during ordinary operation because its browser challenge can affect API consumers and monitoring.
 
 The [13 October 2026 review](security-review-2026-10-13.md) records the new controls, validation and remaining operational limits.
+
+The [runtime follow-up](runtime-hardening-2026-10-13.md) replaces the full Ubuntu
+runtime with Microsoft's Alpine extra variant, preserving globalization and
+Railway volume initialization while reducing unused OS components. Distribution
+patches are applied during the build; final-image scans keep their existing gates.

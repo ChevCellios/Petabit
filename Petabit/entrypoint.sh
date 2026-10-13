@@ -5,8 +5,8 @@ set -eu
 # data directory, then run the web process as the image's unprivileged app user.
 if [ "$(id -u)" = "0" ]; then
     mkdir -p /app/App_Data
-    chown -R "$APP_UID:$APP_UID" /app/App_Data
-    exec runuser -u app -- sh -c 'exec dotnet Petabit.dll --urls "http://0.0.0.0:${PORT:-3000}"'
+    chown -Rh "$APP_UID:$APP_UID" /app/App_Data
+    exec su-exec "$APP_UID:$APP_UID" dotnet Petabit.dll --urls "http://0.0.0.0:${PORT:-3000}"
 fi
 
 exec dotnet Petabit.dll --urls "http://0.0.0.0:${PORT:-3000}"
