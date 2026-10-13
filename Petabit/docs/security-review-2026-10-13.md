@@ -14,6 +14,7 @@ Pregledani su HTTP sloj i kontroleri, vanjski izvori i spremljeni podaci, fronte
 | Starlink integritet i worker | Nepoznati statusi ne postaju operativni; nepodržane deep-space orbite ne ulaze u propagaciju. | Neispravni statusi i stara deep-space orbita; svih 11.105 zapisa u pregledanim stvarnim snapshotovima ostaje podržano. |
 | Starlink oporavak | Oštećen bootstrap gzip ne sprječava korištenje valjanog cachea ili izvora. | Test oštećene gzip datoteke i uspješnog nastavka do valjanih podataka. |
 | Backup putanje | Rezervirana imena, manifest, preduge/preduboke putanje i kolizije datoteka/direktorija odbijaju se prije pisanja. | Testovi potvrđuju da odredište nije ni stvoreno nakon odbijanja; valjana arhiva i neovisni Git oporavak i dalje rade. |
+| Backup verzija | Manifest koristi commit stvarno aktivnog Railway deploymenta, provjeren prije i poslije izvoza. | Master noviji od produkcije, promjena deploymenta tijekom izvoza i nepotpuni metapodaci; nepouzdan izvoz ne dolazi do uploada. |
 | Ovisnosti | NuGet audit odbija i nedostupan/nepotpun advisory izvor. Docker koristi istu konfiguraciju. | Stvarni negativni testovi izvora završavaju s NU1900/NU1905 i izlaznim kodom 1; normalan restore/audit prolazi. |
 | Tajne u izgradnji | Git/Docker isključuju lokalne konfiguracije vjerodajnica i privatne ključeve; Docker i lokalne agent podatke. | Provjereni ignore uzorci i odsutnost takvih praćenih datoteka pri pregledu. |
 | GitHub Actions | Uključena obvezna puna SHA referenca; Dependabot automatsko spajanje veže se na točan commit događaja. | API readback potvrđuje `sha_pinning_required=true`; svih 26 postojećih Actions referenci kompatibilno. |
@@ -29,6 +30,10 @@ Pregledani su HTTP sloj i kontroleri, vanjski izvori i spremljeni podaci, fronte
 ## Dokazi i granice
 
 Lokalno je prošlo 116 .NET i 37 JavaScript regresijskih testova, audit ovisnosti i negativni testovi advisory izvora. Tri Linux integracijska testa lokalno su preskočena. Linux backup integracijski testovi i privatni Docker/ZAP/Trivy postupak izvršavaju se na GitHub runneru; lokalni Docker servis nije bio pokrenut. Završni PR, CI i produkcijska provjera priloženi su u razgovoru.
+
+[CI kontejnerski izvještaj](https://github.com/ChevCellios/Petabit/actions/runs/38392275461/job/115278725222) bilježi 14 nalaza u Ubuntu baznoj slici: devet MEDIUM i pet LOW, bez HIGH/CRITICAL nalaza. Za te zapise izvještaj nema `FixedVersion`; nije opravdano tvrditi da je slika bez ranjivosti. Cjelovit izvještaj zadržan je kao artifact. Dnevno skeniranje i provjera novih baznih slika ostaju važni; build nove slike sam ne ažurira već pokrenut deployment.
+
+ZAP je zabilježio jednu informativnu poruku `Session Management Response Identified`, povezanu s detekcijom cookie/token zaglavlja, bez srednjih/visokih nalaza. Izvještaj je izričito klasificira kao informaciju koja ne traži popravak.
 
 Ovo je pregled i hardening, bez tvrdnje o potpunom neovisnom penetracijskom testu. Nisu pronađeni potvrđeni izravni XSS/SSRF sinkovi u pregledanom kodu, što nije jamstvo da ne postoji drugi put napada.
 

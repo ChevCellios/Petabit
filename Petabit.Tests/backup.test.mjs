@@ -70,3 +70,31 @@ test('CLI backup restores a complete independent Git repository and data without
   fs.writeFileSync(path.join(repo,'app.txt'),'uncommitted');assert.throws(()=>run('create','--repository',repo,'--data',data,'--key',key,'--output',path.join(root,'dirty.pbit')));
  } finally {fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('production backup requires and restores its exact deployed commit even when no Git ref points to it',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'petabit-deployed-revision-'));
+ const git=(directory,...args)=>execFileSync('git',['-C',directory,...args],{stdio:['ignore','pipe','pipe']}).toString().trim();
+ const run=(...args)=>execFileSync(process.execPath,[cli,...args],{stdio:['ignore','pipe','pipe']});
+ try {
+  const repo=path.join(root,'repo'),data=path.join(root,'data'),key=path.join(root,'recovery.key'),archive=path.join(root,'backup.pbit');
+  fs.mkdirSync(repo);fs.mkdirSync(data);git(repo,'init','--initial-branch=master');git(repo,'config','user.email','backup@example.invalid');git(repo,'config','user.name','Backup test');
+  fs.writeFileSync(path.join(repo,'app.txt'),'initial source');git(repo,'add','.');git(repo,'commit','-m','Initial source');
+  git(repo,'checkout','--detach');fs.writeFileSync(path.join(repo,'deployed.txt'),'running production source');git(repo,'add','.');git(repo,'commit','-m','Detached production source');
+  const deployed=git(repo,'rev-parse','HEAD');git(repo,'checkout','master');
+  fs.writeFileSync(path.join(repo,'waiting.txt'),'new source waiting for deployment');git(repo,'add','.');git(repo,'commit','-m','Not yet deployed');
+  assert.notEqual(deployed,git(repo,'rev-parse','HEAD'));
+  fs.writeFileSync(path.join(data,'state.json'),'{}');run('keygen','--key',key);
+  const base=['create','--repository',repo,'--data',data,'--key',key,'--output',archive,'--data-source','railway-volume-export'];
+  assert.throws(()=>run(...base));assert.equal(fs.existsSync(archive),false);
+  for(const invalid of ['HEAD',deployed.slice(0,12),'--all','a'.repeat(40),git(repo,'rev-parse','HEAD:app.txt')]) {
+   assert.throws(()=>run(...base,'--revision',invalid));assert.equal(fs.existsSync(archive),false);
+  }
+  run(...base,'--revision',deployed);
+  const manifest=open(fs.readFileSync(archive),fs.readFileSync(key));assert.equal(manifest.revision,deployed);
+  const restored=path.join(root,'restored');restore(manifest,restored);
+  const clone=path.join(root,'clone');execFileSync('git',['clone',path.join(restored,'repository.bundle'),clone],{stdio:'pipe'});
+  git(clone,'checkout','--detach',manifest.revision);git(clone,'fsck','--full');
+  assert.equal(fs.readFileSync(path.join(clone,'deployed.txt'),'utf8'),'running production source');
+  assert.equal(fs.existsSync(path.join(clone,'waiting.txt')),false);
+ } finally {fs.rmSync(root,{recursive:true,force:true});}
+});

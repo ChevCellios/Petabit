@@ -21,14 +21,15 @@ Primjer (PowerShell; zamijeni putanje svojim odredištem):
 
 ```powershell
 node security/backup/backup.mjs keygen --key C:/PetabitKeys/petabit.recovery-key
-node security/backup/backup.mjs create --repository . --data C:/PetabitExport/App_Data --data-source railway-volume-export --key C:/PetabitKeys/petabit.recovery-key --output E:/PetabitBackups/petabit-2026-10-09.pbit
+$deployedRevision = 'PUNI_SHA_AKTIVNOG_RAILWAY_DEPLOYMENTA'
+node security/backup/backup.mjs create --repository . --data C:/PetabitExport/App_Data --data-source railway-volume-export --revision $deployedRevision --key C:/PetabitKeys/petabit.recovery-key --output E:/PetabitBackups/petabit-2026-10-09.pbit
 node security/backup/backup.mjs verify --archive E:/PetabitBackups/petabit-2026-10-09.pbit --key C:/PetabitKeys/petabit.recovery-key
 node security/backup/backup.mjs restore --archive E:/PetabitBackups/petabit-2026-10-09.pbit --key C:/PetabitKeys/petabit.recovery-key --destination C:/PetabitRestore/new-restore
 ```
 
 Roditeljski direktoriji ključa/arhive/oporavka moraju već postojati. Na Windowsu ograniči ACL direktorija na svoj račun i SYSTEM; Nodeov `mode: 0600` sam nije Windows ACL zaštita. Alat odbija ključ unutar repozitorija ili podatkovnog direktorija, odbija overwrite arhive i traži da arhiva bude izvan direktorija podataka. Ukupni ulaz ograničen je na 192 MiB zbog memorijskog formata; za veće volumene treba alat sa streamingom i standardnim vanjskim spremištem.
 
-U šifriranom manifestu je `dataSource`. Kopija s oznakom `local-preview` sadrži lokalne spremljene podatke, a ne stanje produkcije. Dok se ne preuzme stvarni volumen, ne smije se tvrditi da postoji potpun produkcijski backup.
+U šifriranom manifestu su `dataSource` i `revision`. Za `railway-volume-export` obvezan je puni 40-znamenkasti SHA stvarno aktivne verzije, dostupan u Git povijesti. Ne koristiti automatski `git rev-parse HEAD`: master može biti ispred deploymenta. Za ručni izvoz provjeri aktivni deployment prije i poslije preuzimanja; tijekom zamjene procesa odgodi izvoz. Automatizirani postupak te provjere radi sam. Kopija s oznakom `local-preview` sadrži lokalne spremljene podatke, a ne stanje produkcije. Dok se ne preuzme stvarni volumen, ne smije se tvrditi da postoji potpun produkcijski backup.
 
 Za produkcijski izvoz koristi postojeći ovlašteni Railway CLI/SSH pristup, bez unošenja ključeva u Git:
 
