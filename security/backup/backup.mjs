@@ -19,12 +19,16 @@ try {
     } else if(command==='create') {
         const repo=required('--repository'), data=required('--data'), output=required('--output'), key=read(required('--key'));
         if(within(repo,required('--key')) || within(data,required('--key')) || within(data,output)) throw new Error('Keep recovery keys outside the repository/data and archives outside the data directory.');
+        if(options['--data-source']==='railway-volume-export'&&!options['--revision'])throw new Error('A production volume export requires an explicit deployed --revision.');
+        const revision=options['--revision']??execFileSync('git',['-C',repo,'rev-parse','HEAD']).toString().trim();
+        if(!/^[a-f0-9]{40}$/.test(revision))throw new Error('Revision must be a full 40-character Git commit SHA.');
+        if(execFileSync('git',['-C',repo,'cat-file','-t',revision]).toString().trim()!=='commit')throw new Error('Revision must identify an available Git commit.');
         if(execFileSync('git',['-C',repo,'status','--porcelain']).toString().trim()) throw new Error('Commit or preserve working changes before backing up; only committed Git history is included.');
         const temp=fs.mkdtempSync(path.join(os.tmpdir(),'petabit-bundle-'));
         const bundle=path.join(temp,'repository.bundle');
         // Temporary directory is fresh; only our known bundle is removed in finally.
         try {
-            execFileSync('git',['-C',repo,'bundle','create',bundle,'--all']);
+            execFileSync('git',['-C',repo,'bundle','create',bundle,'--all',revision]);
             const files=[entry('repository.bundle',read(bundle))];
             let total=files[0].size;
             function collect(directory,prefix) {
@@ -38,7 +42,7 @@ try {
             }
             if(fs.lstatSync(data).isSymbolicLink() || !fs.statSync(data).isDirectory())throw new Error('Data must be a regular directory.');
             collect(data,'App_Data');
-            const payload={version:1,createdAt:new Date().toISOString(),revision:execFileSync('git',['-C',repo,'rev-parse','HEAD']).toString().trim(),dataSource:options['--data-source']||'operator-supplied directory',files};
+            const payload={version:1,createdAt:new Date().toISOString(),revision,dataSource:options['--data-source']||'operator-supplied directory',files};
             const encrypted=seal(payload,key); open(encrypted,key);
             fs.writeFileSync(output,encrypted,{flag:'wx',mode:0o600});
             console.log(JSON.stringify({archive:output,revision:payload.revision,createdAt:payload.createdAt,files:files.length,dataSource:payload.dataSource,verified:true}));

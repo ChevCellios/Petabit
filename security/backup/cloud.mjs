@@ -7,6 +7,32 @@ import { fileURLToPath } from 'node:url';
 import { open, seal, entry, restore, limit } from './archive.mjs';
 
 export const sha256=bytes=>createHash('sha256').update(bytes).digest('hex');
+export function selectActiveDeployment(deployments) {
+    const ids=new Set();
+    if(!Array.isArray(deployments)||!deployments.length||deployments.some(item=>{
+        if(!item||typeof item.status!=='string'||!item.status||typeof item.id!=='string'
+            ||! /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(item.id)||ids.has(item.id.toLowerCase()))return true;
+        ids.add(item.id.toLowerCase());return false;
+    }))
+        throw new Error('Railway returned invalid deployment metadata.');
+    if(deployments.some(item=>item.status==='DEPLOYING'||item.status==='REMOVING'))
+        throw new Error('Railway is transitioning deployments; retry the backup after deployment completes.');
+    const active=deployments.filter(item=>item.status==='SUCCESS');
+    if(active.length!==1||typeof active[0].meta?.commitHash!=='string'
+        ||! /^[a-f0-9]{40}$/.test(active[0].meta.commitHash)||active[0].meta?.buildOnly===true)
+        throw new Error('Railway must report one active deployment with a valid Git revision.');
+    return {id:active[0].id,revision:active[0].meta.commitHash};
+}
+export function assertStableDeployment(before,after) {
+    const initial=selectActiveDeployment(before),current=selectActiveDeployment(after);
+    if(initial.id!==current.id||initial.revision!==current.revision)
+        throw new Error('The active Railway deployment changed during export; retry the backup.');
+    const statuses=new Map(before.map(item=>[item.id,item.status]));
+    // A deployment can start and fail between checks while the old SUCCESS remains.
+    // Only still-pending builds can safely appear or change status during export.
+    if(after.some(item=>statuses.get(item.id)!==item.status&&!['WAITING','BUILDING'].includes(item.status)))
+        throw new Error('Railway deployment activity changed during export; retry the backup.');
+}
 export function verifyRemoteCopy(original,downloaded,key) {
     if(sha256(original)!==sha256(downloaded))throw new Error('Remote archive differs from uploaded archive.');
     const payload=open(downloaded,key);
@@ -73,6 +99,8 @@ export async function runCloudBackup({now=new Date(),remoteType='onedrive'}={}) 
         const section=fs.readFileSync(config,'utf8').split(/^\[petabit\][ \t]*\r?$/m)[1]?.split(/^\[/m)[0];
         if(!section||/^type\s*=\s*([\w-]+)[ \t]*\r?$/m.exec(section)?.[1]!==remoteType)throw new Error('The [petabit] remote must use the expected OneDrive backend.');
         configReady=true;
+        const deploymentsBefore=JSON.parse(run('railway',['deployment','list','--limit','100','--json']));
+        const deployment=selectActiveDeployment(deploymentsBefore);
         // Explicit environment targeting avoids `link`'s personal-account discovery query,
         // which workspace-scoped API tokens cannot authorize.
         console.log('Registering temporary Railway SSH access.');
@@ -87,6 +115,8 @@ export async function runCloudBackup({now=new Date(),remoteType='onedrive'}={}) 
         } finally {
             run('railway',['ssh','keys','remove',fingerprint]);registrationAttempted=false;
         }
+        const deploymentsAfter=JSON.parse(run('railway',['deployment','list','--limit','100','--json']));
+        assertStableDeployment(deploymentsBefore,deploymentsAfter);
         console.log('Temporary Railway SSH access revoked; encrypting the backup.');
         for(const name of ['station-status.json','starlink-status.json']) {
             const file=path.join(exportDir,name);
@@ -96,7 +126,7 @@ export async function runCloudBackup({now=new Date(),remoteType='onedrive'}={}) 
         const date=now.toISOString().slice(0,10);
         const filename=`petabit-${date}-${env.GITHUB_RUN_ID}-production.pbit`;
         const archive=path.join(root,filename);
-        run(process.execPath,[fileURLToPath(new URL('./backup.mjs',import.meta.url)),'create','--repository',repo,'--data',exportDir,'--data-source','railway-volume-export','--key',keyFile,'--output',archive]);
+        run(process.execPath,[fileURLToPath(new URL('./backup.mjs',import.meta.url)),'create','--repository',repo,'--data',exportDir,'--data-source','railway-volume-export','--revision',deployment.revision,'--key',keyFile,'--output',archive]);
         const remote=`petabit:Petabit Backups/Automated/${filename}`;
         const rclone=(...args)=>run('rclone',['--config',config,'--contimeout','20s','--timeout','2m','--retries','3',...args]);
         console.log('Uploading the encrypted archive to OneDrive.');
@@ -115,7 +145,7 @@ export async function runCloudBackup({now=new Date(),remoteType='onedrive'}={}) 
             console.log('Verifying the restored application in an isolated environment.');
             run(process.execPath,[fileURLToPath(new URL('./drill.mjs',import.meta.url)),restored],{timeout:900000});
         }
-        const receipt={date,revision:payload.revision,source:payload.dataSource,remote,sha256:sha256(fs.readFileSync(archive)),remoteReadbackVerified:true,gitRestoreVerified:true,fullApplicationDrill:monthDay==='01'||env.PETABIT_RESTORE_DRILL==='true',temporarySshKeyRevoked:true};
+        const receipt={date,revision:payload.revision,deploymentId:deployment.id,source:payload.dataSource,remote,sha256:sha256(fs.readFileSync(archive)),remoteReadbackVerified:true,gitRestoreVerified:true,fullApplicationDrill:monthDay==='01'||env.PETABIT_RESTORE_DRILL==='true',temporarySshKeyRevoked:true};
         fs.writeFileSync(path.join(env.RUNNER_TEMP,'backup-receipt.json'),JSON.stringify(receipt,null,2),{flag:'wx',mode:0o600});
         console.log('Encrypted production backup uploaded, downloaded and restored successfully.');
     } finally {
