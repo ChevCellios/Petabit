@@ -1,24 +1,36 @@
-﻿@{
-    ViewData["Title"] = "Aplikacije za učenje programiranja";
-    ViewData["Description"] = "Preporučene aplikacije za učenje programiranja, tehnologije i razvoj digitalnih vještina.";
-}
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
-
+@{
+    ViewData["Title"] = Localizer["PageTitle"].Value;
+    ViewData["Description"] = Localizer["PageDescription"].Value;
+}
 
 <div class="container content-page resource-page">
     <a class="resource-back" href="/">@Localizer["BackHome"]</a>
     <p class="resource-kicker">@Localizer["ExploreResources"]</p>
     <h1>📱 @Localizer["LearnWithApps"]</h1>
     <p class="resource-intro">@Localizer["PageIntro"]</p>
+    <p class="resource-review">@Localizer["ReviewedLabel"] <time datetime="2026-10-13">@Localizer["ReviewDate"]</time></p>
     <ul class="list-group mt-3 resource-grid">
-        <li class="list-group-item">
-            <a href="https://getmimo.com/invite/6meni7" target="_blank" rel="noopener noreferrer">Mimo App</a>
+        <li class="list-group-item resource-card">
+            <h2>Mimo</h2>
+            <p class="resource-description">@Localizer["MimoDescription"]</p>
+            <dl class="resource-meta">
+                <div><dt>@Localizer["LevelLabel"]</dt><dd>@Localizer["MimoLevel"]</dd></div>
+                <div><dt>@Localizer["LanguageLabel"]</dt><dd>@Localizer["EnglishOverview"]</dd></div>
+            </dl>
+            <a class="resource-link" href="https://mimo.org/" target="_blank" rel="noopener noreferrer">@Localizer["OfficialLink"] <span aria-hidden="true">↗</span></a>
+            <p class="resource-note resource-referral">@Localizer["MimoInviteNote"] <a href="https://getmimo.com/invite/6meni7" target="_blank" rel="noopener noreferrer nofollow">@Localizer["MimoInvite"]</a></p>
         </li>
-        <li class="list-group-item">
-            <a href="https://sololearn.com" target="_blank" rel="noopener noreferrer">SoloLearn</a>
+        <li class="list-group-item resource-card">
+            <h2>Sololearn</h2>
+            <p class="resource-description">@Localizer["SololearnDescription"]</p>
+            <dl class="resource-meta">
+                <div><dt>@Localizer["LevelLabel"]</dt><dd>@Localizer["SololearnLevel"]</dd></div>
+                <div><dt>@Localizer["LanguageLabel"]</dt><dd>@Localizer["EnglishOverview"]</dd></div>
+            </dl>
+            <a class="resource-link" href="https://www.sololearn.com/en/" target="_blank" rel="noopener noreferrer">@Localizer["OfficialLink"] <span aria-hidden="true">↗</span></a>
         </li>
-        <!-- More apps to come -->
     </ul>
+    <p class="resource-note">@Localizer["SelectionNote"] @Localizer["NewTabNote"]</p>
 </div>
-

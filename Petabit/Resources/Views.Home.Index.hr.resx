@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="WelcomeText" xml:space="preserve">
-    <value>Vaš portal za učenje, tehnologiju i kibernetičku sigurnost</value>
+    <value>Prati svemir i istraži odabrane resurse za učenje tehnologije.</value>
   </data>
   <data name="BooksLink" xml:space="preserve">
     <value>Knjige</value>
@@ -344,9 +344,22 @@
   <data name="StarlinkSound" xml:space="preserve"><value>Zvuk modema · 15 s</value></data>
   <data name="StarlinkCalculating" xml:space="preserve"><value>Podaci zaprimljeni · izračun orbitalnih položaja…</value></data>
   <data name="StarlinkReady" xml:space="preserve"><value>Satelitski prikaz spreman</value></data>
-  <data name="StarlinkFresh" xml:space="preserve"><value>Podaci u važećem rasponu</value></data>
-  <data name="StarlinkAging" xml:space="preserve"><value>Stariji podaci · zadnji uspješan dohvat</value></data>
+  <data name="StarlinkFresh" xml:space="preserve"><value>Dohvat ažuran</value></data>
+  <data name="StarlinkAging" xml:space="preserve"><value>Dohvat stariji od 4 sata</value></data>
   <data name="StarlinkAge" xml:space="preserve"><value>Starost dohvata</value></data>
   <data name="StarlinkAgeUnknown" xml:space="preserve"><value>Starost podataka nije dostupna</value></data>
   <data name="StarlinkViewHelp" xml:space="preserve"><value>Zumiranje povećava cijeli globus. Pomiči prikaz vodoravno i okomito za pristup polovima; povuci mišem za zakretanje. Ctrl + kotačić zumira. Vrati pogled ponovno centrira globus.</value></data>
+  <data name="StarlinkSourceFailed"><value>Izvor trenutačno nije dostupan</value></data>
+  <data name="StarlinkSourceFailedHelp"><value>Posljednja provjera izvora nije uspjela. Prikazuje se posljednji uspješan dohvat.</value></data>
+  <data name="StarlinkRetrievalOld"><value>Zadnji uspješan dohvat stariji je od četiri sata. Starost pojedinih orbitalnih podataka prikazana je zasebno.</value></data>
+  <data name="StarlinkOrbitCurrent"><value>Orbitalni podaci do 3,5 dana</value></data>
+  <data name="StarlinkOrbitOlder"><value>Stariji</value></data>
+  <data name="StarlinkOrbitUnknown"><value>Nepoznata epoha</value></data>
+  <data name="StarlinkOrbitChecking"><value>Provjera starosti orbitalnih podataka…</value></data>
+  <data name="StarlinkOlderHidden"><value>Odabrani slojevi imaju samo starije ili nepoznate epohe. Uključi prikaz starijih položaja.</value></data>
+  <data name="StarlinkShowOlder"><value>Prikaži starije položaje</value></data>
+  <data name="StarlinkOlderHelp"><value>Prigušene kružnice označavaju položaje iz podataka starijih od 3,5 dana ili nepoznate epohe. Boja i dalje označava operativni status. Isključivanje ovog prikaza ne mijenja broj satelita u katalogu.</value></data>
+  <data name="StarlinkSettings"><value>Statistika, kretanje i slojevi</value></data>
+  <data name="StarlinkDataDetails"><value>Podaci, izvor i upute za globus</value></data>
+  <data name="HomeDescription"><value>Prati ISS i Starlink, istraži orbitalne podatke i pronađi odabrane knjige, aplikacije i uvod u blockchain.</value></data>
 </root>

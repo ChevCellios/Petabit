@@ -1,24 +1,38 @@
-﻿@{
-    ViewData["Title"] = "Preporučene knjige za programiranje";
-    ViewData["Description"] = "Izbor knjiga za programiranje, razvoj softvera i profesionalni tehnološki rast.";
-}
-
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["PageTitle"].Value;
+    ViewData["Description"] = Localizer["PageDescription"].Value;
+}
 
 <div class="container content-page resource-page">
     <a class="resource-back" href="/">@Localizer["BackHome"]</a>
     <p class="resource-kicker">@Localizer["ExploreResources"]</p>
     <h1>📚 @Localizer["LearnWithBooks"]</h1>
     <p class="resource-intro">@Localizer["PageIntro"]</p>
+    <p class="resource-review">@Localizer["ReviewedLabel"] <time datetime="2026-10-13">@Localizer["ReviewDate"]</time></p>
     <ul class="list-group mt-3 resource-grid">
-        <li class="list-group-item">
-            <a href="https://www.informit.com/store/clean-code-a-handbook-of-agile-software-craftsmanship-9780132350884" target="_blank" rel="noopener noreferrer">@Localizer["Clean Code – Robert C. Martin"]</a>
+        <li class="list-group-item resource-card">
+            <h2>Clean Code</h2>
+            <p class="resource-author">Robert C. Martin · 2008</p>
+            <p class="resource-description">@Localizer["CleanCodeDescription"]</p>
+            <dl class="resource-meta">
+                <div><dt>@Localizer["LevelLabel"]</dt><dd>@Localizer["CleanCodeLevel"]</dd></div>
+                <div><dt>@Localizer["LanguageLabel"]</dt><dd>@Localizer["EnglishEdition"]</dd></div>
+            </dl>
+            <a class="resource-link" href="https://www.informit.com/store/clean-code-a-handbook-of-agile-software-craftsmanship-9780132350884" target="_blank" rel="noopener noreferrer">@Localizer["PublisherLink"] <span aria-hidden="true">↗</span></a>
         </li>
-        <li class="list-group-item">
-            <a href="https://store.pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/" target="_blank" rel="noopener noreferrer">@Localizer["The Pragmatic Programmer"]</a>
+        <li class="list-group-item resource-card">
+            <h2>The Pragmatic Programmer</h2>
+            <p class="resource-author">David Thomas &amp; Andrew Hunt · 2019</p>
+            <p class="resource-edition">@Localizer["PragmaticEdition"]</p>
+            <p class="resource-description">@Localizer["PragmaticDescription"]</p>
+            <dl class="resource-meta">
+                <div><dt>@Localizer["LevelLabel"]</dt><dd>@Localizer["PragmaticLevel"]</dd></div>
+                <div><dt>@Localizer["LanguageLabel"]</dt><dd>@Localizer["EnglishEdition"]</dd></div>
+            </dl>
+            <a class="resource-link" href="https://store.pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/" target="_blank" rel="noopener noreferrer">@Localizer["PublisherLink"] <span aria-hidden="true">↗</span></a>
         </li>
-        <!-- More books to come -->
     </ul>
+    <p class="resource-note">@Localizer["LevelNote"] @Localizer["NewTabNote"]</p>
 </div>
-

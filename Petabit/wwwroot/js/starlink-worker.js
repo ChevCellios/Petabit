@@ -16,7 +16,7 @@ let pendingElements;
 function update() {
     const sentAt = Date.now();
     const frame = orbitModule.positionsAt(records, clock.now(sentAt));
-    self.postMessage({ ...frame, sentAt, speed: clock.speed }, [frame.packed.buffer, frame.statuses.buffer]);
+    self.postMessage({ ...frame, sentAt, speed: clock.speed }, [frame.packed.buffer, frame.statuses.buffer, frame.epochs.buffer]);
     if (clock.running) timer = setTimeout(update, clock.speed === 1 ? 1000 : 250);
 }
 self.onmessage = async ({ data }) => {

@@ -117,14 +117,30 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BlockchainTechnologyDescription" xml:space="preserve">
-    <value>Blockchain tehnologija je temelj digitalnih valuta poput Bitcoina i omogućuje decentraliziranu pohranu i razmjenu podataka bez potrebe za centralnim posrednikom. U sklopu projekta Pi Network, korisnici imaju priliku učiti o blockchain sustavima, dok istovremeno rudare kriptovalutu putem mobilnog uređaja – jednostavno, bez troška i kao edukativni alat.</value>
-  </data>
-  <data name="VisitPiNetwork" xml:space="preserve">
-    <value>Posjeti Pi Network</value>
-  </data>
+  <data name="BlockchainTechnologyDescription" xml:space="preserve"><value>Blockchain bilježi podatke u blokovima povezanima kriptografskim sažecima. Mreža prihvaća promjene prema pravilima konsenzusa; sigurnost ovisi o protokolu i njegovim sudionicima.</value></data>
+  <data name="VisitPiNetwork" xml:space="preserve"><value>Otvori pozivnicu SuperBolt</value></data>
   <data name="BackHome" xml:space="preserve"><value>← Početna</value></data>
   <data name="ExploreResources" xml:space="preserve"><value>ODABRANI RESURSI</value></data>
-  <data name="PageIntro" xml:space="preserve"><value>Istraži odabrane resurse za učenje i razvoj digitalnih vještina.</value></data>
+  <data name="PageIntro" xml:space="preserve"><value>Upoznaj blokove, transakcije i konsenzus kroz dokumentaciju samih projekata. Počni osnovnim pojmovima, pa istraži kako ih različite mreže primjenjuju.</value></data>
   <data name="BlockchainTechnology" xml:space="preserve"><value>Blockchain tehnologija</value></data>
+  <data name="ReviewedLabel" xml:space="preserve"><value>Opisi provjereni:</value></data>
+  <data name="ReviewDate" xml:space="preserve"><value>13. listopada 2026.</value></data>
+  <data name="LevelLabel" xml:space="preserve"><value>Razina</value></data>
+  <data name="NewTabNote" xml:space="preserve"><value>Vanjske poveznice otvaraju se u novoj kartici.</value></data>
+  <data name="LevelNote" xml:space="preserve"><value>Razine su orijentacijske procjene Petabita.</value></data>
+  <data name="PageDescription" xml:space="preserve"><value>Edukativni uvod u blockchain uz dokumentaciju Bitcoina i Ethereuma te jasno označenu Pi Network pozivnicu.</value></data>
+  <data name="LearningSources" xml:space="preserve"><value>Dokumentacija za učenje</value></data>
+  <data name="LanguageLabel" xml:space="preserve"><value>Jezik izvora</value></data>
+  <data name="EnglishResource" xml:space="preserve"><value>Engleski</value></data>
+  <data name="EthereumDescription" xml:space="preserve"><value>Računi, transakcije i pametni ugovori: tehnički pregled osnovnih pojmova mreže Ethereum.</value></data>
+  <data name="EthereumLevel" xml:space="preserve"><value>Osnove · tehničko čitanje</value></data>
+  <data name="ReadEthereum" xml:space="preserve"><value>Pročitaj uvod u Ethereum</value></data>
+  <data name="BitcoinDescription" xml:space="preserve"><value>Kako su blokovi povezani, čemu služe sažeci i kako proof-of-work pomaže provjeri lanca.</value></data>
+  <data name="BitcoinLevel" xml:space="preserve"><value>Srednja · tehničko čitanje</value></data>
+  <data name="ReadBitcoin" xml:space="preserve"><value>Pročitaj Bitcoin vodič</value></data>
+  <data name="ReferralBadge" xml:space="preserve"><value>POZIVNICA / REFERRAL</value></data>
+  <data name="PiProjectTitle" xml:space="preserve"><value>Pi Network · zaseban projekt</value></data>
+  <data name="PiDescription" xml:space="preserve"><value>Pi Network zaseban je projekt sa svojom dokumentacijom i pravilima sudjelovanja.</value></data>
+  <data name="PiReferralNote" xml:space="preserve"><value>Poveznica sadrži pozivni kod SuperBolt. Korištenje pozivnice može donijeti referral pogodnost pozivatelju prema pravilima Pi Networka.</value></data>
+  <data name="PiDocumentation" xml:space="preserve"><value>Pročitaj Pi dokumentaciju</value></data>
 </root>

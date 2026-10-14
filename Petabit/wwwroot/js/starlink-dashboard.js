@@ -21,6 +21,12 @@ let zoom = 1;
 let mappedLayers = [0,0,0,0];
 let latestData;
 let ageUpdatedAt = 0;
+let epochFlags = new Uint8Array(0);
+let currentLayers = [0,0,0,0];
+let lastDrawTime = 0;
+const olderInput = document.getElementById('starlink-show-older');
+const details = document.getElementById('starlink-details');
+details.open = window.matchMedia('(min-width: 768px)').matches;
 const zoomInput = document.getElementById("starlink-zoom");
 const layers = Array.from(panel.querySelectorAll("[data-satellite-layer]"));
 const earthKm = 6371;
@@ -60,21 +66,58 @@ function setFetchState(state) {
 }
 function updateDataHealth() {
     if (!latestData) return;
-    const now = Date.now(), retrieved = Date.parse(latestData.retrievedAt), oldest = Date.parse(latestData.oldestEpoch);
-    const known = Number.isFinite(retrieved) && Number.isFinite(oldest) && retrieved <= now + 60000;
-    const stale = latestData.isStale || latestData.refreshFailed || now - retrieved > 4 * 3600000 || now - oldest > 3.5 * 86400000;
+    const now = Date.now(), retrieved = Date.parse(latestData.retrievedAt);
+    const known = Number.isFinite(retrieved) && retrieved <= now + 60000;
+    const stale = latestData.refreshFailed || now - retrieved > 4 * 3600000;
     const quality = document.getElementById('starlink-data-quality');
     quality.dataset.state = !known ? 'error' : stale ? 'stale' : 'fresh';
-    quality.textContent = !known ? strings.ageUnknown : stale ? strings.aging : strings.fresh;
+    quality.textContent = !known ? strings.ageUnknown : latestData.refreshFailed ? strings.sourceFailed : stale ? strings.aging : strings.fresh;
     const age = Math.max(0, now - retrieved);
     const unit = age >= 48 * 3600000 ? 'day' : age >= 3600000 ? 'hour' : 'minute';
     const scale = unit === 'day' ? 86400000 : unit === 'hour' ? 3600000 : 60000;
     document.getElementById('starlink-data-age').textContent = known
         ? `${strings.age}: ${new Intl.RelativeTimeFormat(strings.locale, { numeric: 'auto' }).format(-Math.floor(age / scale), unit)}` : strings.ageUnknown;
     document.getElementById('starlink-data-health').hidden = false;
+    const warnings = [];
+    if (latestData.refreshFailed) warnings.push(strings.sourceFailedHelp);
+    else if (!known) warnings.push(strings.ageUnknown);
+    else if (stale) warnings.push(strings.retrievalOld);
+    if (latestData.persistenceFailed) warnings.push(document.getElementById('iss-led-localization').dataset.persistence);
+    if (!latestData.statusCoverageComplete) warnings.push(strings.legacy);
+    const warning = document.getElementById('starlink-warning');
+    warning.textContent = warnings.join(' '); warning.hidden = !warnings.length;
+    updateOrbitAges(now);
     ageUpdatedAt = now;
 }
-function draw() {
+function updateOrbitAges(now = Date.now()) {
+    if (!frame) return;
+    epochFlags = new Uint8Array(frame.count);
+    currentLayers = [0,0,0,0];
+    let current = 0, older = 0, unknown = 0;
+    const cutoff = now - 3.5 * 86400000;
+    for (let i = 0; i < frame.count; i++) {
+        const epoch = frame.epochs?.[i];
+        const flag = !Number.isFinite(epoch) || epoch > now + 86400000 ? 2 : epoch < cutoff ? 1 : 0;
+        epochFlags[i] = flag;
+        if (flag === 2) unknown++; else if (flag === 1) older++; else { current++; currentLayers[frame.statuses?.[i] ?? 0]++; }
+    }
+    const number = new Intl.NumberFormat(strings.locale);
+    const summary = document.getElementById('starlink-orbit-quality');
+    const text = `${strings.orbitCurrent}: ${number.format(current)} · ${strings.orbitOlder}: ${number.format(older)}`
+        + (unknown ? ` · ${strings.orbitUnknown}: ${number.format(unknown)}` : '');
+    if (summary.textContent !== text) summary.textContent = text;
+    summary.dataset.state = older || unknown ? 'mixed' : 'fresh';
+    document.getElementById('starlink-older-count').textContent = number.format(older + unknown);
+    canvas.dataset.olderCount = String(older);
+    canvas.dataset.unknownEpochCount = String(unknown);
+}
+function draw(time) {
+    // Bound main-thread drawing while the orbital worker preserves its own cadence.
+    if (typeof time === 'number' && time - lastDrawTime < 1000 / 30) {
+        if (motion.checked && !document.hidden && !panel.hidden && frame) animation = requestAnimationFrame(draw);
+        return;
+    }
+    lastDrawTime = typeof time === 'number' ? time : 0;
     const w = canvas.clientWidth, h = canvas.clientHeight;
     const cx = w / 2, cy = h / 2, radius = Math.min(w, h) * .385;
     const light = document.body.classList.contains('light-mode');
@@ -109,30 +152,39 @@ function draw() {
         const dt = motion.checked && !document.hidden ? Math.min(.5, Math.max(0, (Date.now() - frame.sentAt) / 1000)) * frame.speed : 0;
         for (let i = 0; i < frame.count * 6; i += 6) {
             if (!layers[frame.statuses?.[i / 6] ?? 0].checked) continue;
+            const older = epochFlags[i / 6] > 0;
+            if (!olderInput.checked && older) continue;
             const p = frame.packed;
             const x = p[i] + p[i + 3] * dt, y = p[i + 1] + p[i + 4] * dt, z = p[i + 2] + p[i + 5] * dt;
             const depth = x * cos - y * sin;
             const dx = (y * cos + x * sin) / earthKm * radius, dy = -z / earthKm * radius;
             if (depth < 0 && dx * dx + dy * dy < radius * radius) continue;
-            dots.push({ x: cx + dx, y: cy + dy, front: depth >= 0, status: frame.statuses?.[i / 6] ?? 0 });
+            dots.push({ x: cx + dx, y: cy + dy, front: depth >= 0, status: frame.statuses?.[i / 6] ?? 0, older });
         }
     }
     canvas.dataset.visibleCount = String(dots.length);
     if (frame) {
-        const available = mappedLayers.some((count,index) => count > 0 && layers[index].checked);
+        const counts = olderInput.checked ? mappedLayers : currentLayers;
+        const available = counts.some((count,index) => count > 0 && layers[index].checked);
         const empty = document.getElementById('starlink-empty');
         empty.hidden = available;
-        empty.textContent = available ? '' : mappedLayers.some(count => count > 0) ? strings.allHidden : strings.layerEmpty;
+        empty.textContent = available ? '' : mappedLayers.some((count,index) => count > 0 && layers[index].checked)
+            ? strings.olderHidden : mappedLayers.some(count => count > 0) ? strings.allHidden : strings.layerEmpty;
     }
     const paintDots = front => {
         const colors = light ? ['#006c9c', '#9b6500', '#c63542', '#596b80'] : ['#8bdcff', '#ffd475', '#ff8491', '#b9c4d5'];
         for (let status = 0; status < colors.length; status++) {
             ctx.fillStyle = colors[status]; ctx.globalAlpha = front ? .82 : .35; ctx.beginPath();
-            for (const p of dots) if (p.front === front && p.status === status) {
+            for (const p of dots) if (p.front === front && p.status === status && !p.older) {
                 const size = status === 2 ? 1.9 : .85;
                 ctx.moveTo(p.x + size, p.y); ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
             }
             ctx.fill();
+            ctx.strokeStyle = colors[status]; ctx.globalAlpha = front ? .42 : .2; ctx.lineWidth = .75; ctx.beginPath();
+            for (const p of dots) if (p.front === front && p.status === status && p.older) {
+                ctx.moveTo(p.x + 1.6, p.y); ctx.arc(p.x, p.y, 1.6, 0, Math.PI * 2);
+            }
+            ctx.stroke();
         }
         ctx.globalAlpha = 1;
     };
@@ -177,7 +229,8 @@ button.addEventListener('click', async () => {
     const currentGeneration = ++generation;
     controller = new AbortController();
     panel.hidden = false; button.setAttribute('aria-expanded', 'true');
-    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.dispatchEvent(new Event('starlink-panel-open'));
+    panel.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
     status.textContent = strings.loading;
     setFetchState('loading');
     const warning = document.getElementById('starlink-warning');
@@ -195,13 +248,11 @@ button.addEventListener('click', async () => {
             document.getElementById(`starlink-${id}`).textContent = value === null ? '—' : number.format(value);
         const date = value => new Date(value).toLocaleString(strings.locale);
         document.getElementById('starlink-freshness').textContent = `${strings.updated}: ${date(data.retrievedAt)} · ${strings.epoch}: ${date(data.oldestEpoch)} – ${date(data.newestEpoch)}`;
-        warning.textContent = data.isStale || data.refreshFailed ? strings.stale : '';
-        if (data.persistenceFailed) warning.textContent += ` ${document.getElementById('iss-led-localization').dataset.persistence}`;
-        if (!data.statusCoverageComplete) warning.textContent += ` ${strings.legacy}`;
-        warning.hidden = !warning.textContent;
         worker?.terminate();
         cancelAnimationFrame(animation);
         frame = undefined;
+        epochFlags = new Uint8Array(0);
+        document.getElementById('starlink-orbit-quality').textContent = strings.orbitChecking;
         const workerUrl = new URL(strings.workerUrl, location.origin);
         workerUrl.searchParams.set('orbits', new URL(strings.orbitsUrl, location.origin).searchParams.get('v'));
         workerUrl.searchParams.set('clock', new URL(strings.clockUrl, location.origin).searchParams.get('v'));
@@ -210,6 +261,7 @@ button.addEventListener('click', async () => {
         worker.onmessage = ({ data: next }) => {
             if (panel.hidden || worker !== activeWorker) return;
             frame = next;
+            updateOrbitAges();
             if (document.getElementById('starlink-fetch').dataset.state === 'calculating') setFetchState(next.count ? 'ready' : 'error');
             if (!next.count) status.textContent = strings.error;
             if (Date.now() - ageUpdatedAt >= 60000) updateDataHealth();
@@ -234,7 +286,6 @@ button.addEventListener('click', async () => {
         status.textContent = strings.error;
         setFetchState('error');
         if (latestData) { latestData = { ...latestData, refreshFailed: true }; updateDataHealth(); }
-        if (frame) { warning.textContent = strings.stale; warning.hidden = false; }
     } finally { if (generation === currentGeneration) { pending = false; button.disabled = false; } }
 });
 document.getElementById('starlink-close').addEventListener('click', () => {
@@ -256,7 +307,20 @@ canvas.addEventListener('pointermove', event => {
 });
 canvas.addEventListener('pointerup', () => { pointerX = undefined; });
 canvas.addEventListener('pointercancel', () => { pointerX = undefined; });
-window.addEventListener('pagehide', () => { stopSound(); worker?.terminate(); cancelAnimationFrame(animation); });
+function refreshVisibleHealth() {
+    if (panel.hidden || document.hidden) return;
+    updateDataHealth();
+    if (!motion.checked) redrawView();
+}
+let healthTimer = window.setInterval(refreshVisibleHealth, 60000);
+window.addEventListener('pagehide', () => {
+    stopSound(); worker?.postMessage({ type: 'stop' }); cancelAnimationFrame(animation);
+    window.clearInterval(healthTimer); healthTimer = undefined;
+});
+window.addEventListener('pageshow', () => {
+    healthTimer ??= window.setInterval(refreshVisibleHealth, 60000);
+    run();
+});
 
 function redrawView() { cancelAnimationFrame(animation); if (!panel.hidden) draw(); }
 function setZoom(value) {
@@ -274,6 +338,7 @@ document.getElementById('starlink-zoom-in').addEventListener('click', () => setZ
 document.getElementById('starlink-zoom-out').addEventListener('click', () => setZoom(zoom - .2));
 document.getElementById('starlink-view-reset').addEventListener('click', () => { rotation = -.28; setZoom(1); });
 for (const layer of layers) layer.addEventListener('change', redrawView);
+olderInput.addEventListener('change', redrawView);
 canvas.addEventListener('wheel', event => {
     if (!event.ctrlKey && !event.metaKey) return;
     event.preventDefault();

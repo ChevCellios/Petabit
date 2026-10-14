@@ -179,3 +179,53 @@ body.light-mode .home-hero :is(#iss-panel, #starlink-panel) {
 body.light-mode .starlink-panel .starlink-stage {
     background: radial-gradient(ellipse at center, rgba(216, 243, 238, .7), rgba(239, 247, 250, .25) 75%);
 }
+
+/* Keep the globe near the panel heading; secondary controls stay below it. */
+.starlink-summary-metrics, .starlink-detail-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.starlink-summary-metrics { margin: .75rem 0; }
+.starlink-summary-metrics > div { padding: .65rem .85rem; }
+.starlink-summary-metrics strong { font-size: 1.25rem; }
+.starlink-panel #starlink-status { margin: .5rem 0; }
+.starlink-panel .starlink-fetch { margin: .5rem 0; padding: .5rem .75rem; }
+.starlink-data-health { margin: .5rem 0; }
+.starlink-orbit-quality { font-size: .85rem; line-height: 1.6; margin: .4rem 0; color: var(--ui-muted); }
+.starlink-details { border-top: 1px solid var(--ui-line); margin-top: 1rem; padding-top: .35rem; }
+.starlink-details > summary { padding: .8rem .25rem; min-height: 44px; cursor: pointer; color: var(--ui-text); font-weight: 750; }
+.starlink-details > summary::marker { color: var(--ui-accent); }
+.starlink-details > summary:focus-visible, .starlink-age-filter input:focus-visible { outline: 3px solid var(--ui-accent); outline-offset: 3px; border-radius: 6px; }
+.starlink-details > :last-child { margin-bottom: .5rem; }
+.starlink-age-filter { display: flex; align-items: center; gap: .6rem; min-height: 44px; color: var(--ui-text); }
+.starlink-age-filter input { width: 18px; height: 18px; accent-color: var(--ui-accent); }
+#starlink-older-count { font-variant-numeric: tabular-nums; color: var(--ui-muted); }
+.tracker-panel:focus, .iss-video-panel:focus { outline: none; }
+.tracker-panel:focus-visible, .iss-video-panel:focus-visible { outline: 2px solid var(--ui-accent); outline-offset: 4px; }
+@media(max-width:650px) {
+    .starlink-panel .starlink-zoom { display: grid; grid-template-columns: 44px minmax(0,1fr) 44px auto; gap: .5rem; }
+    .starlink-zoom label { grid-column: 1 / -1; font-size: .85rem; }
+    .starlink-zoom input { width: 100%; min-width: 0; }
+    #starlink-view-reset { grid-column: 1 / -1; }
+    .starlink-summary-metrics span { font-size: .75rem; }
+    .starlink-panel .starlink-stage { height: min(55svh,100cqw); }
+}
+
+body .resource-page .resource-grid .resource-card { display: flex; flex-direction: column; gap: .75rem; padding: 1.4rem; }
+.resource-card :is(h2,h3) { font-size: 1.15rem; line-height: 1.5; margin: 0; }
+.resource-author, .resource-edition { font-size: .85rem; margin: 0; color: var(--ui-muted); }
+.resource-description, .resource-note, .resource-review { color: var(--ui-muted); line-height: 1.7; }
+.resource-description { margin: 0; }
+.resource-note, .resource-review { font-size: .85rem; margin-top: 1.25rem; }
+.resource-review { padding-top: .85rem; border-top: 1px solid var(--ui-line); }
+.resource-meta { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .4rem .8rem; margin: .25rem 0; font-size: .85rem; }
+.resource-meta > div { display: flex; flex-direction: column; gap: .25rem; }
+.resource-meta dt { font-weight: 750; }
+.resource-meta dd { margin: 0; color: var(--ui-muted); }
+body .resource-page .resource-grid .resource-link { display: inline-flex; align-self: flex-start; min-height: 44px; padding: .6rem .85rem; margin-top: auto; border: 1px solid var(--ui-line); border-radius: 10px; font-size: .9rem; color: var(--ui-accent) !important; }
+.resource-grid .resource-link::after, .resource-grid .resource-referral a::after, .resource-actions .resource-link::after { content: none; }
+body .resource-page .resource-grid .resource-referral a { display: inline; min-height: 0; padding: 0; color: var(--ui-accent) !important; }
+.resource-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1rem; }
+.resource-actions .resource-link { display: inline-flex; align-items: center; gap: .7rem; padding: .7rem 1rem; min-height: 44px; border: 1px solid var(--ui-line); border-radius: 10px; text-decoration: none; }
+.resource-badge { display: inline-block; border: 1px solid var(--ui-line); border-radius: 8px; padding: .3rem .6rem; font-size: .8rem; color: var(--ui-muted); }
+.resource-link:focus-visible { outline: 3px solid var(--ui-accent); outline-offset: 3px; }
+.resource-section, .resource-project { padding: 1.4rem; border: 1px solid var(--ui-line); border-radius: 16px; background: var(--ui-surface); margin-top: 1.25rem; }
+.resource-section h2, .resource-project h2 { font-size: 1.3rem; line-height: 1.5; }
+.resource-page .resource-project a { color: var(--ui-accent); }

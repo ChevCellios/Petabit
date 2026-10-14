@@ -122,5 +122,22 @@
   </data>
   <data name="BackHome" xml:space="preserve"><value>← Startseite</value></data>
   <data name="ExploreResources" xml:space="preserve"><value>AUSGEWÄHLTE RESSOURCEN</value></data>
-  <data name="PageIntro" xml:space="preserve"><value>Entdecke ausgewählte Ressourcen zum Lernen und Entwickeln digitaler Fähigkeiten.</value></data>
+  <data name="PageIntro" xml:space="preserve"><value>Kurze Lektionen helfen beim regelmäßigen Lernen. Wähle eine App, beginne mit einem Kurs und nutze das Gelernte in einem eigenen kleinen Projekt.</value></data>
+  <data name="ReviewedLabel" xml:space="preserve"><value>Beschreibungen geprüft:</value></data>
+  <data name="ReviewDate" xml:space="preserve"><value>13. Oktober 2026</value></data>
+  <data name="LevelLabel" xml:space="preserve"><value>Niveau</value></data>
+  <data name="NewTabNote" xml:space="preserve"><value>Externe Links öffnen sich in einem neuen Tab.</value></data>
+  <data name="LevelNote" xml:space="preserve"><value>Die Niveaus sind Orientierungshilfen von Petabit.</value></data>
+  <data name="PageTitle" xml:space="preserve"><value>Apps zum Üben von Programmierung</value></data>
+  <data name="PageDescription" xml:space="preserve"><value>Vergleiche Mimo und Sololearn nach Lernansatz, Einstiegsniveau und Sprache der verlinkten Websites.</value></data>
+  <data name="LanguageLabel" xml:space="preserve"><value>Sprache der verlinkten Website</value></data>
+  <data name="EnglishOverview" xml:space="preserve"><value>Englisch</value></data>
+  <data name="OfficialLink" xml:space="preserve"><value>Offizielle Website öffnen</value></data>
+  <data name="MimoDescription" xml:space="preserve"><value>Interaktive Lektionen und Projekte für Python und Webentwicklung. Ein praktischer Einstieg zum regelmäßigen Üben grundlegender Programmierkonzepte.</value></data>
+  <data name="MimoLevel" xml:space="preserve"><value>Einstieg</value></data>
+  <data name="MimoInviteNote" xml:space="preserve"><value>Optionaler Link mit Einladungscode:</value></data>
+  <data name="MimoInvite" xml:space="preserve"><value>Einladung 6meni7</value></data>
+  <data name="SololearnDescription" xml:space="preserve"><value>Kurze Kurse zu Python, JavaScript und weiteren Sprachen mit Quizfragen und Programmierübungen. Das Angebot umfasst Grundlagen und Inhalte für die Mittelstufe.</value></data>
+  <data name="SololearnLevel" xml:space="preserve"><value>Einstieg bis Mittelstufe</value></data>
+  <data name="SelectionNote" xml:space="preserve"><value>Die Niveaus sind Orientierungshilfen von Petabit. Prüfe Kursangebot und Tarifbedingungen auf den offiziellen Websites.</value></data>
 </root>

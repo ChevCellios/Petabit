@@ -158,6 +158,7 @@
 
     @RenderSection("Styles", required: false)
     <link rel="stylesheet" href="~/css/orbital-ui.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site-chrome.css" asp-append-version="true" />
 </head>
 <body class="dark-mode" data-analytics-id="@Configuration["Analytics:MeasurementId"]">
     <script nonce="@cspNonce">
@@ -167,38 +168,48 @@
     <canvas id="page-hologram" aria-hidden="true"></canvas>
     <!-- Header & Navigation -->
     <header class="site-header">
-        <nav class="navbar navbar-expand-lg navbar-dark matrix">
-            <canvas id="matrixCanvas"></canvas>
+        <nav class="navbar matrix" aria-label="@Localizer["MainNavigation"]">
+            <canvas id="matrixCanvas" aria-hidden="true"></canvas>
 
             <div class="container-fluid position-relative matrix-nav-row">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Petabit</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><span class="brand-mark" aria-hidden="true">◈</span><span>Petabit</span></a>
 
-                <div class="navbar-collapse d-flex matrix-nav-links">
-                    <ul class="navbar-nav flex-row align-items-center gap-2">
+                <div class="matrix-nav-links">
+                    <ul class="navbar-nav">
                         <li class="nav-item">
-                            <form asp-controller="Home" asp-action="SetLanguage" method="post" class="d-inline">
-                                <select id="culture-selector" name="culture" class="form-select form-select-sm w-auto d-inline" aria-label="@Localizer["LanguageSelector"]">
-                                    <option value="en" selected="@(culture == "en" ? "selected" : null)">EN</option>
-                                    <option value="hr" selected="@(culture == "hr" ? "selected" : null)">HR</option>
-                                    <option value="de" selected="@(culture == "de" ? "selected" : null)">DE</option>
-                                </select>
-                            </form>
-
-                            
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" aria-current="@(Context.Request.Path == "/" || Context.Request.Path == "/Home/Index" ? "page" : null)">@Localizer["Home"]</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">@Localizer["Home"]</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">@Localizer["Privacy"]</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy" aria-current="@(Context.Request.Path == "/Home/Privacy" ? "page" : null)">@Localizer["Privacy"]</a>
                         </li>
                     </ul>
                 </div>
+                <div class="matrix-nav-settings">
+                    <form asp-controller="Home" asp-action="SetLanguage" method="post">
+                        <select id="culture-selector" name="culture" class="form-select" aria-label="@Localizer["LanguageSelector"]">
+                            <option value="en" selected="@(culture == "en" ? "selected" : null)">EN</option>
+                            <option value="hr" selected="@(culture == "hr" ? "selected" : null)">HR</option>
+                            <option value="de" selected="@(culture == "de" ? "selected" : null)">DE</option>
+                        </select>
+                    </form>
+                    <button id="toggle-dark-mode" class="mode-toggle" type="button" aria-pressed="true" aria-label="@Localizer["ChangeTheme"]" title="@Localizer["ChangeTheme"]"><span aria-hidden="true">🌓</span><span class="theme-toggle-label">@Localizer["ChangeTheme"]</span></button>
+                </div>
             </div>
         </nav>
-
-        <button id="toggle-dark-mode" class="btn border-0 mode-toggle" type="button" aria-pressed="true" aria-label="@Localizer["ChangeTheme"]" title="@Localizer["ChangeTheme"]">🌓</button>
     </header>
+
+    <section id="analytics-consent" class="container analytics-consent-banner" role="region" aria-labelledby="analytics-consent-title" tabindex="-1" hidden>
+        <div class="consent-copy">
+            <h2 id="analytics-consent-title">@Localizer["AnalyticsSettings"]</h2>
+            <p>@Localizer["AnalyticsDescription"]</p>
+            <p id="analytics-storage-status" class="consent-storage-status" role="status" hidden>@Localizer["AnalyticsStorageUnavailable"]</p>
+        </div>
+        <div class="consent-actions">
+            <button id="analytics-accept" type="button" class="consent-choice">@Localizer["Accept"]</button>
+            <button id="analytics-reject" type="button" class="consent-choice">@Localizer["Reject"]</button>
+            <a asp-controller="Home" asp-action="Privacy">@Localizer["LearnMore"]</a>
+        </div>
+    </section>
 
     <!-- Glavni sadržaj -->
     <div class="container site-main-shell">
@@ -208,72 +219,27 @@
     </div>
 
     <!-- Footer -->
-    <footer class="site-footer border-top">
-        <div class="container">
-            &copy; @DateTime.UtcNow.Year - Petabit - <a asp-area="" asp-controller="Home" asp-action="Privacy">@Localizer["Privacy"]</a>
-            <span class="footer-source-links" aria-label="@Localizer["ExternalSources"]">
-                · <a href="https://www.nasa.gov/" target="_blank" rel="noopener noreferrer">NASA</a>
-                · <a href="https://wheretheiss.at/" target="_blank" rel="noopener noreferrer">Open API</a>
-            </span>
+    <footer class="site-footer">
+        <div class="container footer-row">
+            <p class="footer-brand">&copy; @DateTime.UtcNow.Year <strong>Petabit</strong></p>
+            <nav class="footer-nav" aria-label="@Localizer["FooterNavigation"]">
+                <a asp-area="" asp-controller="Home" asp-action="Privacy">@Localizer["Privacy"]</a>
+                @if (!string.IsNullOrWhiteSpace(Configuration["Analytics:MeasurementId"]))
+                {
+                    <button type="button" class="footer-consent-button" data-manage-analytics>@Localizer["AnalyticsSettings"]</button>
+                }
+            </nav>
+            <nav class="footer-source-links" aria-label="@Localizer["ExternalSources"]">
+                <a href="https://www.nasa.gov/" target="_blank" rel="noopener noreferrer">NASA <span aria-hidden="true">↗</span></a>
+                <a href="https://wheretheiss.at/" target="_blank" rel="noopener noreferrer">Open API <span aria-hidden="true">↗</span></a>
+            </nav>
         </div>
     </footer>
-
-    <section id="analytics-consent" class="analytics-consent-compact border rounded bg-dark text-light" role="dialog" aria-label="@Localizer["AnalyticsSettings"]" aria-live="polite" hidden>
-        <p class="mb-1">@Localizer["AnalyticsDescription"]</p>
-        <div class="d-flex gap-1 align-items-center flex-wrap">
-            <button id="analytics-accept" type="button" class="btn btn-success btn-sm">@Localizer["Accept"]</button>
-            <button id="analytics-reject" type="button" class="btn btn-outline-light btn-sm">@Localizer["Reject"]</button>
-            <a asp-controller="Home" asp-action="Privacy">@Localizer["LearnMore"]</a>
-        </div>
-    </section>
 
     <!-- JS biblioteke -->
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/page-hologram.js" asp-append-version="true"></script>
-
-    <!-- Matrix animacija -->
-    <script nonce="@cspNonce">
-        const canvas = document.getElementById("matrixCanvas");
-        const ctx = canvas.getContext("2d");
-
-        function resizeCanvas() {
-            const navbar = document.querySelector("nav.navbar");
-            canvas.width = navbar.offsetWidth;
-            canvas.height = navbar.offsetHeight;
-        }
-
-        let columns, drops;
-        const fontSize = 1;
-        const matrixChars = "アァイィウエカガキギクグケゲコゴサザシジスズタダチッヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモヤユヨラリルレロワンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        const letters = matrixChars.split("");
-
-        function setupMatrix() {
-            columns = Math.floor(canvas.width / fontSize);
-            drops = Array.from({ length: columns }).fill(1);
-        }
-
-        function drawMatrix() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#00ff00";
-            ctx.font = fontSize + "px monospace";
-
-            for (let i = 0; i < drops.length; i++) {
-                const text = letters[Math.floor(Math.random() * letters.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height || Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            }
-        }
-
-        resizeCanvas();
-        setupMatrix();
-        setInterval(drawMatrix, 33);
-        window.addEventListener("resize", () => {
-            resizeCanvas();
-            setupMatrix();
-        });
-    </script>
+    <script src="~/js/matrix-header.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

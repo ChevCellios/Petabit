@@ -122,5 +122,20 @@
   </data>
   <data name="BackHome" xml:space="preserve"><value>← Početna</value></data>
   <data name="ExploreResources" xml:space="preserve"><value>ODABRANI RESURSI</value></data>
-  <data name="PageIntro" xml:space="preserve"><value>Istraži odabrane resurse za učenje i razvoj digitalnih vještina.</value></data>
+  <data name="PageIntro" xml:space="preserve"><value>Odaberi knjigu prema iskustvu i temi koju želiš vježbati. Ovi naslovi nadopunjuju praktično programiranje primjerima i razvojnim navikama.</value></data>
+  <data name="ReviewedLabel" xml:space="preserve"><value>Opisi provjereni:</value></data>
+  <data name="ReviewDate" xml:space="preserve"><value>13. listopada 2026.</value></data>
+  <data name="LevelLabel" xml:space="preserve"><value>Razina</value></data>
+  <data name="NewTabNote" xml:space="preserve"><value>Vanjske poveznice otvaraju se u novoj kartici.</value></data>
+  <data name="LevelNote" xml:space="preserve"><value>Razine su orijentacijske procjene Petabita.</value></data>
+  <data name="PageTitle" xml:space="preserve"><value>Knjige za razvoj programerskih vještina</value></data>
+  <data name="PageDescription" xml:space="preserve"><value>Dvije knjige o čitljivom kodu i razvoju softvera, s kratkim opisima, razinom i poveznicama na izdavače.</value></data>
+  <data name="LanguageLabel" xml:space="preserve"><value>Jezik izdanja</value></data>
+  <data name="EnglishEdition" xml:space="preserve"><value>Engleski</value></data>
+  <data name="PublisherLink" xml:space="preserve"><value>Pogledaj kod izdavača</value></data>
+  <data name="CleanCodeDescription" xml:space="preserve"><value>Primjeri imenovanja, kratkih funkcija, testiranja i refaktoriranja za čitljiviji kod. Mnogi su primjeri u Javi; knjiga je korisna nakon savladavanja osnova.</value></data>
+  <data name="CleanCodeLevel" xml:space="preserve"><value>Srednja · uz osnove programiranja</value></data>
+  <data name="PragmaticEdition" xml:space="preserve"><value>Izdanje za 20. obljetnicu</value></data>
+  <data name="PragmaticDescription" xml:space="preserve"><value>Praktične navike za održiv softver: izbjegavanje dupliciranja, testiranje i prilagodljiv dizajn. Čitaj uz mali projekt kako bi odmah iskušao ideje.</value></data>
+  <data name="PragmaticLevel" xml:space="preserve"><value>Početna do srednja · uz prve projekte</value></data>
 </root>

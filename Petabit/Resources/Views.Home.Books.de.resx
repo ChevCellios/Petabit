@@ -122,5 +122,20 @@
   </data>
   <data name="BackHome" xml:space="preserve"><value>← Startseite</value></data>
   <data name="ExploreResources" xml:space="preserve"><value>AUSGEWÄHLTE RESSOURCEN</value></data>
-  <data name="PageIntro" xml:space="preserve"><value>Entdecke ausgewählte Ressourcen zum Lernen und Entwickeln digitaler Fähigkeiten.</value></data>
+  <data name="PageIntro" xml:space="preserve"><value>Wähle nach deiner Erfahrung und dem Thema, das du üben möchtest. Diese Bücher ergänzen praktische Programmierung durch Beispiele und Arbeitsweisen.</value></data>
+  <data name="ReviewedLabel" xml:space="preserve"><value>Beschreibungen geprüft:</value></data>
+  <data name="ReviewDate" xml:space="preserve"><value>13. Oktober 2026</value></data>
+  <data name="LevelLabel" xml:space="preserve"><value>Niveau</value></data>
+  <data name="NewTabNote" xml:space="preserve"><value>Externe Links öffnen sich in einem neuen Tab.</value></data>
+  <data name="LevelNote" xml:space="preserve"><value>Die Niveaus sind Orientierungshilfen von Petabit.</value></data>
+  <data name="PageTitle" xml:space="preserve"><value>Bücher für deine Programmierkenntnisse</value></data>
+  <data name="PageDescription" xml:space="preserve"><value>Zwei Bücher über lesbaren Code und Softwareentwicklung, mit Kurzbeschreibungen, Niveau und Verlagslinks.</value></data>
+  <data name="LanguageLabel" xml:space="preserve"><value>Sprache der Ausgabe</value></data>
+  <data name="EnglishEdition" xml:space="preserve"><value>Englisch</value></data>
+  <data name="PublisherLink" xml:space="preserve"><value>Beim Verlag ansehen</value></data>
+  <data name="CleanCodeDescription" xml:space="preserve"><value>Beispiele zu Benennung, übersichtlichen Funktionen, Tests und Refactoring für lesbaren Code. Viele Beispiele nutzen Java; Programmiergrundlagen sind hilfreich.</value></data>
+  <data name="CleanCodeLevel" xml:space="preserve"><value>Mittelstufe · Programmiergrundlagen</value></data>
+  <data name="PragmaticEdition" xml:space="preserve"><value>Ausgabe zum 20. Jubiläum</value></data>
+  <data name="PragmaticDescription" xml:space="preserve"><value>Praktische Gewohnheiten für wartbare Software: Duplikate vermeiden, testen und Entwürfe anpassen. Probiere die Ideen parallel an einem kleinen Projekt aus.</value></data>
+  <data name="PragmaticLevel" xml:space="preserve"><value>Einstieg bis Mittelstufe · erste Projekte</value></data>
 </root>

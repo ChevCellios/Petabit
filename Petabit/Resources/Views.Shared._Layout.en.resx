@@ -6,11 +6,14 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
   <data name="LanguageSelector" xml:space="preserve"><value>Select language</value></data>
   <data name="ChangeTheme" xml:space="preserve"><value>Change theme</value></data>
+  <data name="MainNavigation" xml:space="preserve"><value>Main navigation</value></data>
+  <data name="FooterNavigation" xml:space="preserve"><value>Footer navigation</value></data>
   <data name="Home" xml:space="preserve"><value>Home</value></data>
   <data name="Privacy" xml:space="preserve"><value>Privacy</value></data>
   <data name="ExternalSources" xml:space="preserve"><value>External sources</value></data>
   <data name="AnalyticsSettings" xml:space="preserve"><value>Analytics settings</value></data>
   <data name="AnalyticsDescription" xml:space="preserve"><value>Petabit uses analytics cookies for anonymous traffic measurement and content improvement.</value></data>
+  <data name="AnalyticsStorageUnavailable" xml:space="preserve"><value>Your browser cannot save this choice. Analytics stays off.</value></data>
   <data name="Accept" xml:space="preserve"><value>Accept</value></data>
   <data name="Reject" xml:space="preserve"><value>Reject</value></data>
   <data name="LearnMore" xml:space="preserve"><value>Learn more</value></data>
