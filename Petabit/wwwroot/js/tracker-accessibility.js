@@ -10,7 +10,8 @@
         if (event.key !== 'Escape' || event.defaultPrevented) return;
         const focusedPanel = document.activeElement?.closest('.tracker-panel, .iss-video-panel');
         const panel = focusedPanel && !focusedPanel.hidden ? focusedPanel
-            : lastOpened && !lastOpened.hidden ? lastOpened : undefined;
+            : lastOpened && !lastOpened.hidden ? lastOpened
+            : document.querySelector('.tracker-panel:not([hidden])');
         if (!panel) return;
         event.preventDefault();
         panel.querySelector('.tracker-close')?.click();
