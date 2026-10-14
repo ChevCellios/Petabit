@@ -28,6 +28,8 @@ On mobile the two main counts, retrieval/orbital health, zoom and globe precede 
 
 All users share one singleton cache. CelesTrak GP updates at two-hour intervals and enforces one download per update; repeated pings reuse the cached data. The snapshot is atomically persisted to `App_Data/starlink-status.json` and restored on restart. An unsuccessful refresh preserves the last validated snapshot and waits two hours before another attempt, also protecting against re-downloading one successful half of a failed two-source refresh. With no saved snapshot the endpoint returns 503 rather than an invented count. There is no upstream request before the first Starlink ping.
 
+The public `GET /Home/StarlinkData` JSON response negotiates Brotli or gzip at the fastest compression level to reduce the transfer size of the full orbital dataset. Clients may decline compression; the decoded JSON and `no-store` policy remain identical. Compression is deliberately restricted to this fixed public route. HTML, per-request security tokens and other API responses are excluded from this HTTPS compression policy.
+
 Production should use one app replica and a persistent `/app/App_Data` volume, as with NASA station synchronization. Multiple independent replicas require a shared cache/refresh coordinator. Local cached data and test downloads are excluded from publish and Git.
 
 Snapshots now contain catalog-derived `PETABIT_STATUS` on each orbital element and `NonOperationalCount`, `OtherCount`, `StatusCoverageComplete`. Older operational-only snapshots remain readable: the UI shows an unknown nonoperational count rather than zero, until the next scheduled two-hour refresh provides the complete classification. Migration does not bypass the source download cooldown.
