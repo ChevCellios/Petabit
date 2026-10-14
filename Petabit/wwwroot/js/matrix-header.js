@@ -9,14 +9,13 @@
     if (!navbar) return;
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const characters = Array.from('アイウエオカキクケコサシスセソタチツテトナニヌネノABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
-    const fontSize = 10;
-    const columnWidth = 12;
-    const frameInterval = 1000 / 20;
+    // Preserve the owner's original dense, one-pixel green Matrix rain.
+    const characters = Array.from('アァイィウエカガキギクグケゲコゴサザシジスズタダチッヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモヤユヨラリルレロワンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
+    const fontSize = 1;
+    const frameInterval = 33;
     let width = 0;
     let height = 0;
-    let columns = [];
-    let palette = [];
+    let drops = [];
     let frame = null;
     let lastPaint = null;
     let pageActive = true;
@@ -31,24 +30,17 @@
         lastPaint = null;
     }
 
-    function paint(elapsed, time) {
-        context.clearRect(0, 0, width, height);
+    function paint() {
+        context.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        context.fillRect(0, 0, width, height);
+        context.fillStyle = '#00ff00';
         context.font = `${fontSize}px monospace`;
-        context.textBaseline = 'top';
 
-        for (let index = 0; index < columns.length; index++) {
-            const column = columns[index];
-            column.y += elapsed * column.speed;
-            if (column.y > height + fontSize * 6) column.y = -fontSize;
-
-            for (let trail = 0; trail < 6; trail++) {
-                const y = column.y - trail * fontSize;
-                if (y < -fontSize || y > height) continue;
-                const alpha = (trail === 0 ? 0.54 : 0.28 * (1 - trail / 6));
-                context.fillStyle = `rgba(${palette[index % palette.length]},${alpha})`;
-                const character = characters[(column.seed + trail + Math.floor(time / 200)) % characters.length];
-                context.fillText(character, index * columnWidth, y);
-            }
+        for (let index = 0; index < drops.length; index++) {
+            const character = characters[Math.floor(Math.random() * characters.length)];
+            context.fillText(character, index * fontSize, drops[index] * fontSize);
+            if (drops[index] * fontSize > height || Math.random() > 0.975) drops[index] = 0;
+            drops[index]++;
         }
     }
 
@@ -61,9 +53,9 @@
         if (!canAnimate()) return;
 
         if (lastPaint === null || time - lastPaint >= frameInterval) {
-            const elapsed = lastPaint === null ? 0 : Math.min(time - lastPaint, 150);
-            lastPaint = time;
-            paint(elapsed, time);
+            // Keep the original cadence without accumulating display-frame drift.
+            lastPaint = lastPaint === null ? time : time - ((time - lastPaint) % frameInterval);
+            paint();
         }
         schedule();
     }
@@ -71,29 +63,18 @@
     function restart() {
         stop();
         if (!pageActive || document.hidden || width <= 0 || height <= 0) return;
-        const time = performance.now();
-        paint(0, time);
-        lastPaint = time;
+        paint();
+        lastPaint = performance.now();
         schedule();
     }
 
     function resize() {
         stop();
-        const bounds = navbar.getBoundingClientRect();
-        width = Math.max(0, bounds.width);
-        height = Math.max(0, bounds.height);
-        const ratio = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
-        canvas.width = Math.round(width * ratio);
-        canvas.height = Math.round(height * ratio);
-        context.setTransform(ratio, 0, 0, ratio, 0, 0);
-        palette = document.body.classList.contains('light-mode')
-            ? ['0,123,97', '115,51,166', '149,103,0']
-            : ['94,224,192', '189,133,255', '255,208,117'];
-        columns = Array.from({ length: Math.ceil(width / columnWidth) }, () => ({
-            y: Math.random() * (height + fontSize * 6),
-            speed: 0.022 + Math.random() * 0.026,
-            seed: Math.floor(Math.random() * characters.length)
-        }));
+        width = Math.max(0, navbar.offsetWidth);
+        height = Math.max(0, navbar.offsetHeight);
+        canvas.width = width;
+        canvas.height = height;
+        drops = Array.from({ length: Math.floor(width / fontSize) }).fill(1);
         restart();
     }
 

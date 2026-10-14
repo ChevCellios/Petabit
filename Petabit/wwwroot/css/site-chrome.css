@@ -15,18 +15,15 @@ body .site-header .navbar.matrix {
     min-height: 80px;
     padding: 0;
     border: 0;
-    background: var(--ui-surface);
-    color: var(--ui-text);
+    border-bottom: 2px solid #00ff00;
+    background: linear-gradient(145deg,#001f00,#003300);
+    color: #f1f1f1;
     overflow: hidden;
 }
 body .site-header .navbar.matrix::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 0;
-    height: 2px;
-    background: linear-gradient(90deg,var(--chrome-mint),var(--chrome-purple),var(--chrome-gold));
+    content: none;
 }
-body .site-header #matrixCanvas { opacity: .55; }
+body .site-header #matrixCanvas { opacity: 1; }
 body .site-header .navbar.matrix .matrix-nav-row {
     display: grid;
     grid-template-columns: auto 1fr auto;
@@ -38,8 +35,8 @@ body .site-header .navbar.matrix .matrix-nav-row {
     margin-inline: auto;
 }
 body .site-header .navbar.matrix :is(.navbar-brand,.nav-link) {
-    color: var(--ui-text) !important;
-    text-shadow: none !important;
+    color: #f1f1f1 !important;
+    text-shadow: 0 0 3px #00ff00 !important;
     text-decoration: none;
 }
 body .site-header .navbar.matrix .navbar-brand {
@@ -65,10 +62,10 @@ body .site-header .navbar.matrix .nav-link {
     border-radius: 10px;
     font-size: .9rem;
     font-weight: 750;
-    background: var(--ui-surface);
+    background: transparent;
 }
-body .site-header .navbar.matrix .nav-link[aria-current="page"] { border-color: var(--chrome-purple); background: var(--ui-raised); }
-body .site-header .navbar.matrix .nav-link:hover { color: var(--chrome-mint) !important; border-color: var(--ui-line); }
+body .site-header .navbar.matrix .nav-link[aria-current="page"] { border-color: #00ff00; }
+body .site-header .navbar.matrix .nav-link:hover { color: #ccffcc !important; border-color: #00ff00; text-shadow: 0 0 8px #00ff00 !important; }
 .site-header .matrix-nav-settings { display: flex; align-items: center; gap: .6rem; }
 .site-header .matrix-nav-settings form { margin: 0; }
 body .site-header .matrix-nav-settings :is(.form-select,.mode-toggle) {

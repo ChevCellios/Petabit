@@ -16,17 +16,17 @@ function harness({ reduced = false, hidden = false, hasCanvas = true, hasContext
     let bounds = { width: 1200, height: 72 };
     const frames = new Map();
     const colors = [];
-    const transforms = [];
+    const fills = [];
+    const text = [];
     const events = new Map();
     function eventTarget(name, object = {}) {
         object.addEventListener = (type, callback) => events.set(`${name}:${type}`, callback);
         return object;
     }
-    const navbar = { getBoundingClientRect: () => bounds };
+    const navbar = { get offsetWidth() { return bounds.width; }, get offsetHeight() { return bounds.height; } };
     const context = {
-        clearRect() { paints++; },
-        setTransform(...args) { transforms.push(args); },
-        fillText() { glyphs++; colors.push(this.fillStyle); }
+        fillRect(...args) { paints++; fills.push({ color: this.fillStyle, bounds: args }); },
+        fillText(character, x, y) { glyphs++; colors.push(this.fillStyle); text.push({ character, x, y, font: this.font }); }
     };
     const canvas = { getContext: () => hasContext ? context : null, closest: () => navbar };
     const toggle = eventTarget('toggle');
@@ -51,7 +51,7 @@ function harness({ reduced = false, hidden = false, hasCanvas = true, hasContext
         }
     });
     return {
-        canvas, context, document, motion, colors, transforms,
+        canvas, context, document, motion, colors, fills, text,
         pending: () => frames.size,
         paints: () => paints,
         glyphs: () => glyphs,
@@ -68,17 +68,34 @@ function harness({ reduced = false, hidden = false, hasCanvas = true, hasContext
     };
 }
 
-test('caps drawing at 20 fps, bounds pixel density, and uses legible columns', () => {
+test('preserves the original one-pixel green rain, fading trails and 33ms cadence', () => {
     const h = harness();
-    assert.equal(h.canvas.width, 2400);
-    assert.equal(h.canvas.height, 144);
-    assert.deepEqual(h.transforms[0], [2, 0, 0, 2, 0, 0]);
-    assert.equal(h.context.font, '10px monospace');
-    assert.ok(h.glyphs() > 0 && h.glyphs() <= 100 * 6);
+    assert.equal(h.canvas.width, 1200);
+    assert.equal(h.canvas.height, 72);
+    assert.equal(h.context.font, '1px monospace');
+    assert.equal(h.glyphs(), 1200);
+    assert.deepEqual(h.fills[0], { color: 'rgba(0, 0, 0, 0.05)', bounds: [0, 0, 1200, 72] });
+    assert.ok(h.colors.every(color => color === '#00ff00'));
+    assert.equal(h.text[0].x, 0);
+    assert.equal(h.text[1199].x, 1199);
+    assert.ok(h.text.every(glyph => glyph.y === 1));
     const initialPaints = h.paints();
     for (let time = 10; time <= 1000; time += 10) h.frame(time);
-    assert.equal(h.paints() - initialPaints, 20);
+    assert.equal(h.paints() - initialPaints, 30);
     assert.equal(h.pending(), 1);
+});
+
+test('rain descends one pixel per original 33ms step', () => {
+    const h = harness();
+    h.frame(32);
+    assert.equal(h.paints(), 1);
+    h.frame(33);
+    assert.equal(h.text[1200].y, 2);
+    h.frame(65);
+    assert.equal(h.paints(), 2);
+    h.frame(66);
+    assert.equal(h.text[2400].y, 3);
+    assert.equal(h.paints(), 3);
 });
 
 test('hidden tabs stop immediately and resume with a single loop', () => {
@@ -137,15 +154,15 @@ test('pagehide cannot be restarted by resize or theme events; pageshow restores 
 
 test('resize observer, window resize, and theme changes redraw without duplicate loops', () => {
     const h = harness();
-    assert.ok(h.colors.some(color => color.startsWith('rgba(94,224,192,')));
+    assert.ok(h.colors.every(color => color === '#00ff00'));
     h.resize(600, 90);
-    assert.equal(h.canvas.width, 1200);
-    assert.equal(h.canvas.height, 180);
+    assert.equal(h.canvas.width, 600);
+    assert.equal(h.canvas.height, 90);
     h.emit('window', 'resize');
     h.setLight(true);
     h.colors.length = 0;
     h.emit('toggle', 'click');
-    assert.ok(h.colors.some(color => color.startsWith('rgba(0,123,97,')));
+    assert.ok(h.colors.length > 0 && h.colors.every(color => color === '#00ff00'));
     assert.equal(h.pending(), 1);
     h.resize(0, 0);
     assert.equal(h.pending(), 0);
