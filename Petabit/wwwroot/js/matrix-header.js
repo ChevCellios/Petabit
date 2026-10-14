@@ -8,8 +8,8 @@
     const navbar = canvas.closest('nav.navbar') || canvas.parentElement;
     if (!navbar) return;
 
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    // Preserve the owner's original dense, one-pixel green Matrix rain.
+    // The owner explicitly requests this custom Matrix rain to stay live,
+    // including when the browser reports a reduced-motion preference.
     const characters = Array.from('アァイィウエカガキギクグケゲコゴサザシジスズタダチッヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモヤユヨラリルレロワンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
     const fontSize = 1;
     const frameInterval = 33;
@@ -21,7 +21,7 @@
     let pageActive = true;
 
     function canAnimate() {
-        return pageActive && !document.hidden && !reducedMotion.matches && width > 0 && height > 0;
+        return pageActive && !document.hidden && width > 0 && height > 0;
     }
 
     function stop() {
@@ -80,7 +80,6 @@
 
     window.addEventListener('resize', resize, { passive: true });
     document.addEventListener('visibilitychange', restart);
-    reducedMotion.addEventListener('change', restart);
     window.addEventListener('pagehide', () => {
         pageActive = false;
         stop();
