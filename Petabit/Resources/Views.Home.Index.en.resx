@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="WelcomeText" xml:space="preserve">
-    <value>Your gateway to learning, technology and cybersecurity</value>
+    <value>Track space and explore selected resources for learning technology.</value>
   </data>
   <data name="BooksLink" xml:space="preserve">
     <value>Books</value>
@@ -344,9 +344,22 @@
   <data name="StarlinkSound" xml:space="preserve"><value>Modem sound · 15 s</value></data>
   <data name="StarlinkCalculating" xml:space="preserve"><value>Data received · calculating orbital positions…</value></data>
   <data name="StarlinkReady" xml:space="preserve"><value>Satellite view ready</value></data>
-  <data name="StarlinkFresh" xml:space="preserve"><value>Data within freshness limits</value></data>
-  <data name="StarlinkAging" xml:space="preserve"><value>Older data · last successful retrieval</value></data>
+  <data name="StarlinkFresh" xml:space="preserve"><value>Retrieval up to date</value></data>
+  <data name="StarlinkAging" xml:space="preserve"><value>Retrieval over 4 hours old</value></data>
   <data name="StarlinkAge" xml:space="preserve"><value>Retrieval age</value></data>
   <data name="StarlinkAgeUnknown" xml:space="preserve"><value>Data age unavailable</value></data>
   <data name="StarlinkViewHelp" xml:space="preserve"><value>Zoom enlarges the whole globe. Scroll horizontally and vertically to reach the poles; drag with a mouse to rotate. Ctrl + wheel zooms. Reset view centers the globe again.</value></data>
+  <data name="StarlinkSourceFailed"><value>Source temporarily unavailable</value></data>
+  <data name="StarlinkSourceFailedHelp"><value>The latest source check failed. The last successful retrieval is shown.</value></data>
+  <data name="StarlinkRetrievalOld"><value>The last successful retrieval is over four hours old. Individual orbital data ages are shown separately.</value></data>
+  <data name="StarlinkOrbitCurrent"><value>Orbital data up to 3.5 days old</value></data>
+  <data name="StarlinkOrbitOlder"><value>Older</value></data>
+  <data name="StarlinkOrbitUnknown"><value>Unknown epoch</value></data>
+  <data name="StarlinkOrbitChecking"><value>Checking orbital data ages…</value></data>
+  <data name="StarlinkOlderHidden"><value>The selected layers only have older or unknown epochs. Enable older positions to see them.</value></data>
+  <data name="StarlinkShowOlder"><value>Show older positions</value></data>
+  <data name="StarlinkOlderHelp"><value>Dim rings mark positions based on data over 3.5 days old or an unknown epoch. Color still indicates operational status. Hiding these positions does not change catalog totals.</value></data>
+  <data name="StarlinkSettings"><value>Statistics, motion and layers</value></data>
+  <data name="StarlinkDataDetails"><value>Data, source and globe instructions</value></data>
+  <data name="HomeDescription"><value>Track the ISS and Starlink, explore orbital data, and discover selected books, learning apps and an introduction to blockchain.</value></data>
 </root>

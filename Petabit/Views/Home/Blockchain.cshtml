@@ -1,24 +1,51 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
-
 @{
     ViewData["Title"] = Localizer["BlockchainTechnology"].Value;
-    ViewData["Description"] = "Uvod u blockchain tehnologiju i korisni resursi za daljnje istraživanje decentraliziranih sustava.";
+    ViewData["Description"] = Localizer["PageDescription"].Value;
 }
 
 <div class="container content-page resource-page">
     <a class="resource-back" href="/">@Localizer["BackHome"]</a>
     <p class="resource-kicker">@Localizer["ExploreResources"]</p>
-    <h1 class="display-4">🪙 @Localizer["BlockchainTechnology"]</h1>
+    <h1>🪙 @Localizer["BlockchainTechnology"]</h1>
     <p class="resource-intro">@Localizer["PageIntro"]</p>
+    <p class="resource-review">@Localizer["ReviewedLabel"] <time datetime="2026-10-13">@Localizer["ReviewDate"]</time></p>
+    <p class="resource-description">@Localizer["BlockchainTechnologyDescription"]</p>
 
-    <div class="mt-4">
-        <p class="lead">
-            @Localizer["BlockchainTechnologyDescription"]
-        </p>
+    <section class="resource-section" aria-labelledby="blockchain-sources-title">
+        <h2 id="blockchain-sources-title">@Localizer["LearningSources"]</h2>
+        <ul class="list-group resource-grid">
+            <li class="list-group-item resource-card">
+                <h3>Ethereum</h3>
+                <p class="resource-description">@Localizer["EthereumDescription"]</p>
+                <dl class="resource-meta">
+                    <div><dt>@Localizer["LevelLabel"]</dt><dd>@Localizer["EthereumLevel"]</dd></div>
+                    <div><dt>@Localizer["LanguageLabel"]</dt><dd>@Localizer["EnglishResource"]</dd></div>
+                </dl>
+                <a class="resource-link" href="https://ethereum.org/en/developers/docs/intro-to-ethereum/" target="_blank" rel="noopener noreferrer">@Localizer["ReadEthereum"] <span aria-hidden="true">↗</span></a>
+            </li>
+            <li class="list-group-item resource-card">
+                <h3>Bitcoin</h3>
+                <p class="resource-description">@Localizer["BitcoinDescription"]</p>
+                <dl class="resource-meta">
+                    <div><dt>@Localizer["LevelLabel"]</dt><dd>@Localizer["BitcoinLevel"]</dd></div>
+                    <div><dt>@Localizer["LanguageLabel"]</dt><dd>@Localizer["EnglishResource"]</dd></div>
+                </dl>
+                <a class="resource-link" href="https://developer.bitcoin.org/devguide/block_chain.html" target="_blank" rel="noopener noreferrer">@Localizer["ReadBitcoin"] <span aria-hidden="true">↗</span></a>
+            </li>
+        </ul>
+    </section>
 
-        <a href="https://minepi.com/SuperBolt" target="_blank" rel="noopener noreferrer" class="btn btn-outline-warning mt-3">
-            🌐 @Localizer["VisitPiNetwork"]
-        </a>
-    </div>
+    <section class="resource-section resource-project" aria-labelledby="pi-project-title">
+        <p class="resource-badge">@Localizer["ReferralBadge"]</p>
+        <h2 id="pi-project-title">@Localizer["PiProjectTitle"]</h2>
+        <p class="resource-description">@Localizer["PiDescription"]</p>
+        <p class="resource-note resource-referral">@Localizer["PiReferralNote"]</p>
+        <div class="resource-actions">
+            <a class="resource-link" href="https://minepi.com/white-paper/" target="_blank" rel="noopener noreferrer">@Localizer["PiDocumentation"] <span aria-hidden="true">↗</span></a>
+            <a class="resource-link resource-link-secondary" href="https://minepi.com/SuperBolt" target="_blank" rel="noopener noreferrer nofollow">@Localizer["VisitPiNetwork"] <span aria-hidden="true">↗</span></a>
+        </div>
+    </section>
+    <p class="resource-note">@Localizer["LevelNote"] @Localizer["NewTabNote"]</p>
 </div>

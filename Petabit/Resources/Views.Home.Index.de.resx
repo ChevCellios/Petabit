@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="WelcomeText" xml:space="preserve">
-    <value>Ihr Zugang zu Lernen, Technologie und Cybersicherheit</value>
+    <value>Verfolge das All und entdecke ausgewählte Lernressourcen zur Technologie.</value>
   </data>
   <data name="BooksLink" xml:space="preserve">
     <value>Bücher</value>
@@ -344,9 +344,22 @@
   <data name="StarlinkSound" xml:space="preserve"><value>Modemton · 15 s</value></data>
   <data name="StarlinkCalculating" xml:space="preserve"><value>Daten empfangen · Orbitalpositionen werden berechnet…</value></data>
   <data name="StarlinkReady" xml:space="preserve"><value>Satellitenansicht bereit</value></data>
-  <data name="StarlinkFresh" xml:space="preserve"><value>Daten innerhalb der Aktualitätsgrenzen</value></data>
-  <data name="StarlinkAging" xml:space="preserve"><value>Ältere Daten · letzter erfolgreicher Abruf</value></data>
+  <data name="StarlinkFresh" xml:space="preserve"><value>Abruf aktuell</value></data>
+  <data name="StarlinkAging" xml:space="preserve"><value>Abruf über 4 Stunden alt</value></data>
   <data name="StarlinkAge" xml:space="preserve"><value>Alter des Abrufs</value></data>
   <data name="StarlinkAgeUnknown" xml:space="preserve"><value>Datenalter nicht verfügbar</value></data>
   <data name="StarlinkViewHelp" xml:space="preserve"><value>Der Zoom vergrößert den ganzen Globus. Horizontal und vertikal scrollen, um die Pole zu erreichen; mit der Maus ziehen, um zu drehen. Strg + Mausrad zoomt. Ansicht zurücksetzen zentriert den Globus.</value></data>
+  <data name="StarlinkSourceFailed"><value>Quelle vorübergehend nicht erreichbar</value></data>
+  <data name="StarlinkSourceFailedHelp"><value>Die letzte Quellenprüfung ist fehlgeschlagen. Der letzte erfolgreiche Abruf wird angezeigt.</value></data>
+  <data name="StarlinkRetrievalOld"><value>Der letzte erfolgreiche Abruf ist über vier Stunden alt. Das Alter einzelner Bahndaten wird separat angezeigt.</value></data>
+  <data name="StarlinkOrbitCurrent"><value>Bahndaten bis 3,5 Tage alt</value></data>
+  <data name="StarlinkOrbitOlder"><value>Älter</value></data>
+  <data name="StarlinkOrbitUnknown"><value>Unbekannte Epoche</value></data>
+  <data name="StarlinkOrbitChecking"><value>Alter der Bahndaten wird geprüft…</value></data>
+  <data name="StarlinkOlderHidden"><value>Die gewählten Ebenen enthalten nur ältere oder unbekannte Epochen. Aktiviere ältere Positionen, um sie anzuzeigen.</value></data>
+  <data name="StarlinkShowOlder"><value>Ältere Positionen anzeigen</value></data>
+  <data name="StarlinkOlderHelp"><value>Gedämpfte Ringe zeigen Positionen aus über 3,5 Tage alten Daten oder unbekannten Epochen. Die Farbe zeigt weiterhin den Betriebsstatus. Ausblenden ändert die Katalogzahlen nicht.</value></data>
+  <data name="StarlinkSettings"><value>Statistik, Bewegung und Ebenen</value></data>
+  <data name="StarlinkDataDetails"><value>Daten, Quelle und Globus-Hilfe</value></data>
+  <data name="HomeDescription"><value>Verfolge ISS und Starlink, erkunde Bahndaten und entdecke ausgewählte Bücher, Lern-Apps und eine Einführung in Blockchain.</value></data>
 </root>

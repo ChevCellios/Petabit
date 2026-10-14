@@ -54,3 +54,22 @@ test('deep-space elements with a very old epoch are skipped before costly resona
     assert.equal(frame.count, 1);
     assert.ok([...frame.packed].every(Number.isFinite));
 });
+
+test('UTC observation epochs stay aligned with propagated positions when records are skipped', () => {
+    const earlier = '2026-10-04T22:35:12.73824';
+    const frame = positionsAt(createRecords([
+        { ...omm, ECCENTRICITY: 2 }, { ...omm, PETABIT_STATUS: 'P', EPOCH: earlier }, omm
+    ]), Date.parse(omm.EPOCH + 'Z'));
+    assert.equal(frame.count, 2);
+    assert.deepEqual([...frame.statuses], [1, 0]);
+    assert.deepEqual([...frame.epochs], [Date.parse(earlier + 'Z'), Date.parse(omm.EPOCH + 'Z')]);
+    assert.equal(frame.epochs[1] - frame.epochs[0], 60000);
+});
+
+test('equivalent plain UTC, Z and offset epochs propagate to the same location', () => {
+    const variants = [omm.EPOCH, omm.EPOCH + 'Z', omm.EPOCH + 'z', '2026-10-05T00:36:12.73824+02:00'];
+    const frame = positionsAt(createRecords(variants.map(EPOCH => ({ ...omm, EPOCH }))), Date.parse(omm.EPOCH + 'Z'));
+    assert.equal(frame.count, 4);
+    assert.ok([...frame.epochs].every(epoch => epoch === Date.parse(omm.EPOCH + 'Z')));
+    for(let i=1;i<4;i++)assert.deepEqual([...frame.packed.slice(i*6,i*6+6)], [...frame.packed.slice(0,6)]);
+});

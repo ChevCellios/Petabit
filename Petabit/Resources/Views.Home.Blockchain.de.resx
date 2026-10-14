@@ -117,14 +117,30 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BlockchainTechnologyDescription" xml:space="preserve">
-    <value>Die Blockchain-Technologie bildet das Fundament digitaler Währungen wie Bitcoin und ermöglicht eine dezentrale Speicherung und den Austausch von Daten – ganz ohne zentrale Vermittler. Über das Projekt Pi Network können Benutzer Blockchain-Systeme kennenlernen und gleichzeitig Kryptowährung auf ihrem Mobilgerät schürfen – einfach, kostenlos und als lehrreicher Einstieg.</value>
-  </data>
-  <data name="VisitPiNetwork" xml:space="preserve">
-    <value>Besuche Pi Network</value>
-  </data>
+  <data name="BlockchainTechnologyDescription" xml:space="preserve"><value>Eine Blockchain speichert Daten in Blöcken, die durch kryptografische Hashes verbunden sind. Das Netzwerk akzeptiert Änderungen nach Konsensregeln; die Sicherheit hängt vom Protokoll und seinen Teilnehmern ab.</value></data>
+  <data name="VisitPiNetwork" xml:space="preserve"><value>SuperBolt-Einladung öffnen</value></data>
   <data name="BackHome" xml:space="preserve"><value>← Startseite</value></data>
   <data name="ExploreResources" xml:space="preserve"><value>AUSGEWÄHLTE RESSOURCEN</value></data>
-  <data name="PageIntro" xml:space="preserve"><value>Entdecke ausgewählte Ressourcen zum Lernen und Entwickeln digitaler Fähigkeiten.</value></data>
+  <data name="PageIntro" xml:space="preserve"><value>Entdecke Blöcke, Transaktionen und Konsens anhand der Dokumentation der Projekte. Beginne mit den Grundlagen und vergleiche anschließend ihre Umsetzung in verschiedenen Netzwerken.</value></data>
   <data name="BlockchainTechnology" xml:space="preserve"><value>Blockchain-Technologie</value></data>
+  <data name="ReviewedLabel" xml:space="preserve"><value>Beschreibungen geprüft:</value></data>
+  <data name="ReviewDate" xml:space="preserve"><value>13. Oktober 2026</value></data>
+  <data name="LevelLabel" xml:space="preserve"><value>Niveau</value></data>
+  <data name="NewTabNote" xml:space="preserve"><value>Externe Links öffnen sich in einem neuen Tab.</value></data>
+  <data name="LevelNote" xml:space="preserve"><value>Die Niveaus sind Orientierungshilfen von Petabit.</value></data>
+  <data name="PageDescription" xml:space="preserve"><value>Ein Lernüberblick zur Blockchain mit Bitcoin- und Ethereum-Dokumentation sowie einer klar gekennzeichneten Pi-Network-Einladung.</value></data>
+  <data name="LearningSources" xml:space="preserve"><value>Dokumentation zum Lernen</value></data>
+  <data name="LanguageLabel" xml:space="preserve"><value>Sprache der Quelle</value></data>
+  <data name="EnglishResource" xml:space="preserve"><value>Englisch</value></data>
+  <data name="EthereumDescription" xml:space="preserve"><value>Konten, Transaktionen und Smart Contracts: ein technischer Überblick über die Grundlagen von Ethereum.</value></data>
+  <data name="EthereumLevel" xml:space="preserve"><value>Grundlagen · technische Lektüre</value></data>
+  <data name="ReadEthereum" xml:space="preserve"><value>Ethereum-Einführung lesen</value></data>
+  <data name="BitcoinDescription" xml:space="preserve"><value>Wie Blöcke verbunden sind, wozu Hashes dienen und wie Proof of Work bei der Prüfung der Kette hilft.</value></data>
+  <data name="BitcoinLevel" xml:space="preserve"><value>Mittelstufe · technische Lektüre</value></data>
+  <data name="ReadBitcoin" xml:space="preserve"><value>Bitcoin-Leitfaden lesen</value></data>
+  <data name="ReferralBadge" xml:space="preserve"><value>EINLADUNG / REFERRAL</value></data>
+  <data name="PiProjectTitle" xml:space="preserve"><value>Pi Network · eigenständiges Projekt</value></data>
+  <data name="PiDescription" xml:space="preserve"><value>Pi Network ist ein eigenständiges Projekt mit eigener Dokumentation und eigenen Teilnahmebedingungen.</value></data>
+  <data name="PiReferralNote" xml:space="preserve"><value>Der Link enthält den Einladungscode SuperBolt. Seine Verwendung kann dem Einladenden gemäß den Regeln von Pi Network einen Referral-Vorteil bringen.</value></data>
+  <data name="PiDocumentation" xml:space="preserve"><value>Pi-Dokumentation lesen</value></data>
 </root>

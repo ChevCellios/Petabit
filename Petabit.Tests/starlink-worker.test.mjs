@@ -8,7 +8,7 @@ function harness() {
     const self = { location: { href: 'https://petabit.example/js/starlink-worker.js?v=workerHash&orbits=orbitHash&clock=clockHash' },
         postMessage: frame => frames.push(frame) };
     const orbitModule = { createRecords: elements => elements, positionsAt: (records, timestamp) => ({
-        timestamp, count: records.length, packed: new Float32Array(records.length * 6), statuses: new Uint8Array(records.length) }) };
+        timestamp, count: records.length, packed: new Float32Array(records.length * 6), statuses: new Uint8Array(records.length), epochs: new Float64Array(records.length) }) };
     // Replace only the browser module-loader boundary; execute the real worker lifecycle.
     const source = fs.readFileSync(new URL('../Petabit/wwwroot/js/starlink-worker.js', import.meta.url), 'utf8')
         .replace('import(url.href)', 'loadModule(url.href)');

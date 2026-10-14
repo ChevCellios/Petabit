@@ -14,7 +14,7 @@ function setup(){
  const workers=[];
  class FakeWorker { constructor(){this.messages=[];workers.push(this);} postMessage(data){this.messages.push(data);} terminate(){this.terminated=true;} }
  const documentEvents={},windowEvents={};
- const sandbox=vm.createContext({document:{getElementById:element,querySelector:selector=>element(selector),hidden:false,body:{classList:{contains:()=>false}},addEventListener(type,fn){documentEvents[type]=fn;}},window:{matchMedia:()=>({matches:true}),addEventListener(type,fn){windowEvents[type]=fn;}},devicePixelRatio:1,cancelAnimationFrame(){},requestAnimationFrame(){return 1;},console,Date,Math,Number,String,Array,URL,AbortController,AbortSignal,Worker:FakeWorker,location:{origin:'https://example.invalid'},fetch:async()=>{throw Error('Unavailable');}});
+ const sandbox=vm.createContext({document:{getElementById:element,querySelector:selector=>element(selector),hidden:false,body:{classList:{contains:()=>false}},addEventListener(type,fn){documentEvents[type]=fn;}},window:{matchMedia:()=>({matches:true}),setInterval(fn){windowEvents.healthTick=fn;return 1;},clearInterval(){},dispatchEvent(){},addEventListener(type,fn){windowEvents[type]=fn;}},devicePixelRatio:1,cancelAnimationFrame(){},requestAnimationFrame(){return 1;},console,Date,Math,Number,String,Array,URL,Event,AbortController,AbortSignal,Worker:FakeWorker,location:{origin:'https://example.invalid'},fetch:async()=>{throw Error('Unavailable');}});
  vm.runInContext(fs.readFileSync('Petabit/wwwroot/js/starlink-dashboard.js','utf8'),sandbox);
  return {sandbox,element,layers,workers,documentEvents,windowEvents};
 }
@@ -24,6 +24,42 @@ test('zoom clamps to usable limits and reset restores orientation without changi
  vm.runInContext('setZoom(-5)',sandbox);assert.equal(element('starlink-globe').dataset.zoom,'1');assert.equal(element('starlink-zoom-out').disabled,true);
  layers[0].checked=false;vm.runInContext('rotation=2;setZoom(2)',sandbox);element('starlink-view-reset').events.click();
  assert.equal(vm.runInContext('rotation',sandbox),-.28);assert.equal(element('starlink-globe').dataset.zoom,'1');assert.equal(layers[0].checked,false);
+});
+
+test('a fresh successful retrieval remains healthy when only some orbital epochs are old',()=>{
+ const {sandbox,element}=setup();const now=Date.now();
+ Object.assign(element('starlink-panel').dataset,{orbitCurrent:'Recent',orbitOlder:'Older',orbitUnknown:'Unknown'});
+ sandbox.healthNow=now;
+ vm.runInContext(`latestData={retrievedAt:new Date(healthNow).toISOString(),isStale:true,refreshFailed:false,statusCoverageComplete:true};
+ frame={count:2,epochs:new Float64Array([healthNow,healthNow-4*86400000]),statuses:new Uint8Array([0,0])};updateDataHealth()`,sandbox);
+ assert.equal(element('starlink-data-quality').dataset.state,'fresh');
+ assert.equal(element('starlink-warning').hidden,true);
+ assert.equal(element('starlink-orbit-quality').textContent,'Recent: 1 · Older: 1');
+ assert.equal(element('starlink-globe').dataset.olderCount,'1');
+});
+
+test('epoch filtering uses observation age, preserves statuses and catalog totals, and explains an empty selection',()=>{
+ const {sandbox,element,layers}=setup();element('starlink-panel').hidden=false;
+ element('starlink-panel').dataset.olderHidden='Only old positions remain';
+ vm.runInContext(`frame={count:3,packed:new Float32Array([7000,0,0,0,0,0,7000,0,0,0,0,0,7000,0,0,0,0,0]),
+ epochs:new Float64Array([Date.now(),Date.now()-4*86400000,NaN]),statuses:new Uint8Array([0,1,2]),
+ timestamp:Date.now()+100*86400000,speed:30,sentAt:Date.now()};updateLayerCoverage(frame,new Intl.NumberFormat('en'));updateOrbitAges();draw()`,sandbox);
+ assert.equal(element('starlink-globe').dataset.visibleCount,'3');
+ assert.equal(element('starlink-globe').dataset.olderCount,'1');assert.equal(element('starlink-globe').dataset.unknownEpochCount,'1');
+ element('starlink-orbit').textContent='20';element('starlink-show-older').checked=false;element('starlink-show-older').events.change();
+ assert.equal(element('starlink-globe').dataset.visibleCount,'1');assert.equal(element('starlink-orbit').textContent,'20');
+ layers[0].checked=false;layers[0].events.change();assert.equal(element('starlink-globe').dataset.visibleCount,'0');
+ assert.equal(element('starlink-empty').textContent,'Only old positions remain');
+ element('starlink-show-older').checked=true;element('starlink-show-older').events.change();
+ assert.equal(element('starlink-globe').dataset.visibleCount,'2');
+});
+
+test('paused visible data ages without worker messages; hidden panels do not update',()=>{
+ const {sandbox,element,windowEvents}=setup();element('starlink-panel').hidden=false;element('starlink-motion').checked=false;
+ vm.runInContext(`latestData={retrievedAt:new Date(Date.now()-5*3600000).toISOString(),statusCoverageComplete:true};`,sandbox);
+ windowEvents.healthTick();assert.equal(element('starlink-data-quality').dataset.state,'stale');
+ element('starlink-panel').hidden=true;element('starlink-data-quality').dataset.state='untouched';
+ windowEvents.healthTick();assert.equal(element('starlink-data-quality').dataset.state,'untouched');
 });
 
 test('zoom enlarges the complete drawing surface, bounds memory and leaves ordinary scrolling available',()=>{

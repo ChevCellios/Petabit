@@ -122,5 +122,22 @@
   </data>
   <data name="BackHome" xml:space="preserve"><value>← Početna</value></data>
   <data name="ExploreResources" xml:space="preserve"><value>ODABRANI RESURSI</value></data>
-  <data name="PageIntro" xml:space="preserve"><value>Istraži odabrane resurse za učenje i razvoj digitalnih vještina.</value></data>
+  <data name="PageIntro" xml:space="preserve"><value>Kratke lekcije pomažu održati ritam učenja. Odaberi aplikaciju, započni jednim tečajem i primijeni naučeno u vlastitom malom projektu.</value></data>
+  <data name="ReviewedLabel" xml:space="preserve"><value>Opisi provjereni:</value></data>
+  <data name="ReviewDate" xml:space="preserve"><value>13. listopada 2026.</value></data>
+  <data name="LevelLabel" xml:space="preserve"><value>Razina</value></data>
+  <data name="NewTabNote" xml:space="preserve"><value>Vanjske poveznice otvaraju se u novoj kartici.</value></data>
+  <data name="LevelNote" xml:space="preserve"><value>Razine su orijentacijske procjene Petabita.</value></data>
+  <data name="PageTitle" xml:space="preserve"><value>Aplikacije za vježbanje programiranja</value></data>
+  <data name="PageDescription" xml:space="preserve"><value>Usporedi Mimo i Sololearn prema načinu učenja, početnoj razini i jeziku povezanih stranica.</value></data>
+  <data name="LanguageLabel" xml:space="preserve"><value>Jezik povezane stranice</value></data>
+  <data name="EnglishOverview" xml:space="preserve"><value>Engleski</value></data>
+  <data name="OfficialLink" xml:space="preserve"><value>Otvori službenu stranicu</value></data>
+  <data name="MimoDescription" xml:space="preserve"><value>Interaktivne lekcije i projekti za Python i web razvoj. Praktičan početak za redovitu vježbu osnovnih programerskih koncepata.</value></data>
+  <data name="MimoLevel" xml:space="preserve"><value>Početna</value></data>
+  <data name="MimoInviteNote" xml:space="preserve"><value>Neobvezna poveznica s kodom pozivnice:</value></data>
+  <data name="MimoInvite" xml:space="preserve"><value>Pozivnica 6meni7</value></data>
+  <data name="SololearnDescription" xml:space="preserve"><value>Kratki tečajevi Pythona, JavaScripta i drugih jezika, uz kvizove i vježbanje koda. Ponuda uključuje uvodne i srednje zahtjevne sadržaje.</value></data>
+  <data name="SololearnLevel" xml:space="preserve"><value>Početna do srednja</value></data>
+  <data name="SelectionNote" xml:space="preserve"><value>Razine su orijentacijske procjene Petabita. Na službenim stranicama provjeri ponudu tečajeva i uvjete plana.</value></data>
 </root>

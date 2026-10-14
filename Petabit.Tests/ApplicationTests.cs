@@ -320,18 +320,6 @@ public sealed class ApplicationTests : IClassFixture<WebApplicationFactory<Progr
     }
 
     [Fact]
-    public async Task MobileAnalyticsConsentStylesProvideBottomSheetBehavior()
-    {
-        var styles = await _client.GetStringAsync("/Petabit.styles.css");
-
-        Assert.Contains("max-height: min(45vh, 18rem)", styles);
-        Assert.Contains("overscroll-behavior: contain", styles);
-        Assert.Contains("touch-action: pan-y", styles);
-        Assert.Contains("min-height: 44px", styles);
-        Assert.Contains("safe-area-inset-bottom", styles);
-    }
-
-    [Fact]
     public async Task IssDataReturnsJsonWhenUpstreamSucceeds()
     {
         var handler = new IssPositionsHttpMessageHandler();

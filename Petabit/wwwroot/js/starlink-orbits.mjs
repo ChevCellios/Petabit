@@ -5,7 +5,12 @@ import { eciToEcf } from '../lib/satellite-js/dist/transforms.js';
 export function createRecords(elements) {
     return elements.map(element => {
         try {
-            const record = json2satrec(element);
+            // OMM epochs without an offset are UTC, independently of the viewer's zone.
+            const epoch = String(element.EPOCH ?? '');
+            const epochTime = Date.parse(/[zZ]$|[+-]\d{2}:?\d{2}$/.test(epoch) ? epoch : epoch + 'Z');
+            if (!Number.isFinite(epochTime)) return null;
+            const record = json2satrec({ ...element, EPOCH: new Date(epochTime).toISOString() });
+            record.petabitEpoch = epochTime;
             switch (element.PETABIT_STATUS ?? '+') {
                 case '+': record.petabitStatus = 0; break;
                 case 'P': record.petabitStatus = 1; break;
@@ -24,6 +29,7 @@ export function positionsAt(records, timestamp) {
     const sidereal = gstime(time);
     const packed = new Float32Array(records.length * 6);
     const statuses = new Uint8Array(records.length);
+    const epochs = new Float64Array(records.length);
     let count = 0;
     for (const record of records) {
         // This Starlink viewer supports near-Earth orbits. Deep-space resonance
@@ -38,7 +44,8 @@ export function positionsAt(records, timestamp) {
         packed.set([p.x, p.y, p.z, v.x + 7.292115e-5 * p.y,
             v.y - 7.292115e-5 * p.x, v.z], count * 6);
         statuses[count] = record.petabitStatus;
+        epochs[count] = record.petabitEpoch;
         count++;
     }
-    return { timestamp, count, packed: packed.subarray(0, count * 6), statuses: statuses.subarray(0, count) };
+    return { timestamp, count, packed: packed.subarray(0, count * 6), statuses: statuses.subarray(0, count), epochs: epochs.subarray(0, count) };
 }
