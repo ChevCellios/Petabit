@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
+using System.IO.Compression;
 using System.Net;
 using System.Security.Cryptography;
 using System.Threading.RateLimiting;
@@ -18,6 +20,17 @@ namespace Petabit
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddResponseCompression(options =>
+            {
+                // Applied only to the public Starlink JSON route below. HTML contains
+                // per-request nonces/antiforgery tokens and must remain uncompressed.
+                options.EnableForHttps = true;
+                options.MimeTypes = ["application/json"];
+                options.Providers.Add<BrotliCompressionProvider>();
+                options.Providers.Add<GzipCompressionProvider>();
+            });
+            builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
+            builder.Services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
             builder.WebHost.ConfigureKestrel(options =>
             {
                 options.AddServerHeader = false;
@@ -265,6 +278,9 @@ namespace Petabit
 
             app.UseRouting();
             app.UseRateLimiter();
+            app.UseWhen(context => HttpMethods.IsGet(context.Request.Method)
+                && context.Request.Path.Equals("/Home/StarlinkData", StringComparison.OrdinalIgnoreCase),
+                publicData => publicData.UseResponseCompression());
             app.UseStaticFiles();
             app.UseOutputCache();
             app.UseAuthorization();
