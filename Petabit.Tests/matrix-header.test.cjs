@@ -114,20 +114,23 @@ test('hidden tabs stop immediately and resume with a single loop', () => {
     assert.ok(h.paints() > paints);
 });
 
-test('reduced motion renders a static frame and reacts to preference changes', () => {
+test('the explicitly requested live Matrix keeps moving with reduced motion enabled', () => {
     const h = harness({ reduced: true });
     assert.equal(h.paints(), 1);
     assert.ok(h.glyphs() > 0);
-    assert.equal(h.pending(), 0);
+    assert.equal(h.pending(), 1);
+    h.frame(33);
+    assert.equal(h.paints(), 2);
+    assert.equal(h.text[1200].y, 2);
     h.motion.matches = false;
     h.emit('motion', 'change');
     assert.equal(h.pending(), 1);
     h.motion.matches = true;
     h.emit('motion', 'change');
-    assert.equal(h.pending(), 0);
+    assert.equal(h.pending(), 1);
     const paints = h.paints();
-    h.frame(1000);
-    assert.equal(h.paints(), paints);
+    h.frame(66);
+    assert.equal(h.paints(), paints + 1);
 });
 
 test('pagehide cannot be restarted by resize or theme events; pageshow restores eligibility', () => {
@@ -148,7 +151,7 @@ test('pagehide cannot be restarted by resize or theme events; pageshow restores 
     h.document.hidden = false;
     h.motion.matches = true;
     h.emit('window', 'pageshow');
-    assert.equal(h.pending(), 0);
+    assert.equal(h.pending(), 1);
     assert.ok(h.paints() > paints);
 });
 
