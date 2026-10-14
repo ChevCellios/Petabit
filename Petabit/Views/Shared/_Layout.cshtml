@@ -216,7 +216,8 @@
         (() => {
             if (!document.body.dataset.analyticsId) return;
             let preference;
-            try { preference = localStorage.getItem('petabit-analytics-consent'); } catch { }
+            try { preference = localStorage.getItem('petabit-analytics-consent'); }
+            catch { document.getElementById('analytics-storage-status').hidden = false; }
             document.getElementById('analytics-consent').hidden = preference === 'accepted' || preference === 'rejected';
         })();
     </script>
