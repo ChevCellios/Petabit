@@ -135,7 +135,8 @@
   <data name="OfficialLink" xml:space="preserve"><value>Otvori službenu stranicu</value></data>
   <data name="MimoDescription" xml:space="preserve"><value>Interaktivne lekcije i projekti za Python i web razvoj. Praktičan početak za redovitu vježbu osnovnih programerskih koncepata.</value></data>
   <data name="MimoLevel" xml:space="preserve"><value>Početna</value></data>
-  <data name="MimoInviteNote" xml:space="preserve"><value>Neobvezna poveznica s kodom pozivnice:</value></data>
+  <data name="MimoInviteNote" xml:space="preserve"><value>Prijavi se putem ove pozivnice i koristi Mimo Pro besplatno na 2 tjedna. Certificiraj se! :)</value></data>
+  <data name="MimoInviteTerms" xml:space="preserve"><value>Za nove korisnike, prema uvjetima Mima.</value></data>
   <data name="MimoInvite" xml:space="preserve"><value>Pozivnica 6meni7</value></data>
   <data name="SololearnDescription" xml:space="preserve"><value>Kratki tečajevi Pythona, JavaScripta i drugih jezika, uz kvizove i vježbanje koda. Ponuda uključuje uvodne i srednje zahtjevne sadržaje.</value></data>
   <data name="SololearnLevel" xml:space="preserve"><value>Početna do srednja</value></data>
