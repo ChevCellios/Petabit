@@ -135,7 +135,8 @@
   <data name="OfficialLink" xml:space="preserve"><value>Offizielle Website öffnen</value></data>
   <data name="MimoDescription" xml:space="preserve"><value>Interaktive Lektionen und Projekte für Python und Webentwicklung. Ein praktischer Einstieg zum regelmäßigen Üben grundlegender Programmierkonzepte.</value></data>
   <data name="MimoLevel" xml:space="preserve"><value>Einstieg</value></data>
-  <data name="MimoInviteNote" xml:space="preserve"><value>Optionaler Link mit Einladungscode:</value></data>
+  <data name="MimoInviteNote" xml:space="preserve"><value>Registriere dich über diese Einladung und nutze Mimo Pro 2 Wochen lang kostenlos. Hol dir dein Zertifikat! :)</value></data>
+  <data name="MimoInviteTerms" xml:space="preserve"><value>Für neue Nutzer gemäß den Mimo-Bedingungen.</value></data>
   <data name="MimoInvite" xml:space="preserve"><value>Einladung 6meni7</value></data>
   <data name="SololearnDescription" xml:space="preserve"><value>Kurze Kurse zu Python, JavaScript und weiteren Sprachen mit Quizfragen und Programmierübungen. Das Angebot umfasst Grundlagen und Inhalte für die Mittelstufe.</value></data>
   <data name="SololearnLevel" xml:space="preserve"><value>Einstieg bis Mittelstufe</value></data>

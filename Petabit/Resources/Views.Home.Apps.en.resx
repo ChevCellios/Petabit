@@ -135,7 +135,8 @@
   <data name="OfficialLink" xml:space="preserve"><value>Open the official website</value></data>
   <data name="MimoDescription" xml:space="preserve"><value>Interactive lessons and projects for Python and web development. A convenient starting point for practising basic coding concepts.</value></data>
   <data name="MimoLevel" xml:space="preserve"><value>Beginner</value></data>
-  <data name="MimoInviteNote" xml:space="preserve"><value>Optional link with an invitation code:</value></data>
+  <data name="MimoInviteNote" xml:space="preserve"><value>Sign up through this invitation and enjoy Mimo Pro free for 2 weeks. Earn your certificate! :)</value></data>
+  <data name="MimoInviteTerms" xml:space="preserve"><value>For new users, under Mimo’s terms.</value></data>
   <data name="MimoInvite" xml:space="preserve"><value>Invitation 6meni7</value></data>
   <data name="SololearnDescription" xml:space="preserve"><value>Short courses in Python, JavaScript and other languages, with quizzes and coding practice. Includes introductory and intermediate material.</value></data>
   <data name="SololearnLevel" xml:space="preserve"><value>Beginner to intermediate</value></data>
