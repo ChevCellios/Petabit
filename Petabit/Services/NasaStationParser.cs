@@ -91,6 +91,8 @@ public static class NasaStationParser
                 "Teretna letjelica", "Northrop Grumman / NASA"));
         foreach (var match in Matches(text, @"(?:CRS|SpaceX)[- ](\d+)(?:\s+Dragon)?"))
             vehicles.Add(new($"CRS-{match.Groups[1].Value} Dragon", "Teretna letjelica", "SpaceX / NASA"));
+        foreach (var match in Matches(text, @"SpaceX[’']s\s+(\d+)(?:st|nd|rd|th)\s+commercial resupply services mission"))
+            vehicles.Add(new($"CRS-{match.Groups[1].Value} Dragon", "Teretna letjelica", "SpaceX / NASA"));
         return vehicles.DistinctBy(v => v.Name).ToArray();
     }
 
@@ -128,7 +130,7 @@ public static class NasaStationParser
         var evidence = article.Text.Split('.').FirstOrDefault(s => Matches(s, action).Any()
             && !Matches(s, @"\b(?:will|scheduled|planned|expected|targeting|could|would)\b").Any());
         if (evidence is null) return (current with { NeedsReview = true }, "review");
-        if (vehicles.Length == 0) vehicles = ExtractVehicles(evidence);
+        if (vehicles.Length == 0) vehicles = ExtractVehicles(article.Text);
         if (vehicles.Length != 1) return (current with { NeedsReview = true }, "review");
         var vehicle = vehicles[0];
         var mission = vehicle.Name.Replace(" Dragon", "");
