@@ -55,7 +55,7 @@ public static class NasaStationParser
             .Select(m => PlainText(m.Groups[1].Value));
         foreach (var caption in captions)
         {
-            var match = Matches(caption, @"(?<date>[A-Za-z]+\.?\s+\d{1,2},\s+\d{4}): International Space Station Configuration\.\s+(?<count>\w+) spaceships are attached[^.]*").FirstOrDefault();
+            var match = Matches(caption, @"(?<date>[A-Za-z]+\.?\s+\d{1,2},\s+\d{4}): International Space Station Configuration\.\s+(?<count>\w+) spaceships are (?:attached|docked)[^.]*").FirstOrDefault();
             if (match is null) continue;
             var dateText = match.Groups["date"].Value.Replace(".", "");
             var date = DateTimeOffset.ParseExact(dateText, ["MMM d, yyyy", "MMMM d, yyyy"],
