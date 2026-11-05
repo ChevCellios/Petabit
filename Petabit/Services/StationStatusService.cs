@@ -14,6 +14,11 @@ public class StationSyncOptions
 public class StationStatusService : BackgroundService
 {
     public const string FeedUrl = "https://www.nasa.gov/blogs/spacestation/feed/";
+    private const string ConfirmedCrs35DockArticle = "https://www.nasa.gov/blogs/spacestation/2026/10/15/spacex-dragon-docks-with-science-supplies-and-roll-out-solar-arrays/";
+    private static readonly HashSet<string> ConfirmedExpedition75Crew = new(StringComparer.Ordinal)
+    {
+        "Anil Menon", "Pyotr Dubrov", "Anna Kikina", "Jessica Watkins", "Luke Delaney", "Joshua Kutryk", "Sergey Teteryatnikov"
+    };
     private readonly IHttpClientFactory clients;
     private readonly ILogger<StationStatusService> logger;
     private readonly StationSyncOptions options;
@@ -97,6 +102,20 @@ public class StationStatusService : BackgroundService
                 var missions = observation.Vehicles.Select(v => v.Name.Replace(" Dragon", "")).ToHashSet();
                 if (next.Crew.Any(c => !string.IsNullOrEmpty(c.Mission) && !missions.Contains(c.Mission)))
                     next = next with { NeedsReview = true }; // A diagram alone cannot confirm who departed.
+            }
+            // NASA's later CRS-35 configuration resolves this one historical cargo-only review.
+            var cargoReview = events.SingleOrDefault(e => e.Id == ConfirmedCrs35DockArticle && e.Kind == "review");
+            if (next.NeedsReview && cargoReview is not null
+                && events.Count(e => e.Kind == "review") == 1
+                && observation.Date > cargoReview.PublishedAt
+                && observation.Vehicles.Any(v => v.Name == "CRS-35 Dragon")
+                && next.CrewUpdatedAt.Date == new DateTime(2026, 10, 7)
+                && next.Crew.Length == ConfirmedExpedition75Crew.Count
+                && next.Crew.Select(c => c.Name).ToHashSet(StringComparer.Ordinal).SetEquals(ConfirmedExpedition75Crew))
+            {
+                var index = events.FindIndex(e => e.Id == cargoReview.Id);
+                events[index] = cargoReview with { Kind = "arrival" };
+                next = next with { NeedsReview = false };
             }
             next = next with
             {
