@@ -12,7 +12,7 @@ RUN dotnet publish "Petabit/Petabit.csproj" -c Release -o /app/publish --no-rest
 
 # The official extra variant retains ICU, time zones and CA certificates.
 # Keep the distro release explicit while accepting supported .NET patch updates.
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine3.24-extra AS final
+FROM mcr.microsoft.com/dotnet/aspnet:11.0-alpine3.24-extra AS final
 WORKDIR /app
 
 COPY --from=build /app/publish .
