@@ -4,6 +4,6 @@
   "private": true,
   "description": "Audit and integrity verification for the vendored orbital runtime; not an application build dependency.",
   "dependencies": {
-    "satellite.js": "7.1.0"
+    "satellite.js": "7.2.0"
   }
 }
