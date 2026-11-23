@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine3.24 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0-alpine3.24 AS build
 WORKDIR /src
 
 COPY ["NuGet.Config", "."]
